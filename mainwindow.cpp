@@ -69,18 +69,61 @@ void MainWindow::on_butConnect_clicked()
 
 void MainWindow::connected()
 {
-    const QSet<QByteArray>LISTSkip {"LIST:__PF_CRC,DWORD\r\n","LIST:__PLC_RUN,BOOL\r\n"};
+    const QSet<QByteArray>skip {
+        "__PF_CRC",
+        "__PLC_RUN"
+    };
+    const QSet<QString>supportedTypes {
+        "LIGHT",
+        "RELAY"
+    };
     statusBar()->showMessage("Connected");
     state = Connected;
 
-    socket.write("LIST:\n");
+#ifdef SETCONF
+    QString setconf("SETCONF:ipaddr,");
+    setconf.append(ui->lineEditPLCAddr->text()).append('\n');
+    socket.write(setconf);
+    if (!socket.waitForReadyRead(5000)) {
+        socket.abort();
+        return;
+    }
+#endif
 
-    QRegularExpression LISTRE("^LIST:(.+)\\.GTSAP1_([^_]+)_(.+),(.+)\r\n$");
+    QByteArray lineArray = socket.readLine();
+    socket.write("GETINFO:\n");
+    bool done = false;
+    while (!done) {
+        if (!socket.waitForReadyRead(5000)) {
+            socket.abort();
+            statusBar()->showMessage("GETINFO failed");
+            return;
+        }
+
+        while (socket.canReadLine()) {
+            QByteArray lineArray = socket.readLine();
+            if (lineArray == "GETINFO:\r\n") {
+                done = true;
+                break;
+            }
+            if (lineArray.startsWith("GETINFO:VERSION_PLC,")) {
+                lineArray.chop(2); // \r\n
+                ui->labelPLC->setText(lineArray.mid(sizeof("GETINFO:VERSION_PLC,") - 1));
+            }
+            //qDebug() << lineArray;
+        }
+    }
+
+    QTextCodec *codec = QTextCodec::codecForName("Windows 1250");
     QRegularExpression GETRE("^GET:(.+)\\.GTSAP1_([^_]+)_(.+),(.+)\r\n$");
-    QStringList list;
-    FoxtrotItem *item = nullptr;
+    QByteArray enableString("DI:\n");
 
-    while (1) {
+    socket.write("DI:\n"
+                 "EN:*_ENABLE\n"
+                 "GET:\n");
+
+    done = false;
+    while (!done) {
         if (!socket.waitForReadyRead(5000)) {
             socket.abort();
             return;
@@ -88,49 +131,91 @@ void MainWindow::connected()
 
         while (socket.canReadLine()) {
             QByteArray lineArray = socket.readLine();
-            if (LISTSkip.contains(lineArray))
+            QByteArray crop = lineArray.mid(sizeof("GET:") - 1);
+            crop.truncate(crop.indexOf(','));
+            if (skip.contains(crop))
                 continue;
-            if (lineArray == "LIST:\r\n")
-                goto done;
+            if (lineArray == "GET:\r\n") {
+                done = true;
+                break;
+            }
 
-            QString line = QString::fromLatin1(lineArray.data());
-            QRegularExpressionMatch match = LISTRE.match(line);
+            QString line = codec->toUnicode(lineArray.data());
+            QRegularExpressionMatch match = GETRE.match(line);
             if (!match.hasMatch()) {
-                qDebug() << "wrong line" << line;
+                qDebug() << "wrong GET line" << line << crop;
                 continue;
             }
             QString foxName = match.captured(1);
             QString foxType = match.captured(2);
             QString prop = match.captured(3);
-            QString propType = match.captured(4);
-            if (!item || item->getFoxName() != foxName) {
-                //item = new FoxtrotItem(FoxtrotItem::getType(foxType), foxName);
-                item = new FoxtrotItem(foxType, foxName);
-                items.insert(foxName, item);
-            }
-            item->setProp(prop, QVariant(0));
-            qDebug() << foxName << foxType << prop << propType;
+            QString value = match.captured(4);
+            if (value != "1")
+                continue;
+            if (!supportedTypes.contains(foxType))
+                continue;
+
+            FoxtrotItem *item = new FoxtrotItem(foxType, foxName);
+            itemsFox.insert(foxName, item);
+            enableString.append("EN:").append(foxName).append(".GTSAP1_").append(foxType).append("_*\n");
+            //qDebug() << foxName << foxType << prop << value;
         }
     }
 
-done:
-    QTextCodec *codec = QTextCodec::codecForName("Windows 1250");
+    enableString.append("GET:\n");
+    socket.write(enableString);
+    QStringList list;
 
-    for (auto a : items) {
-        QByteArray query("GET:");
-        query.append(a->getFoxName()).append(".GTSAP1_").append(a->getFoxType()).append("_NAME\n");
-        socket.write(query);
+    done = false;
+    while (!done) {
         if (!socket.waitForReadyRead(5000)) {
             socket.abort();
             return;
         }
 
-        QByteArray lineArray = socket.readLine();
-        QString reply = codec->toUnicode(lineArray.split(',')[1]);
-        qDebug() << lineArray << reply;
-        reply.chop(3);
-        list.append(a->getFoxType()[0] + " " + reply.mid(1));
+        while (socket.canReadLine()) {
+            QByteArray lineArray = socket.readLine();
+            QByteArray crop = lineArray.mid(sizeof("GET:") - 1, lineArray.indexOf(',') - 4);
+            if (skip.contains(crop))
+                continue;
+            if (lineArray == "GET:\r\n") {
+                done = true;
+                break;
+            }
+
+            QString line = codec->toUnicode(lineArray.data());
+            QRegularExpressionMatch match = GETRE.match(line);
+            if (!match.hasMatch()) {
+                qDebug() << "wrong GET line" << line << crop;
+                continue;
+            }
+            QString foxName = match.captured(1);
+            QString foxType = match.captured(2);
+            QString prop = match.captured(3);
+            QString value = match.captured(4);
+            QMap<QString, FoxtrotItem *>::const_iterator itemIt = itemsFox.find(foxName);
+            if (itemIt == itemsFox.end()) {
+                qWarning() << "cannot find" << foxName << "in items";
+                continue;
+            }
+            FoxtrotItem *item = itemIt.value();
+            item->setProp(prop, value);
+        }
     }
+
+    for (FoxtrotItem *item : itemsFox) {
+        if (item->hasProp("NAME")) {
+            QString val = item->getProp("NAME").toString();
+
+            val.remove(0, 1);
+            val.chop(1);
+            val.prepend(item->getFoxType()[0] + " ");
+            list.append(val);
+            itemsName.insert(val, item);
+
+        }
+    }
+
     list.sort();
     model->setStringList(list);
 
@@ -140,6 +225,7 @@ void MainWindow::disconnected()
 {
     statusBar()->showMessage("Disconnected");
     ui->butConnect->setText("&Connect");
+    ui->labelPLC->setText("");
     state = Disconnected;
 }
 
@@ -152,4 +238,13 @@ void MainWindow::sockError(QAbstractSocket::SocketError socketError)
     (void)socketError;
     disconnected();
     statusBar()->showMessage("Error connecting: " + socket.errorString());
+}
+
+void MainWindow::on_listViewItems_clicked(const QModelIndex &index)
+{
+    QString name = model->data(index).toString();
+    qDebug() << "clicked" << index.row() << name;
+    FoxtrotItem *item = itemsName.value(name);
+    for (QMap<QString, QVariant>::const_iterator i = item->begin(); i != item->end(); ++i)
+        qDebug() << i.key() << i.value().toString();
 }

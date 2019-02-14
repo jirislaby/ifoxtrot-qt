@@ -55,9 +55,33 @@
        </widget>
       </item>
       <item>
+       <widget class="QLabel" name="labelAddr_2">
+        <property name="text">
+         <string>PLC address:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="lineEditPLCAddr">
+        <property name="text">
+         <string>192.168.1.176</string>
+        </property>
+        <property name="placeholderText">
+         <string>192.168.1.149</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="butConnect">
         <property name="text">
          <string>&amp;Connect</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="labelPLC">
+        <property name="text">
+         <string/>
         </property>
        </widget>
       </item>
@@ -89,6 +113,9 @@
            <string>PushButton</string>
           </property>
          </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QListView" name="listViewEntry"/>
         </item>
        </layout>
       </item>

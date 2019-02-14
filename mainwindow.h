@@ -22,10 +22,13 @@ public:
     //FoxType getType() { return type; }
     QString getFoxType() { return foxType; }
     QString getFoxName() { return foxName; }
+    bool hasProp(QString prop) { return propMap.contains(prop); }
     QVariant getProp(QString prop) { return propMap.value(prop); }
 
     void addProp(QString prop) { propList.append(prop); }
     void setProp(QString prop, QVariant val) { propMap.insert(prop, val); }
+    QMap<QString, QVariant>::const_iterator begin() {return propMap.begin(); }
+    QMap<QString, QVariant>::const_iterator end() {return propMap.end(); }
 
     //static FoxType getType(QString);
 private:
@@ -52,6 +55,8 @@ private slots:
     void readyRead();
     void sockError(QAbstractSocket::SocketError socketError);
 
+    void on_listViewItems_clicked(const QModelIndex &index);
+
 private:
     enum ConState {
         Disconnected,
@@ -62,7 +67,8 @@ private:
     QTcpSocket socket;
     Ui::MainWindow *ui;
     QStringListModel *model;
-    QMap<QString, FoxtrotItem *> items;
+    QMap<QString, FoxtrotItem *> itemsFox;
+    QMap<QString, FoxtrotItem *> itemsName;
 };
 
 #endif // MAINWINDOW_H
