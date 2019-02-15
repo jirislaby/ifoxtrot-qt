@@ -242,7 +242,7 @@ void MainWindow::sockError(QAbstractSocket::SocketError socketError)
 
 void MainWindow::on_listViewItems_clicked(const QModelIndex &index)
 {
-    QString name = model->data(index).toString();
+    QString name = model->data(index, Qt::DisplayRole).toString();
     qDebug() << "clicked" << index.row() << name;
     FoxtrotItem *item = itemsName.value(name);
     for (QMap<QString, QVariant>::const_iterator i = item->begin(); i != item->end(); ++i)
