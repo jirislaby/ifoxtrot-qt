@@ -245,6 +245,19 @@ void MainWindow::on_listViewItems_clicked(const QModelIndex &index)
     QString name = model->data(index, Qt::DisplayRole).toString();
     qDebug() << "clicked" << index.row() << name;
     FoxtrotItem *item = itemsName.value(name);
-    for (QMap<QString, QVariant>::const_iterator i = item->begin(); i != item->end(); ++i)
-        qDebug() << i.key() << i.value().toString();
+    for (int i = 0; i < ui->stackedWidget->count(); i++)
+        if (ui->stackedWidget->widget(i)->objectName().mid(5) == item->getFoxType()) {
+            ui->stackedWidget->setCurrentIndex(i);
+            break;
+        }
+
+    ui->labelFoxName->setEnabled(true);
+    ui->stackedWidget->setEnabled(true);
+
+    ui->labelFoxName->setText(item->getFoxName());
+    ui->labelLightStatus->setText(item->getProp("ONOFF").toString());
+    ui->labelRelayStatus->setText(item->getProp("ONOFF").toString());
+
+    /*    for (QMap<QString, QVariant>::const_iterator i = item->begin(); i != item->end(); ++i)
+        qDebug() << i.key() << i.value().toString();*/
 }
