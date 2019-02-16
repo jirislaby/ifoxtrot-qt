@@ -21,6 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->stackedWidget->setCurrentIndex(0);
     connect(&socket, &QTcpSocket::connected, this, &MainWindow::connected);
     connect(&socket, &QTcpSocket::disconnected, this, &MainWindow::disconnected);
 //    connect(&socket, &QTcpSocket::readyRead, this, &MainWindow::readyRead);
@@ -251,13 +252,27 @@ void MainWindow::on_listViewItems_clicked(const QModelIndex &index)
             break;
         }
 
-    ui->labelFoxName->setEnabled(true);
-    ui->stackedWidget->setEnabled(true);
-
-    ui->labelFoxName->setText(item->getFoxName());
+    ui->labelFoxName->setText(name);
     ui->labelLightStatus->setText(item->getProp("ONOFF").toString());
     ui->labelRelayStatus->setText(item->getProp("ONOFF").toString());
 
     /*    for (QMap<QString, QVariant>::const_iterator i = item->begin(); i != item->end(); ++i)
         qDebug() << i.key() << i.value().toString();*/
+}
+
+void MainWindow::on_pushButtonRelay_clicked()
+{
+
+}
+
+void MainWindow::on_pushButtonLight_clicked()
+{
+    FoxtrotItem *item = itemsName.value(ui->labelFoxName->text());
+    QByteArray req("SET:");
+    QString val = QString::number(!item->getProp("ONOFF").toString().toInt());
+    req.append(item->getFoxName()).append(".GTSAP1_").append(item->getFoxType()).append("_ONOFF,").append(val).append('\n');
+    item->setProp("ONOFF", val);
+    ui->labelLightStatus->setText(item->getProp("ONOFF").toString());
+    qDebug() << "REQ" << req;
+    socket.write(req);
 }

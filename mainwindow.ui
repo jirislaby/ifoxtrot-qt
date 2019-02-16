@@ -110,21 +110,22 @@
         <item>
          <widget class="QLabel" name="labelFoxName">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="text">
-           <string>TextLabel</string>
+           <string/>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QStackedWidget" name="stackedWidget">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="currentIndex">
            <number>1</number>
           </property>
+          <widget class="QWidget" name="page_EMPTY"/>
           <widget class="QWidget" name="page_LIGHT">
            <widget class="QLabel" name="label">
             <property name="geometry">
@@ -139,7 +140,7 @@
              <string>Světlo</string>
             </property>
            </widget>
-           <widget class="QPushButton" name="pushButton">
+           <widget class="QPushButton" name="pushButtonLight">
             <property name="geometry">
              <rect>
               <x>130</x>
@@ -172,7 +173,7 @@
            </widget>
           </widget>
           <widget class="QWidget" name="page_RELAY">
-           <widget class="QPushButton" name="pushButton_2">
+           <widget class="QPushButton" name="pushButtonRelay">
             <property name="geometry">
              <rect>
               <x>130</x>

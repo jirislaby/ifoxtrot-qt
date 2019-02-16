@@ -57,6 +57,10 @@ private slots:
 
     void on_listViewItems_clicked(const QModelIndex &index);
 
+    void on_pushButtonRelay_clicked();
+
+    void on_pushButtonLight_clicked();
+
 private:
     enum ConState {
         Disconnected,
