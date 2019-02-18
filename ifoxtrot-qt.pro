@@ -26,13 +26,17 @@ CONFIG += c++11
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+    ifoxtrotctl.cpp
 
 HEADERS += \
-        mainwindow.h
+        mainwindow.h \
+    ifoxtrotctl.h
 
 FORMS += \
         mainwindow.ui
+
+QMAKE_CXXFLAGS += -Wno-unused-parameter
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

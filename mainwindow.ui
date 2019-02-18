@@ -27,10 +27,10 @@
       <item>
        <widget class="QLineEdit" name="lineEditAddr">
         <property name="text">
-         <string>192.168.1.149</string>
+         <string/>
         </property>
         <property name="placeholderText">
-         <string>192.168.1.149</string>
+         <string>192.168.1.1</string>
         </property>
        </widget>
       </item>
@@ -64,10 +64,10 @@
       <item>
        <widget class="QLineEdit" name="lineEditPLCAddr">
         <property name="text">
-         <string>192.168.1.176</string>
+         <string/>
         </property>
         <property name="placeholderText">
-         <string>192.168.1.149</string>
+         <string>192.168.1.176</string>
         </property>
        </widget>
       </item>

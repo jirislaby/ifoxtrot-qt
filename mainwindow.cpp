@@ -1,27 +1,25 @@
 #include <QMessageBox>
 #include <QTextCodec>
+#include <QSettings>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
-#if 0
-FoxtrotItem::Type FoxtrotItem::getType(QString type)
-{
-    if (type.startsWith("LIGHT"))
-        return FoxtrotItem::Type::Light;
-    if (type.startsWith("RELAY"))
-        return FoxtrotItem::Type::Relay;
-    return FoxtrotItem::Type::Unknown;
-}
-#endif
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     state(Disconnected),
     ui(new Ui::MainWindow)
 {
+    QSettings settings("jirislaby", "ifoxtrot");
+
     ui->setupUi(this);
     ui->stackedWidget->setCurrentIndex(0);
+
+    // settings
+    ui->lineEditPLCAddr->setText(settings.value("PLCaddr").toString());
+    ui->lineEditAddr->setText(settings.value("IPaddr").toString());
+    ui->spinBoxPort->setValue(settings.value("port", "5010").toInt());
+
     connect(&socket, &QTcpSocket::connected, this, &MainWindow::connected);
     connect(&socket, &QTcpSocket::disconnected, this, &MainWindow::disconnected);
 //    connect(&socket, &QTcpSocket::readyRead, this, &MainWindow::readyRead);
@@ -33,7 +31,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    QSettings settings("jirislaby", "ifoxtrot");
+
     socket.close();
+
+    settings.setValue("PLCaddr", ui->lineEditPLCAddr->text());
+    settings.setValue("IPaddr", ui->lineEditAddr->text());
+    settings.setValue("port", ui->spinBoxPort->value());
+
     delete ui;
 }
 
@@ -73,10 +78,6 @@ void MainWindow::connected()
     const QSet<QByteArray>skip {
         "__PF_CRC",
         "__PLC_RUN"
-    };
-    const QSet<QString>supportedTypes {
-        "LIGHT",
-        "RELAY"
     };
     statusBar()->showMessage("Connected");
     state = Connected;
@@ -153,10 +154,12 @@ void MainWindow::connected()
             QString value = match.captured(4);
             if (value != "1")
                 continue;
-            if (!supportedTypes.contains(foxType))
-                continue;
 
-            FoxtrotItem *item = new FoxtrotItem(foxType, foxName);
+            iFoxtrotCtl *item = iFoxtrotCtl::getOne(foxType, foxName);
+            if (!item) {
+                qWarning() << "unsupported type" << foxType << "for" << foxName;
+                continue;
+            }
             itemsFox.insert(foxName, item);
             enableString.append("EN:").append(foxName).append(".GTSAP1_").append(foxType).append("_*\n");
             //qDebug() << foxName << foxType << prop << value;
@@ -194,22 +197,20 @@ void MainWindow::connected()
             QString foxType = match.captured(2);
             QString prop = match.captured(3);
             QString value = match.captured(4);
-            QMap<QString, FoxtrotItem *>::const_iterator itemIt = itemsFox.find(foxName);
+            QMap<QString, iFoxtrotCtl *>::const_iterator itemIt = itemsFox.find(foxName);
             if (itemIt == itemsFox.end()) {
                 qWarning() << "cannot find" << foxName << "in items";
                 continue;
             }
-            FoxtrotItem *item = itemIt.value();
+            iFoxtrotCtl *item = itemIt.value();
             item->setProp(prop, value);
         }
     }
 
-    for (FoxtrotItem *item : itemsFox) {
-        if (item->hasProp("NAME")) {
-            QString val = item->getProp("NAME").toString();
+    for (iFoxtrotCtl *item : itemsFox) {
+        if (item->getName() != "") {
+            QString val = item->getName();
 
-            val.remove(0, 1);
-            val.chop(1);
             val.prepend(item->getFoxType()[0] + " ");
             list.append(val);
             itemsName.insert(val, item);
@@ -245,7 +246,7 @@ void MainWindow::on_listViewItems_clicked(const QModelIndex &index)
 {
     QString name = model->data(index, Qt::DisplayRole).toString();
     qDebug() << "clicked" << index.row() << name;
-    FoxtrotItem *item = itemsName.value(name);
+    iFoxtrotCtl *item = itemsName.value(name);
     for (int i = 0; i < ui->stackedWidget->count(); i++)
         if (ui->stackedWidget->widget(i)->objectName().mid(5) == item->getFoxType()) {
             ui->stackedWidget->setCurrentIndex(i);
@@ -253,8 +254,8 @@ void MainWindow::on_listViewItems_clicked(const QModelIndex &index)
         }
 
     ui->labelFoxName->setText(name);
-    ui->labelLightStatus->setText(item->getProp("ONOFF").toString());
-    ui->labelRelayStatus->setText(item->getProp("ONOFF").toString());
+    item->setupUI(ui);
+    //ui->labelRelayStatus->setText(item->getProp("ONOFF").toString());
 
     /*    for (QMap<QString, QVariant>::const_iterator i = item->begin(); i != item->end(); ++i)
         qDebug() << i.key() << i.value().toString();*/
@@ -267,12 +268,12 @@ void MainWindow::on_pushButtonRelay_clicked()
 
 void MainWindow::on_pushButtonLight_clicked()
 {
-    FoxtrotItem *item = itemsName.value(ui->labelFoxName->text());
+    iFoxtrotLight *light = dynamic_cast<iFoxtrotLight *>(itemsName.value(ui->labelFoxName->text()));
     QByteArray req("SET:");
-    QString val = QString::number(!item->getProp("ONOFF").toString().toInt());
-    req.append(item->getFoxName()).append(".GTSAP1_").append(item->getFoxType()).append("_ONOFF,").append(val).append('\n');
-    item->setProp("ONOFF", val);
-    ui->labelLightStatus->setText(item->getProp("ONOFF").toString());
+    bool onOff = !light->getOnOff();
+    req.append(light->getFoxName()).append(".GTSAP1_").append(light->getFoxType()).append("_ONOFF,").append(onOff ? '1' : '0').append('\n');
+    light->setOnOff(onOff);
+    ui->labelLightStatus->setText(onOff ? "1" : "0");
     qDebug() << "REQ" << req;
     socket.write(req);
 }
