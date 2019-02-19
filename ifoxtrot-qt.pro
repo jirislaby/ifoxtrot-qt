@@ -27,11 +27,13 @@ CONFIG += c++11
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    ifoxtrotctl.cpp
+    ifoxtrotctl.cpp \
+    ifoxtrotmodel.cpp
 
 HEADERS += \
         mainwindow.h \
-    ifoxtrotctl.h
+    ifoxtrotctl.h \
+    ifoxtrotmodel.h
 
 FORMS += \
         mainwindow.ui

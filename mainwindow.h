@@ -5,7 +5,8 @@
 #include <QStringListModel>
 #include <QTcpSocket>
 
-#include <ifoxtrotctl.h>
+#include "ifoxtrotctl.h"
+#include "ifoxtrotmodel.h"
 
 namespace Ui {
 class MainWindow;
@@ -42,7 +43,7 @@ private:
     enum ConState state;
     QTcpSocket socket;
     Ui::MainWindow *ui;
-    QStringListModel *model;
+    iFoxtrotModel *model;
     QMap<QString, iFoxtrotCtl *> itemsFox;
     QMap<QString, iFoxtrotCtl *> itemsName;
 };

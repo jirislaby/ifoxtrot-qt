@@ -1,0 +1,76 @@
+#include <QBrush>
+#include <QColor>
+#include <QDebug>
+#include <QFont>
+
+#include "ifoxtrotmodel.h"
+
+int iFoxtrotModel::rowCount(const QModelIndex &parent) const
+{
+    return list.size();
+}
+
+QModelIndex iFoxtrotModel::sibling(int row, int column, const QModelIndex &idx) const
+{
+    if (!idx.isValid() || column != 0 || row >= list.count() || row < 0)
+        return QModelIndex();
+
+    return createIndex(row, 0);
+}
+
+QVariant iFoxtrotModel::data(const QModelIndex &index, int role) const
+{
+    if (index.row() < 0 || index.row() >= list.count())
+        return QVariant();
+
+    iFoxtrotCtl *item = list.at(index.row());
+
+    if (role == Qt::DisplayRole || role == Qt::EditRole)
+        return item->getFoxType().mid(0, 1) + ' ' + item->getName();
+
+    if (role == Qt::FontRole) {
+        if (item->isBold()) {
+            QFont f;
+            f.setWeight(QFont::Bold);
+            return f;
+        }
+        return QVariant();
+    }
+
+    if (role == Qt::BackgroundRole)
+        return QBrush(item->getColor());
+
+//    qDebug() << __func__ << role << index.row();
+
+    return QVariant();
+}
+
+void iFoxtrotModel::setList(QList<iFoxtrotCtl *> list)
+{
+    beginResetModel();
+    this->list = list;
+    endResetModel();
+}
+
+static bool foxSortAsc(const iFoxtrotCtl *a, const iFoxtrotCtl *b)
+{
+    QString aStr(a->getFoxType().front());
+    QString bStr(b->getFoxType().front());
+
+    aStr.append(a->getName());
+    bStr.append(b->getName());
+
+    return aStr < bStr;
+}
+
+static bool foxSortDesc(const iFoxtrotCtl *a, const iFoxtrotCtl *b)
+{
+    return !foxSortAsc(a, b);
+}
+
+void iFoxtrotModel::sort(int column, Qt::SortOrder order)
+{
+    if (column == 0)
+        std::sort(list.begin(), list.end(),
+                  order == Qt::SortOrder::AscendingOrder ? foxSortAsc : foxSortDesc);
+}

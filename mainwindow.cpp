@@ -25,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
 //    connect(&socket, &QTcpSocket::readyRead, this, &MainWindow::readyRead);
 //    connect(&socket, &QTcpSocket::error, this, &MainWindow::sockError);
 
-    model = new QStringListModel(this);
+    model = new iFoxtrotModel();
     ui->listViewItems->setModel(model);
 }
 
@@ -119,6 +119,7 @@ void MainWindow::connected()
     QTextCodec *codec = QTextCodec::codecForName("Windows 1250");
     QRegularExpression GETRE("^GET:(.+)\\.GTSAP1_([^_]+)_(.+),(.+)\r\n$");
     QByteArray enableString("DI:\n");
+    QList<iFoxtrotCtl *> list;
 
     socket.write("DI:\n"
                  "EN:*_ENABLE\n"
@@ -160,6 +161,7 @@ void MainWindow::connected()
                 qWarning() << "unsupported type" << foxType << "for" << foxName;
                 continue;
             }
+            list.append(item);
             itemsFox.insert(foxName, item);
             enableString.append("EN:").append(foxName).append(".GTSAP1_").append(foxType).append("_*\n");
             //qDebug() << foxName << foxType << prop << value;
@@ -168,7 +170,6 @@ void MainWindow::connected()
 
     enableString.append("GET:\n");
     socket.write(enableString);
-    QStringList list;
 
     done = false;
     while (!done) {
@@ -212,15 +213,13 @@ void MainWindow::connected()
             QString val = item->getName();
 
             val.prepend(item->getFoxType()[0] + " ");
-            list.append(val);
             itemsName.insert(val, item);
 
         }
     }
 
-    list.sort();
-    model->setStringList(list);
-
+    model->setList(list);
+    model->sort(0);
 }
 
 void MainWindow::disconnected()
