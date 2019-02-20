@@ -1,5 +1,6 @@
 #include <QBrush>
 #include <QColor>
+#include <QCollator>
 #include <QDebug>
 #include <QFont>
 
@@ -54,18 +55,28 @@ void iFoxtrotModel::setList(QList<iFoxtrotCtl *> list)
 
 static bool foxSortAsc(const iFoxtrotCtl *a, const iFoxtrotCtl *b)
 {
-    QString aStr(a->getFoxType().front());
-    QString bStr(b->getFoxType().front());
+    int typeCmp = a->getFoxType().compare(b->getFoxType());
 
-    aStr.append(a->getName());
-    bStr.append(b->getName());
+    if (typeCmp < 0)
+        return true;
 
-    return aStr < bStr;
+    if (typeCmp == 0)
+        return QCollator().compare(a->getName(), b->getName()) < 0;
+
+    return false;
 }
 
 static bool foxSortDesc(const iFoxtrotCtl *a, const iFoxtrotCtl *b)
 {
-    return !foxSortAsc(a, b);
+    int typeCmp = a->getFoxType().compare(b->getFoxType());
+
+    if (typeCmp < 0)
+        return true;
+
+    if (typeCmp == 0)
+        return QCollator().compare(a->getName(), b->getName()) > 0;
+
+    return false;
 }
 
 void iFoxtrotModel::sort(int column, Qt::SortOrder order)
