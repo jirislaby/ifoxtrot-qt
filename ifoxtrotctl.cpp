@@ -9,6 +9,8 @@ iFoxtrotCtl *iFoxtrotCtl::getOne(const QString &foxType, const QString &foxName)
         return new iFoxtrotLight(foxName);
     if (foxType == "RELAY")
         return new iFoxtrotRelay(foxName);
+    if (foxType == "DISPLAY")
+        return new iFoxtrotDisplay(foxName);
     if (foxType == "SHUTTER")
         return new iFoxtrotShutter(foxName);
 
@@ -94,6 +96,58 @@ bool iFoxtrotRelay::setProp(const QString &prop, const QString &val)
 void iFoxtrotRelay::setupUI(Ui::MainWindow *ui)
 {
     ui->labelRelayStatus->setText(onOff ? "1" : "0");
+}
+
+bool iFoxtrotDisplay::setProp(const QString &prop, const QString &val)
+{
+    if (prop == "EDIT") {
+        editable = (val == "1");
+        return true;
+    }
+    if (prop == "TYPE") {
+        real = (val == "1");
+        return true;
+    }
+    if (prop == "SYMBOL") {
+        return true;
+    }
+    if (prop == "VALUE") {
+        value = val.toDouble();
+        return true;
+    }
+    if (prop == "UNIT") {
+        unit = val;
+        unit.remove(0, 1);
+        unit.chop(1);
+        return true;
+    }
+    if (prop == "PRECISION") {
+        return true;
+    }
+    if (prop == "URL") {
+        return true;
+    }
+    if (prop == "INCVALUE") {
+        return true;
+    }
+    if (prop == "DECVALUE") {
+        return true;
+    }
+    if (prop == "VALUESET") {
+        return true;
+    }
+
+    if (iFoxtrotCtl::setProp(prop, val))
+        return true;
+
+    return false;
+}
+
+void iFoxtrotDisplay::setupUI(Ui::MainWindow *ui)
+{
+    ui->doubleSpinBoxDisplayVal->setReadOnly(editable);
+    ui->doubleSpinBoxDisplayVal->setValue(value);
+    ui->labelDisplayUnit->setText(unit);
 }
 
 bool iFoxtrotShutter::setProp(const QString &prop, const QString &val)

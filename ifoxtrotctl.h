@@ -13,7 +13,8 @@ class iFoxtrotCtl : public QObject
 {
     Q_OBJECT
 public:
-    iFoxtrotCtl(const QString &foxName) : foxName(foxName), name("") { }
+    iFoxtrotCtl(const QString &foxName) :
+        foxName(foxName), name("") { }
     virtual ~iFoxtrotCtl() = default;
 
     QString getFoxName() const { return foxName; }
@@ -52,7 +53,8 @@ protected:
 
 class iFoxtrotLight : public iFoxtrotOnOff {
 public:
-    iFoxtrotLight(const QString &foxName) : iFoxtrotOnOff(foxName), dimmable(false), rgb(false) { }
+    iFoxtrotLight(const QString &foxName) :
+        iFoxtrotOnOff(foxName), dimmable(false), rgb(false) { }
 
     QString getFoxType() const override { return "LIGHT"; }
     bool setProp(const QString &prop, const QString &val) override;
@@ -68,7 +70,8 @@ private:
 
 class iFoxtrotRelay : public iFoxtrotOnOff {
 public:
-    iFoxtrotRelay(const QString &foxName) : iFoxtrotOnOff(foxName) { }
+    iFoxtrotRelay(const QString &foxName) :
+        iFoxtrotOnOff(foxName) { }
 
     QString getFoxType() const override { return "RELAY"; }
     bool setProp(const QString &prop, const QString &val) override;
@@ -77,6 +80,27 @@ public:
 
     QColor getColor() const override { return QColor(250, 250, 250); }
 private:
+};
+
+class iFoxtrotDisplay : public iFoxtrotCtl {
+public:
+    iFoxtrotDisplay(const QString &foxName) :
+        iFoxtrotCtl(foxName), editable(false), real(false), value(0), unit("") {}
+
+    /*bool getOnOff() const { return onOff; }
+    void setOnOff(bool onOff) { this->onOff = onOff; }*/
+
+    QString getFoxType() const override { return "DISPLAY"; }
+    bool setProp(const QString &prop, const QString &val) override;
+
+    void setupUI(Ui::MainWindow *ui) override;
+
+    QColor getColor() const override { return QColor(210, 210, 255); }
+private:
+    bool editable;
+    bool real;
+    double value;
+    QString unit;
 };
 
 class iFoxtrotShutter : public iFoxtrotCtl {
@@ -92,8 +116,8 @@ public:
 
     void setupUI(Ui::MainWindow *ui) override;
 
-    QColor getColor() const override { return QColor(255, 200, 200); }
-protected:
+    QColor getColor() const override { return QColor(255, 210, 210); }
+private:
 };
 
 #endif // IFOXTROTCTL_H
