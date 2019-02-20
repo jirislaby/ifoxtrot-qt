@@ -133,21 +133,21 @@
            <bool>true</bool>
           </property>
           <property name="currentIndex">
-           <number>1</number>
+           <number>3</number>
           </property>
           <widget class="QWidget" name="page_EMPTY"/>
           <widget class="QWidget" name="page_LIGHT">
-           <widget class="QLabel" name="label">
+           <widget class="QLabel" name="labelLight">
             <property name="geometry">
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>41</width>
+              <width>31</width>
               <height>16</height>
              </rect>
             </property>
             <property name="text">
-             <string>Světlo</string>
+             <string>Light</string>
             </property>
            </widget>
            <widget class="QPushButton" name="pushButtonLight">
@@ -196,17 +196,17 @@
              <string>Přepnout</string>
             </property>
            </widget>
-           <widget class="QLabel" name="label_2">
+           <widget class="QLabel" name="labelRelay">
             <property name="geometry">
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>26</width>
+              <width>31</width>
               <height>16</height>
              </rect>
             </property>
             <property name="text">
-             <string>Relé</string>
+             <string>Relay</string>
             </property>
            </widget>
            <widget class="QLabel" name="labelRelayStatus">
@@ -225,6 +225,21 @@
             </property>
             <property name="text">
              <string>TextLabel</string>
+            </property>
+           </widget>
+          </widget>
+          <widget class="QWidget" name="page_SHUTTER">
+           <widget class="QLabel" name="labelShutter">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>51</width>
+              <height>16</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Shutter</string>
             </property>
            </widget>
           </widget>

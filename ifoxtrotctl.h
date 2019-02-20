@@ -79,4 +79,21 @@ public:
 private:
 };
 
+class iFoxtrotShutter : public iFoxtrotCtl {
+public:
+    iFoxtrotShutter(const QString &foxName) :
+        iFoxtrotCtl(foxName) {}
+
+    /*bool getOnOff() const { return onOff; }
+    void setOnOff(bool onOff) { this->onOff = onOff; }*/
+
+    QString getFoxType() const override { return "SHUTTER"; }
+    bool setProp(const QString &prop, const QString &val) override;
+
+    void setupUI(Ui::MainWindow *ui) override;
+
+    QColor getColor() const override { return QColor(255, 200, 200); }
+protected:
+};
+
 #endif // IFOXTROTCTL_H

@@ -9,6 +9,8 @@ iFoxtrotCtl *iFoxtrotCtl::getOne(const QString &foxType, const QString &foxName)
         return new iFoxtrotLight(foxName);
     if (foxType == "RELAY")
         return new iFoxtrotRelay(foxName);
+    if (foxType == "SHUTTER")
+        return new iFoxtrotShutter(foxName);
 
     return nullptr;
 }
@@ -69,7 +71,8 @@ bool iFoxtrotLight::setProp(const QString &prop, const QString &val)
     return false;
 }
 
-void iFoxtrotLight::setupUI(Ui::MainWindow *ui){
+void iFoxtrotLight::setupUI(Ui::MainWindow *ui)
+{
     ui->labelLightStatus->setText(onOff ? "1" : "0");
 }
 
@@ -88,6 +91,47 @@ bool iFoxtrotRelay::setProp(const QString &prop, const QString &val)
     return false;
 }
 
-void iFoxtrotRelay::setupUI(Ui::MainWindow *ui){
+void iFoxtrotRelay::setupUI(Ui::MainWindow *ui)
+{
     ui->labelRelayStatus->setText(onOff ? "1" : "0");
+}
+
+bool iFoxtrotShutter::setProp(const QString &prop, const QString &val)
+{
+    if (prop == "UP") {
+        return true;
+    }
+    if (prop == "DOWN") {
+        return true;
+    }
+    if (prop == "RUN") {
+        return true;
+    }
+    if (prop == "UPPOS") {
+        return true;
+    }
+    if (prop == "DOWNPOS") {
+        return true;
+    }
+    if (prop == "UP_CONTROL") {
+        return true;
+    }
+    if (prop == "DOWN_CONTROL") {
+        return true;
+    }
+    if (prop == "ROTUP_CONTROL") {
+        return true;
+    }
+    if (prop == "ROTDOWN_CONTROL") {
+        return true;
+    }
+
+    if (iFoxtrotCtl::setProp(prop, val))
+        return true;
+
+    return false;
+}
+
+void iFoxtrotShutter::setupUI(Ui::MainWindow *ui)
+{
 }
