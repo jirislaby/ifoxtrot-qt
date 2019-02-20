@@ -19,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->lineEditPLCAddr->setText(settings.value("PLCaddr").toString());
     ui->lineEditAddr->setText(settings.value("IPaddr").toString());
     ui->spinBoxPort->setValue(settings.value("port", "5010").toInt());
+    ui->checkBoxAutocon->setChecked(settings.value("autoconnect", false).toBool());
 
     connect(&socket, &QTcpSocket::connected, this, &MainWindow::connected);
     connect(&socket, &QTcpSocket::disconnected, this, &MainWindow::disconnected);
@@ -27,6 +28,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     model = new iFoxtrotModel();
     ui->listViewItems->setModel(model);
+
+    if (ui->checkBoxAutocon->isChecked())
+        emit ui->butConnect->click();
 }
 
 MainWindow::~MainWindow()
@@ -38,6 +42,7 @@ MainWindow::~MainWindow()
     settings.setValue("PLCaddr", ui->lineEditPLCAddr->text());
     settings.setValue("IPaddr", ui->lineEditAddr->text());
     settings.setValue("port", ui->spinBoxPort->value());
+    settings.setValue("autoconnect", ui->checkBoxAutocon->isChecked());
 
     delete ui;
 }

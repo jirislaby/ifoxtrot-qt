@@ -79,6 +79,16 @@
        </widget>
       </item>
       <item>
+       <widget class="QCheckBox" name="checkBoxAutocon">
+        <property name="text">
+         <string>Autoconnect</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QLabel" name="labelPLC">
         <property name="text">
          <string/>

@@ -13,7 +13,6 @@ public:
     iFoxtrotModel(QObject *parent = nullptr) : QAbstractListModel(parent), list() { }
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-    QModelIndex sibling(int row, int column, const QModelIndex &idx) const override;
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 

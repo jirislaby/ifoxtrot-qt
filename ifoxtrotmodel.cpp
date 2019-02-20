@@ -11,14 +11,6 @@ int iFoxtrotModel::rowCount(const QModelIndex &parent) const
     return list.size();
 }
 
-QModelIndex iFoxtrotModel::sibling(int row, int column, const QModelIndex &idx) const
-{
-    if (!idx.isValid() || column != 0 || row >= list.count() || row < 0)
-        return QModelIndex();
-
-    return createIndex(row, 0);
-}
-
 QVariant iFoxtrotModel::data(const QModelIndex &index, int role) const
 {
     if (index.row() < 0 || index.row() >= list.count())
