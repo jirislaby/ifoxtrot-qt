@@ -24,7 +24,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&socket, &QTcpSocket::connected, this, &MainWindow::connected);
     connect(&socket, &QTcpSocket::disconnected, this, &MainWindow::disconnected);
 //    connect(&socket, &QTcpSocket::readyRead, this, &MainWindow::readyRead);
-//    connect(&socket, &QTcpSocket::error, this, &MainWindow::sockError);
+    connect(&socket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error),
+            this, &MainWindow::sockError);
 
     model = new iFoxtrotModel();
     ui->listViewItems->setModel(model);
@@ -185,7 +186,8 @@ void MainWindow::connected()
 
         while (socket.canReadLine()) {
             QByteArray lineArray = socket.readLine();
-            QByteArray crop = lineArray.mid(sizeof("GET:") - 1, lineArray.indexOf(',') - 4);
+            QByteArray crop = lineArray.mid(sizeof("GET:") - 1,
+                                            lineArray.indexOf(',') - 4);
             if (skip.contains(crop))
                 continue;
             if (lineArray == "GET:\r\n") {
@@ -213,13 +215,12 @@ void MainWindow::connected()
         }
     }
 
-    for (iFoxtrotCtl *item : itemsFox) {
+    for (iFoxtrotCtl *item : list) {
         if (item->getName() != "") {
             QString val = item->getName();
 
             val.prepend(item->getFoxType()[0] + " ");
             itemsName.insert(val, item);
-
         }
     }
 
@@ -241,16 +242,17 @@ void MainWindow::readyRead()
 
 void MainWindow::sockError(QAbstractSocket::SocketError socketError)
 {
-    (void)socketError;
+    qWarning() << "disconnected" << socketError;
     disconnected();
     statusBar()->showMessage("Error connecting: " + socket.errorString());
 }
 
 void MainWindow::on_listViewItems_clicked(const QModelIndex &index)
 {
-    QString name = model->data(index, Qt::DisplayRole).toString();
+    iFoxtrotCtl *item = model->at(index.row());
+    QString name = item->getName();
     qDebug() << "clicked" << index.row() << name;
-    iFoxtrotCtl *item = itemsName.value(name);
+
     for (int i = 0; i < ui->stackedWidget->count(); i++)
         if (ui->stackedWidget->widget(i)->objectName().mid(5) == item->getFoxType()) {
             ui->stackedWidget->setCurrentIndex(i);
@@ -259,15 +261,6 @@ void MainWindow::on_listViewItems_clicked(const QModelIndex &index)
 
     ui->labelFoxName->setText(name);
     item->setupUI(ui);
-    //ui->labelRelayStatus->setText(item->getProp("ONOFF").toString());
-
-    /*    for (QMap<QString, QVariant>::const_iterator i = item->begin(); i != item->end(); ++i)
-        qDebug() << i.key() << i.value().toString();*/
-}
-
-void MainWindow::on_pushButtonRelay_clicked()
-{
-
 }
 
 void MainWindow::on_pushButtonLight_clicked()
@@ -280,4 +273,9 @@ void MainWindow::on_pushButtonLight_clicked()
     ui->labelLightStatus->setText(onOff ? "1" : "0");
     qDebug() << "REQ" << req;
     socket.write(req);
+}
+
+void MainWindow::on_pushButtonRelay_clicked()
+{
+
 }

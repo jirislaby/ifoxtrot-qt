@@ -279,6 +279,9 @@
               <height>25</height>
              </rect>
             </property>
+            <property name="decimals">
+             <number>1</number>
+            </property>
            </widget>
           </widget>
          </widget>

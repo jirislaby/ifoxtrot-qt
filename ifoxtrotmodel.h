@@ -19,6 +19,8 @@ public:
     void setList(QList<iFoxtrotCtl *> list);
 
     void sort(int column, Qt::SortOrder order = Qt::AscendingOrder) override;
+
+    iFoxtrotCtl *at(int index) const { return list.at(index); }
 private:
     QList<iFoxtrotCtl *> list;
 };
