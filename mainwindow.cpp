@@ -2,6 +2,8 @@
 #include <QTextCodec>
 #include <QSettings>
 
+#include <QtGlobal>
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -23,8 +25,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(&socket, &QTcpSocket::connected, this, &MainWindow::connected);
     connect(&socket, &QTcpSocket::disconnected, this, &MainWindow::disconnected);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
     connect(&socket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error),
             this, &MainWindow::sockError);
+#else
+    connect(&socket, static_cast<void (QAbstractSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::error),
+            this, &MainWindow::sockError);
+#endif
 
     model = new iFoxtrotModel();
     ui->listViewItems->setModel(model);
