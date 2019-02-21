@@ -23,7 +23,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(&socket, &QTcpSocket::connected, this, &MainWindow::connected);
     connect(&socket, &QTcpSocket::disconnected, this, &MainWindow::disconnected);
-//    connect(&socket, &QTcpSocket::readyRead, this, &MainWindow::readyRead);
     connect(&socket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error),
             this, &MainWindow::sockError);
 
@@ -125,6 +124,7 @@ void MainWindow::connected()
     QTextCodec *codec = QTextCodec::codecForName("Windows 1250");
     QRegularExpression GETRE("^GET:(.+)\\.GTSAP1_([^_]+)_(.+),(.+)\r\n$");
     QByteArray enableString("DI:\n");
+    QMap<QString, iFoxtrotCtl *> itemsFox;
     QList<iFoxtrotCtl *> list;
 
     socket.write("DI:\n"
@@ -215,17 +215,10 @@ void MainWindow::connected()
         }
     }
 
-    for (iFoxtrotCtl *item : list) {
-        if (item->getName() != "") {
-            QString val = item->getName();
-
-            val.prepend(item->getFoxType()[0] + " ");
-            itemsName.insert(val, item);
-        }
-    }
-
     model->setList(list);
     model->sort(0);
+
+    connect(&socket, &QTcpSocket::readyRead, this, &MainWindow::readyRead);
 }
 
 void MainWindow::disconnected()
@@ -238,6 +231,25 @@ void MainWindow::disconnected()
 
 void MainWindow::readyRead()
 {
+    QRegularExpression DIFFRE("^DIFF:(.+)\\.GTSAP1_([^_]+)_(.+),(.+)\r\n$");
+    QTextCodec *codec = QTextCodec::codecForName("Windows 1250");
+
+    while (socket.canReadLine()) {
+        QByteArray lineArray = socket.readLine();
+
+        QString line = codec->toUnicode(lineArray.data());
+        QRegularExpressionMatch match = DIFFRE.match(line);
+        if (!match.hasMatch()) {
+            qDebug() << __PRETTY_FUNCTION__ << " unexpected line" << line;
+            continue;
+        }
+        QString foxName = match.captured(1);
+        QString foxType = match.captured(2);
+        QString prop = match.captured(3);
+        QString value = match.captured(4);
+
+        qDebug() << __PRETTY_FUNCTION__ << "DIFF" << foxName << foxType << prop << value;
+    }
 }
 
 void MainWindow::sockError(QAbstractSocket::SocketError socketError)
@@ -265,7 +277,8 @@ void MainWindow::on_listViewItems_clicked(const QModelIndex &index)
 
 void MainWindow::on_pushButtonLight_clicked()
 {
-    iFoxtrotLight *light = dynamic_cast<iFoxtrotLight *>(itemsName.value(ui->labelFoxName->text()));
+    int row = ui->listViewItems->currentIndex().row();
+    iFoxtrotLight *light = dynamic_cast<iFoxtrotLight *>(model->at(row));
     QByteArray req("SET:");
     bool onOff = !light->getOnOff();
     req.append(light->getFoxName()).append(".GTSAP1_").append(light->getFoxType()).append("_ONOFF,").append(onOff ? '1' : '0').append('\n');
@@ -277,5 +290,4 @@ void MainWindow::on_pushButtonLight_clicked()
 
 void MainWindow::on_pushButtonRelay_clicked()
 {
-
 }

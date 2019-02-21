@@ -44,8 +44,6 @@ private:
     QTcpSocket socket;
     Ui::MainWindow *ui;
     iFoxtrotModel *model;
-    QMap<QString, iFoxtrotCtl *> itemsFox;
-    QMap<QString, iFoxtrotCtl *> itemsName;
 };
 
 #endif // MAINWINDOW_H

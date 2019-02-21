@@ -46,10 +46,7 @@ bool iFoxtrotOnOff::setProp(const QString &prop, const QString &val)
         return true;
     }
 
-    if (iFoxtrotCtl::setProp(prop, val))
-        return true;
-
-    return false;
+    return iFoxtrotCtl::setProp(prop, val);
 }
 
 bool iFoxtrotLight::setProp(const QString &prop, const QString &val)
@@ -67,10 +64,7 @@ bool iFoxtrotLight::setProp(const QString &prop, const QString &val)
         return true;
     }
 
-    if (iFoxtrotOnOff::setProp(prop, val))
-        return true;
-
-    return false;
+    return iFoxtrotOnOff::setProp(prop, val);
 }
 
 void iFoxtrotLight::setupUI(Ui::MainWindow *ui)
@@ -87,10 +81,7 @@ bool iFoxtrotRelay::setProp(const QString &prop, const QString &val)
         return true;
     }
 
-    if (iFoxtrotOnOff::setProp(prop, val))
-        return true;
-
-    return false;
+    return iFoxtrotOnOff::setProp(prop, val);
 }
 
 void iFoxtrotRelay::setupUI(Ui::MainWindow *ui)
