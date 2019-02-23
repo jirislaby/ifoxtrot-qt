@@ -284,12 +284,13 @@ void MainWindow::on_listViewItems_clicked(const QModelIndex &index)
 
 void MainWindow::on_pushButtonLight_clicked()
 {
-    int row = ui->listViewItems->currentIndex().row();
+    QModelIndex index = ui->listViewItems->currentIndex();
+    int row = index.row();
     iFoxtrotLight *light = dynamic_cast<iFoxtrotLight *>(model->at(row));
-    QByteArray req("SET:");
     bool onOff = !light->getOnOff();
-    req.append(light->getFoxName()).append(".GTSAP1_").append(light->getFoxType()).append("_ONOFF,").append(onOff ? '1' : '0').append('\n');
+    QByteArray req = light->GTSAP("SET", "ONOFF", onOff ? "1" : "0");
     light->setOnOff(onOff);
+    emit model->dataChanged(index, index);
     ui->labelLightStatus->setText(onOff ? "1" : "0");
     qDebug() << "REQ" << req;
     socket.write(req);
@@ -297,4 +298,46 @@ void MainWindow::on_pushButtonLight_clicked()
 
 void MainWindow::on_pushButtonRelay_clicked()
 {
+}
+
+void MainWindow::on_pushButtonSc1_clicked()
+{
+    int row = ui->listViewItems->currentIndex().row();
+    iFoxtrotScene *scene = dynamic_cast<iFoxtrotScene *>(model->at(row));
+    socket.write(scene->GTSAP("SET", QString("SET").append('1'), "1"));
+}
+
+void MainWindow::on_pushButtonSc2_clicked()
+{
+
+}
+
+void MainWindow::on_pushButtonSc3_clicked()
+{
+
+}
+
+void MainWindow::on_pushButtonSc4_clicked()
+{
+
+}
+
+void MainWindow::on_pushButtonSc5_clicked()
+{
+
+}
+
+void MainWindow::on_pushButtonSc6_clicked()
+{
+
+}
+
+void MainWindow::on_pushButtonSc7_clicked()
+{
+
+}
+
+void MainWindow::on_pushButtonSc8_clicked()
+{
+
 }

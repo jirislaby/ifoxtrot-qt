@@ -1,16 +1,19 @@
 #include <QDebug>
+#include <QList>
 
 #include "ifoxtrotctl.h"
 #include "ui_mainwindow.h"
 
 iFoxtrotCtl *iFoxtrotCtl::getOne(const QString &foxType, const QString &foxName)
 {
+    if (foxType == "DISPLAY")
+        return new iFoxtrotDisplay(foxName);
     if (foxType == "LIGHT")
         return new iFoxtrotLight(foxName);
     if (foxType == "RELAY")
         return new iFoxtrotRelay(foxName);
-    if (foxType == "DISPLAY")
-        return new iFoxtrotDisplay(foxName);
+    if (foxType == "SCENE")
+        return new iFoxtrotScene(foxName);
     if (foxType == "SHUTTER")
         return new iFoxtrotShutter(foxName);
 
@@ -37,6 +40,22 @@ bool iFoxtrotCtl::setProp(const QString &prop, const QString &val)
     qWarning() << "unknown property" << prop << "for" << getFoxType();
 
     return false;
+}
+
+QByteArray iFoxtrotCtl::GTSAP(const QString &prefix, const QString &prop,
+                              const QString &set) const
+{
+    QByteArray ret;
+
+    ret.append(prefix).append(':').append(getFoxName()).append(".GTSAP1_").
+            append(getFoxType()).append('_').append(prop);
+
+    if (!set.isEmpty())
+        ret.append(',').append(set);
+
+    ret.append('\n');
+
+    return ret;
 }
 
 bool iFoxtrotOnOff::setProp(const QString &prop, const QString &val)
@@ -171,12 +190,42 @@ bool iFoxtrotShutter::setProp(const QString &prop, const QString &val)
         return true;
     }
 
-    if (iFoxtrotCtl::setProp(prop, val))
-        return true;
-
-    return false;
+    return iFoxtrotCtl::setProp(prop, val);
 }
 
 void iFoxtrotShutter::setupUI(Ui::MainWindow *ui)
 {
+}
+
+bool iFoxtrotScene::setProp(const QString &prop, const QString &val)
+{
+    if (prop == "FILE") {
+        return true;
+    }
+    if (prop == "NUM") {
+        bool ok;
+        scenes = val.toInt(&ok);
+        if (!ok || (scenes != 4 && scenes != 8))
+            qWarning() << "invalid scene NUM" << val;
+        return true;
+    }
+    if (prop.length() == 4 && prop.startsWith("SET") && prop.at(3).isDigit()) {
+        return true;
+    }
+
+    return iFoxtrotCtl::setProp(prop, val);
+}
+
+void iFoxtrotScene::setupUI(Ui::MainWindow *ui)
+{
+    for (QPushButton *but : ui->page_SCENE->findChildren<QPushButton *>(QString(),
+                                    Qt::FindDirectChildrenOnly)) {
+        QString name = but->objectName();
+
+        if (!name.startsWith("pushButtonSc"))
+            continue;
+
+        int which = name.remove(0, sizeof "pushButtonSc" - 1).toInt();
+        but->setEnabled(which <= scenes);
+    }
 }

@@ -34,6 +34,22 @@ private slots:
 
     void on_pushButtonLight_clicked();
 
+    void on_pushButtonSc1_clicked();
+
+    void on_pushButtonSc2_clicked();
+
+    void on_pushButtonSc3_clicked();
+
+    void on_pushButtonSc4_clicked();
+
+    void on_pushButtonSc5_clicked();
+
+    void on_pushButtonSc6_clicked();
+
+    void on_pushButtonSc7_clicked();
+
+    void on_pushButtonSc8_clicked();
+
 private:
     enum ConState {
         Disconnected,

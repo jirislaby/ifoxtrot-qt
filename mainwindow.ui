@@ -133,7 +133,7 @@
            <bool>true</bool>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>5</number>
           </property>
           <widget class="QWidget" name="page_EMPTY"/>
           <widget class="QWidget" name="page_LIGHT">
@@ -244,7 +244,7 @@
            </widget>
           </widget>
           <widget class="QWidget" name="page_DISPLAY">
-           <widget class="QLabel" name="labelShutter_2">
+           <widget class="QLabel" name="labelDisplay">
             <property name="geometry">
              <rect>
               <x>0</x>
@@ -281,6 +281,125 @@
             </property>
             <property name="decimals">
              <number>1</number>
+            </property>
+           </widget>
+          </widget>
+          <widget class="QWidget" name="page_SCENE">
+           <widget class="QLabel" name="labelScene">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>51</width>
+              <height>16</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Scene</string>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="pushButtonSc1">
+            <property name="geometry">
+             <rect>
+              <x>40</x>
+              <y>50</y>
+              <width>80</width>
+              <height>24</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Scene 1</string>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="pushButtonSc2">
+            <property name="geometry">
+             <rect>
+              <x>40</x>
+              <y>80</y>
+              <width>80</width>
+              <height>24</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Scene 2</string>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="pushButtonSc3">
+            <property name="geometry">
+             <rect>
+              <x>40</x>
+              <y>110</y>
+              <width>80</width>
+              <height>24</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Scene 3</string>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="pushButtonSc4">
+            <property name="geometry">
+             <rect>
+              <x>40</x>
+              <y>140</y>
+              <width>80</width>
+              <height>24</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Scene 4</string>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="pushButtonSc5">
+            <property name="geometry">
+             <rect>
+              <x>40</x>
+              <y>170</y>
+              <width>80</width>
+              <height>24</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Scene 5</string>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="pushButtonSc6">
+            <property name="geometry">
+             <rect>
+              <x>40</x>
+              <y>200</y>
+              <width>80</width>
+              <height>24</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Scene 6</string>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="pushButtonSc7">
+            <property name="geometry">
+             <rect>
+              <x>40</x>
+              <y>230</y>
+              <width>80</width>
+              <height>24</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Scene 7</string>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="pushButtonSc8">
+            <property name="geometry">
+             <rect>
+              <x>40</x>
+              <y>260</y>
+              <width>80</width>
+              <height>24</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Scene 8</string>
             </property>
            </widget>
           </widget>

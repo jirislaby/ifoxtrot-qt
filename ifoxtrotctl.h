@@ -1,6 +1,7 @@
 #ifndef IFOXTROTCTL_H
 #define IFOXTROTCTL_H
 
+#include <QByteArray>
 #include <QColor>
 #include <QObject>
 #include <QString>
@@ -23,6 +24,9 @@ public:
 
     virtual void setupUI(Ui::MainWindow *ui) = 0;
     virtual bool setProp(const QString &prop, const QString &val);
+
+    QByteArray GTSAP(const QString &prefix, const QString &prop,
+                     const QString &set = QString()) const;
 
     /* ui */
     virtual QColor getColor() const { return Qt::white; }
@@ -54,7 +58,7 @@ protected:
 class iFoxtrotLight : public iFoxtrotOnOff {
 public:
     iFoxtrotLight(const QString &foxName) :
-        iFoxtrotOnOff(foxName), dimmable(false), rgb(false) { }
+        iFoxtrotOnOff(foxName), dimmable(false), rgb(false), dimlevel(0) { }
 
     QString getFoxType() const override { return "LIGHT"; }
     bool setProp(const QString &prop, const QString &val) override;
@@ -118,6 +122,21 @@ public:
 
     QColor getColor() const override { return QColor(255, 210, 210); }
 private:
+};
+
+class iFoxtrotScene : public iFoxtrotCtl {
+public:
+    iFoxtrotScene(const QString &foxName) :
+        iFoxtrotCtl(foxName), scenes(0) {}
+
+    QString getFoxType() const override { return "SCENE"; }
+    bool setProp(const QString &prop, const QString &val) override;
+
+    void setupUI(Ui::MainWindow *ui) override;
+
+    QColor getColor() const override { return QColor(210, 255, 210); }
+private:
+    int scenes;
 };
 
 #endif // IFOXTROTCTL_H
