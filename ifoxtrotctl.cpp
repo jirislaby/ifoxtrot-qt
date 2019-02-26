@@ -68,6 +68,10 @@ bool iFoxtrotOnOff::setProp(const QString &prop, const QString &val)
     return iFoxtrotCtl::setProp(prop, val);
 }
 
+void iFoxtrotOnOff::click()
+{
+}
+
 bool iFoxtrotLight::setProp(const QString &prop, const QString &val)
 {
     if (prop == "TYPE") {

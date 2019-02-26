@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>837</width>
-    <height>557</height>
+    <width>805</width>
+    <height>705</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -416,7 +416,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>837</width>
+     <width>805</width>
      <height>21</height>
     </rect>
    </property>
@@ -428,14 +428,6 @@
     <addaction name="actionQuit"/>
    </widget>
    <addaction name="menuFile"/>
-  </widget>
-  <widget class="QToolBar" name="mainToolBar">
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionQuit">
@@ -466,5 +458,136 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButtonSc2</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>buttonSceneClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>486</x>
+     <y>178</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>418</x>
+     <y>278</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonSc3</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>buttonSceneClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>512</x>
+     <y>206</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>341</x>
+     <y>676</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonSc4</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>buttonSceneClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>486</x>
+     <y>238</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>402</x>
+     <y>352</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonSc1</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>buttonSceneClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>486</x>
+     <y>148</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>402</x>
+     <y>352</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonSc5</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>buttonSceneClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>486</x>
+     <y>268</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>402</x>
+     <y>352</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonSc6</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>buttonSceneClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>486</x>
+     <y>298</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>402</x>
+     <y>352</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonSc7</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>buttonSceneClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>486</x>
+     <y>328</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>402</x>
+     <y>352</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonSc8</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>buttonSceneClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>486</x>
+     <y>358</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>402</x>
+     <y>352</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
+ <slots>
+  <slot>buttonSceneClicked()</slot>
+ </slots>
 </ui>

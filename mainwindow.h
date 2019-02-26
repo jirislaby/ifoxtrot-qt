@@ -5,6 +5,7 @@
 #include <QStringListModel>
 #include <QTcpSocket>
 
+#include "ifoxtrotconn.h"
 #include "ifoxtrotctl.h"
 #include "ifoxtrotmodel.h"
 
@@ -34,21 +35,9 @@ private slots:
 
     void on_pushButtonLight_clicked();
 
-    void on_pushButtonSc1_clicked();
+    void buttonSceneClicked();
 
-    void on_pushButtonSc2_clicked();
-
-    void on_pushButtonSc3_clicked();
-
-    void on_pushButtonSc4_clicked();
-
-    void on_pushButtonSc5_clicked();
-
-    void on_pushButtonSc6_clicked();
-
-    void on_pushButtonSc7_clicked();
-
-    void on_pushButtonSc8_clicked();
+    void on_listViewItems_doubleClicked(const QModelIndex &index);
 
 private:
     enum ConState {
@@ -58,6 +47,7 @@ private:
     };
     enum ConState state;
     QTcpSocket socket;
+    iFoxtrotConn conn;
     Ui::MainWindow *ui;
     iFoxtrotModel *model;
 };

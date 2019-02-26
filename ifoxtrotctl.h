@@ -32,6 +32,8 @@ public:
     virtual QColor getColor() const { return Qt::white; }
     virtual bool isBold() const { return false; }
 
+    virtual void click() {}
+
     static iFoxtrotCtl *getOne(const QString &foxType, const QString &foxName);
 protected:
     QString foxName;
@@ -50,6 +52,8 @@ public:
     virtual bool setProp(const QString &prop, const QString &val) override;
 
     virtual bool isBold() const override { return onOff; }
+
+    virtual void click() override;
 
 protected:
     bool onOff;

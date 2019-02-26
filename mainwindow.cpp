@@ -282,11 +282,19 @@ void MainWindow::on_listViewItems_clicked(const QModelIndex &index)
     item->setupUI(ui);
 }
 
+void MainWindow::on_listViewItems_doubleClicked(const QModelIndex &index)
+{
+    iFoxtrotCtl *item = model->at(index.row());
+    qDebug() << "double click" << item->getFoxName();
+    item->click();
+}
+
 void MainWindow::on_pushButtonLight_clicked()
 {
     QModelIndex index = ui->listViewItems->currentIndex();
     int row = index.row();
     iFoxtrotLight *light = dynamic_cast<iFoxtrotLight *>(model->at(row));
+    light->click();
     bool onOff = !light->getOnOff();
     QByteArray req = light->GTSAP("SET", "ONOFF", onOff ? "1" : "0");
     light->setOnOff(onOff);
@@ -298,46 +306,32 @@ void MainWindow::on_pushButtonLight_clicked()
 
 void MainWindow::on_pushButtonRelay_clicked()
 {
+    QModelIndex index = ui->listViewItems->currentIndex();
+    int row = index.row();
+    iFoxtrotRelay *relay = dynamic_cast<iFoxtrotRelay *>(model->at(row));
+    relay->click();
+    bool onOff = !relay->getOnOff();
+    QByteArray req = relay->GTSAP("SET", "ONOFF", onOff ? "1" : "0");
+    relay->setOnOff(onOff);
+    emit model->dataChanged(index, index);
+    ui->labelRelayStatus->setText(onOff ? "1" : "0");
+    qDebug() << "REQ" << req;
+    socket.write(req);
 }
 
-void MainWindow::on_pushButtonSc1_clicked()
+void MainWindow::buttonSceneClicked()
 {
+    const QPushButton *s = dynamic_cast<QPushButton *>(sender());
+    if (!s) {
+        qDebug() << "bad sender" << sender();
+        return;
+    }
+    QString set = s->objectName();
+    set.replace(0, set.size() - 1, "SET");
+
     int row = ui->listViewItems->currentIndex().row();
     iFoxtrotScene *scene = dynamic_cast<iFoxtrotScene *>(model->at(row));
-    socket.write(scene->GTSAP("SET", QString("SET").append('1'), "1"));
-}
-
-void MainWindow::on_pushButtonSc2_clicked()
-{
-
-}
-
-void MainWindow::on_pushButtonSc3_clicked()
-{
-
-}
-
-void MainWindow::on_pushButtonSc4_clicked()
-{
-
-}
-
-void MainWindow::on_pushButtonSc5_clicked()
-{
-
-}
-
-void MainWindow::on_pushButtonSc6_clicked()
-{
-
-}
-
-void MainWindow::on_pushButtonSc7_clicked()
-{
-
-}
-
-void MainWindow::on_pushButtonSc8_clicked()
-{
-
+    QByteArray req = scene->GTSAP("SET", set, "1");
+    qDebug() << req;
+    socket.write(req);
 }

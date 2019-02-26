@@ -28,12 +28,14 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     ifoxtrotctl.cpp \
-    ifoxtrotmodel.cpp
+    ifoxtrotmodel.cpp \
+    ifoxtrotconn.cpp
 
 HEADERS += \
         mainwindow.h \
     ifoxtrotctl.h \
-    ifoxtrotmodel.h
+    ifoxtrotmodel.h \
+    ifoxtrotconn.h
 
 FORMS += \
         mainwindow.ui
