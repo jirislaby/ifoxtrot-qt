@@ -6,6 +6,8 @@
 #include <QObject>
 #include <QString>
 
+class iFoxtrotSession;
+
 namespace Ui {
     class MainWindow;
 };
@@ -14,8 +16,8 @@ class iFoxtrotCtl : public QObject
 {
     Q_OBJECT
 public:
-    iFoxtrotCtl(const QString &foxName) :
-        foxName(foxName), name("") { }
+    iFoxtrotCtl(iFoxtrotSession *session, const QString &foxName) :
+        session(session), foxName(foxName), name("") { }
     virtual ~iFoxtrotCtl() = default;
 
     QString getFoxName() const { return foxName; }
@@ -34,16 +36,18 @@ public:
 
     virtual void click() {}
 
-    static iFoxtrotCtl *getOne(const QString &foxType, const QString &foxName);
+    static iFoxtrotCtl *getOne(iFoxtrotSession *session,
+                               const QString &foxType, const QString &foxName);
 protected:
+    iFoxtrotSession *session;
     QString foxName;
     QString name;
 };
 
 class iFoxtrotOnOff : public iFoxtrotCtl {
 public:
-    iFoxtrotOnOff(const QString &foxName) :
-            iFoxtrotCtl(foxName), onOff(false) {}
+    iFoxtrotOnOff(iFoxtrotSession *session, const QString &foxName) :
+            iFoxtrotCtl(session, foxName), onOff(false) {}
     virtual ~iFoxtrotOnOff() override = default;
 
     bool getOnOff() const { return onOff; }
@@ -61,8 +65,9 @@ protected:
 
 class iFoxtrotLight : public iFoxtrotOnOff {
 public:
-    iFoxtrotLight(const QString &foxName) :
-        iFoxtrotOnOff(foxName), dimmable(false), rgb(false), dimlevel(0) { }
+    iFoxtrotLight(iFoxtrotSession *session, const QString &foxName) :
+        iFoxtrotOnOff(session, foxName), dimmable(false), rgb(false),
+        dimlevel(0) { }
 
     QString getFoxType() const override { return "LIGHT"; }
     bool setProp(const QString &prop, const QString &val) override;
@@ -78,8 +83,8 @@ private:
 
 class iFoxtrotRelay : public iFoxtrotOnOff {
 public:
-    iFoxtrotRelay(const QString &foxName) :
-        iFoxtrotOnOff(foxName) { }
+    iFoxtrotRelay(iFoxtrotSession *session, const QString &foxName) :
+        iFoxtrotOnOff(session, foxName) { }
 
     QString getFoxType() const override { return "RELAY"; }
     bool setProp(const QString &prop, const QString &val) override;
@@ -92,8 +97,9 @@ private:
 
 class iFoxtrotDisplay : public iFoxtrotCtl {
 public:
-    iFoxtrotDisplay(const QString &foxName) :
-        iFoxtrotCtl(foxName), editable(false), real(false), value(0), unit("") {}
+    iFoxtrotDisplay(iFoxtrotSession *session, const QString &foxName) :
+        iFoxtrotCtl(session, foxName), editable(false), real(false), value(0),
+        unit("") {}
 
     /*bool getOnOff() const { return onOff; }
     void setOnOff(bool onOff) { this->onOff = onOff; }*/
@@ -113,8 +119,8 @@ private:
 
 class iFoxtrotShutter : public iFoxtrotCtl {
 public:
-    iFoxtrotShutter(const QString &foxName) :
-        iFoxtrotCtl(foxName) {}
+    iFoxtrotShutter(iFoxtrotSession *session, const QString &foxName) :
+        iFoxtrotCtl(session, foxName) {}
 
     /*bool getOnOff() const { return onOff; }
     void setOnOff(bool onOff) { this->onOff = onOff; }*/
@@ -130,8 +136,8 @@ private:
 
 class iFoxtrotScene : public iFoxtrotCtl {
 public:
-    iFoxtrotScene(const QString &foxName) :
-        iFoxtrotCtl(foxName), scenes(0) {}
+    iFoxtrotScene(iFoxtrotSession *session, const QString &foxName) :
+        iFoxtrotCtl(session, foxName), scenes(0) {}
 
     QString getFoxType() const override { return "SCENE"; }
     bool setProp(const QString &prop, const QString &val) override;

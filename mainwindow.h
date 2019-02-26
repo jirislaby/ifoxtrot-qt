@@ -5,9 +5,8 @@
 #include <QStringListModel>
 #include <QTcpSocket>
 
-#include "ifoxtrotconn.h"
+#include "ifoxtrotsession.h"
 #include "ifoxtrotctl.h"
-#include "ifoxtrotmodel.h"
 
 namespace Ui {
 class MainWindow;
@@ -40,16 +39,8 @@ private slots:
     void on_listViewItems_doubleClicked(const QModelIndex &index);
 
 private:
-    enum ConState {
-        Disconnected,
-        Connecting,
-        Connected
-    };
-    enum ConState state;
-    QTcpSocket socket;
-    iFoxtrotConn conn;
     Ui::MainWindow *ui;
-    iFoxtrotModel *model;
+    iFoxtrotSession session;
 };
 
 #endif // MAINWINDOW_H

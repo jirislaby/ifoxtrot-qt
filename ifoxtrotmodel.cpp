@@ -4,10 +4,12 @@
 #include <QDebug>
 #include <QFont>
 
+#include "ifoxtrotctl.h"
 #include "ifoxtrotmodel.h"
 
 int iFoxtrotModel::rowCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent);
     return list.size();
 }
 
@@ -41,7 +43,7 @@ QVariant iFoxtrotModel::data(const QModelIndex &index, int role) const
 void iFoxtrotModel::setList(QList<iFoxtrotCtl *> list)
 {
     beginResetModel();
-    this->list = list;
+    this->list = std::move(list);
     endResetModel();
 }
 

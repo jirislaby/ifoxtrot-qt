@@ -4,7 +4,7 @@
 #include <QAbstractListModel>
 #include <QObject>
 
-#include <ifoxtrotctl.h>
+class iFoxtrotCtl;
 
 class iFoxtrotModel : public QAbstractListModel
 {

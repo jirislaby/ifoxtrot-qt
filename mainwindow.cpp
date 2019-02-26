@@ -1,5 +1,4 @@
 #include <QMessageBox>
-#include <QTextCodec>
 #include <QSettings>
 
 #include <QtGlobal>
@@ -9,7 +8,6 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    state(Disconnected),
     ui(new Ui::MainWindow)
 {
     QSettings settings("jirislaby", "ifoxtrot");
@@ -23,18 +21,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->spinBoxPort->setValue(settings.value("port", "5010").toInt());
     ui->checkBoxAutocon->setChecked(settings.value("autoconnect", false).toBool());
 
-    connect(&socket, &QTcpSocket::connected, this, &MainWindow::connected);
-    connect(&socket, &QTcpSocket::disconnected, this, &MainWindow::disconnected);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-    connect(&socket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error),
-            this, &MainWindow::sockError);
-#else
-    connect(&socket, static_cast<void (QAbstractSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::error),
-            this, &MainWindow::sockError);
-#endif
+    connect(&session, &iFoxtrotSession::connected, this, &MainWindow::connected);
+    connect(&session, &iFoxtrotSession::disconnected, this, &MainWindow::disconnected);
+    connect(&session, &iFoxtrotSession::error, this, &MainWindow::sockError);
 
-    model = new iFoxtrotModel();
-    ui->listViewItems->setModel(model);
+    ui->listViewItems->setModel(session.getModel());
 
     if (ui->checkBoxAutocon->isChecked())
         emit ui->butConnect->click();
@@ -44,7 +35,7 @@ MainWindow::~MainWindow()
 {
     QSettings settings("jirislaby", "ifoxtrot");
 
-    socket.close();
+    session.close();
 
     settings.setValue("PLCaddr", ui->lineEditPLCAddr->text());
     settings.setValue("IPaddr", ui->lineEditAddr->text());
@@ -56,12 +47,12 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_butConnect_clicked()
 {
-    switch (state) {
-    case Connecting:
-        socket.abort();
+    switch (session.getState()) {
+    case iFoxtrotSession::Connecting:
+        session.abort();
         return;
-    case Connected:
-        socket.close();
+    case iFoxtrotSession::Connected:
+        session.close();
         return;
     default:
         break;
@@ -78,154 +69,16 @@ void MainWindow::on_butConnect_clicked()
         return;
     }
 
-    socket.connectToHost(addr, port);
+    session.connectToHost(addr, port);
 
     statusBar()->showMessage("Connecting to " + addr + ":" + QString::number(port));
     ui->butConnect->setText("&Disconnect");
-    state = Connecting;
 }
 
 void MainWindow::connected()
 {
-    const QSet<QByteArray>skip {
-        "__PF_CRC",
-        "__PLC_RUN"
-    };
     statusBar()->showMessage("Connected");
-    state = Connected;
-
-#ifdef SETCONF
-    QString setconf("SETCONF:ipaddr,");
-    setconf.append(ui->lineEditPLCAddr->text()).append('\n');
-    socket.write(setconf);
-    if (!socket.waitForReadyRead(5000)) {
-        socket.abort();
-        return;
-    }
-#endif
-
-    QByteArray lineArray = socket.readLine();
-    socket.write("GETINFO:\n");
-    bool done = false;
-    while (!done) {
-        if (!socket.waitForReadyRead(5000)) {
-            socket.abort();
-            statusBar()->showMessage("GETINFO failed");
-            return;
-        }
-
-        while (socket.canReadLine()) {
-            QByteArray lineArray = socket.readLine();
-            if (lineArray == "GETINFO:\r\n") {
-                done = true;
-                break;
-            }
-            if (lineArray.startsWith("GETINFO:VERSION_PLC,")) {
-                lineArray.chop(2); // \r\n
-                ui->labelPLC->setText(lineArray.mid(sizeof("GETINFO:VERSION_PLC,") - 1));
-            }
-            //qDebug() << lineArray;
-        }
-    }
-
-    QTextCodec *codec = QTextCodec::codecForName("Windows 1250");
-    QRegularExpression GETRE("^GET:(.+)\\.GTSAP1_([^_]+)_(.+),(.+)\r\n$");
-    QByteArray enableString("DI:\n");
-    QMap<QString, iFoxtrotCtl *> itemsFox;
-    QList<iFoxtrotCtl *> list;
-
-    socket.write("DI:\n"
-                 "EN:*_ENABLE\n"
-                 "GET:\n");
-
-    done = false;
-    while (!done) {
-        if (!socket.waitForReadyRead(5000)) {
-            socket.abort();
-            return;
-        }
-
-        while (socket.canReadLine()) {
-            QByteArray lineArray = socket.readLine();
-            QByteArray crop = lineArray.mid(sizeof("GET:") - 1);
-            crop.truncate(crop.indexOf(','));
-            if (skip.contains(crop))
-                continue;
-            if (lineArray == "GET:\r\n") {
-                done = true;
-                break;
-            }
-
-            QString line = codec->toUnicode(lineArray.data());
-            QRegularExpressionMatch match = GETRE.match(line);
-            if (!match.hasMatch()) {
-                qDebug() << "wrong GET line" << line << crop;
-                continue;
-            }
-            QString foxName = match.captured(1);
-            QString foxType = match.captured(2);
-            QString prop = match.captured(3);
-            QString value = match.captured(4);
-            if (value != "1")
-                continue;
-
-            iFoxtrotCtl *item = iFoxtrotCtl::getOne(foxType, foxName);
-            if (!item) {
-                qWarning() << "unsupported type" << foxType << "for" << foxName;
-                continue;
-            }
-            list.append(item);
-            itemsFox.insert(foxName, item);
-            enableString.append("EN:").append(foxName).append(".GTSAP1_").append(foxType).append("_*\n");
-            //qDebug() << foxName << foxType << prop << value;
-        }
-    }
-
-    enableString.append("GET:\n");
-    socket.write(enableString);
-
-    done = false;
-    while (!done) {
-        if (!socket.waitForReadyRead(5000)) {
-            socket.abort();
-            return;
-        }
-
-        while (socket.canReadLine()) {
-            QByteArray lineArray = socket.readLine();
-            QByteArray crop = lineArray.mid(sizeof("GET:") - 1,
-                                            lineArray.indexOf(',') - 4);
-            if (skip.contains(crop))
-                continue;
-            if (lineArray == "GET:\r\n") {
-                done = true;
-                break;
-            }
-
-            QString line = codec->toUnicode(lineArray.data());
-            QRegularExpressionMatch match = GETRE.match(line);
-            if (!match.hasMatch()) {
-                qDebug() << "wrong GET line" << line << crop;
-                continue;
-            }
-            QString foxName = match.captured(1);
-            QString foxType = match.captured(2);
-            QString prop = match.captured(3);
-            QString value = match.captured(4);
-            QMap<QString, iFoxtrotCtl *>::const_iterator itemIt = itemsFox.find(foxName);
-            if (itemIt == itemsFox.end()) {
-                qWarning() << "cannot find" << foxName << "in items";
-                continue;
-            }
-            iFoxtrotCtl *item = itemIt.value();
-            item->setProp(prop, value);
-        }
-    }
-
-    model->setList(list);
-    model->sort(0);
-
-    connect(&socket, &QTcpSocket::readyRead, this, &MainWindow::readyRead);
+    ui->labelPLC->setText(session.getPLCVersion());
 }
 
 void MainWindow::disconnected()
@@ -233,44 +86,23 @@ void MainWindow::disconnected()
     statusBar()->showMessage("Disconnected");
     ui->butConnect->setText("&Connect");
     ui->labelPLC->setText("");
-    state = Disconnected;
 }
 
 void MainWindow::readyRead()
 {
-    QRegularExpression DIFFRE("^DIFF:(.+)\\.GTSAP1_([^_]+)_(.+),(.+)\r\n$");
-    QTextCodec *codec = QTextCodec::codecForName("Windows 1250");
-
-    while (socket.canReadLine()) {
-        QByteArray lineArray = socket.readLine();
-
-        QString line = codec->toUnicode(lineArray.data());
-        QRegularExpressionMatch match = DIFFRE.match(line);
-        if (!match.hasMatch()) {
-            qDebug() << __PRETTY_FUNCTION__ << " unexpected line" << line;
-            continue;
-        }
-        QString foxName = match.captured(1);
-        QString foxType = match.captured(2);
-        QString prop = match.captured(3);
-        QString value = match.captured(4);
-
-        qDebug() << __PRETTY_FUNCTION__ << "DIFF" << foxName << foxType << prop << value;
-    }
 }
 
 void MainWindow::sockError(QAbstractSocket::SocketError socketError)
 {
     qWarning() << "disconnected" << socketError;
     disconnected();
-    statusBar()->showMessage("Error connecting: " + socket.errorString());
+    statusBar()->showMessage("Socket error: " + QString::number(socketError)); // + socket.errorString());
 }
 
 void MainWindow::on_listViewItems_clicked(const QModelIndex &index)
 {
-    iFoxtrotCtl *item = model->at(index.row());
+    iFoxtrotCtl *item = session.getModel()->at(index.row());
     QString name = item->getName();
-    qDebug() << "clicked" << index.row() << name;
 
     for (int i = 0; i < ui->stackedWidget->count(); i++)
         if (ui->stackedWidget->widget(i)->objectName().mid(5) == item->getFoxType()) {
@@ -284,7 +116,7 @@ void MainWindow::on_listViewItems_clicked(const QModelIndex &index)
 
 void MainWindow::on_listViewItems_doubleClicked(const QModelIndex &index)
 {
-    iFoxtrotCtl *item = model->at(index.row());
+    iFoxtrotCtl *item = session.getModel()->at(index.row());
     qDebug() << "double click" << item->getFoxName();
     item->click();
 }
@@ -293,30 +125,30 @@ void MainWindow::on_pushButtonLight_clicked()
 {
     QModelIndex index = ui->listViewItems->currentIndex();
     int row = index.row();
-    iFoxtrotLight *light = dynamic_cast<iFoxtrotLight *>(model->at(row));
+    iFoxtrotLight *light = dynamic_cast<iFoxtrotLight *>(session.getModel()->at(row));
     light->click();
     bool onOff = !light->getOnOff();
     QByteArray req = light->GTSAP("SET", "ONOFF", onOff ? "1" : "0");
     light->setOnOff(onOff);
-    emit model->dataChanged(index, index);
+    emit session.getModel()->dataChanged(index, index);
     ui->labelLightStatus->setText(onOff ? "1" : "0");
     qDebug() << "REQ" << req;
-    socket.write(req);
+    session.write(req);
 }
 
 void MainWindow::on_pushButtonRelay_clicked()
 {
     QModelIndex index = ui->listViewItems->currentIndex();
     int row = index.row();
-    iFoxtrotRelay *relay = dynamic_cast<iFoxtrotRelay *>(model->at(row));
+    iFoxtrotRelay *relay = dynamic_cast<iFoxtrotRelay *>(session.getModel()->at(row));
     relay->click();
     bool onOff = !relay->getOnOff();
     QByteArray req = relay->GTSAP("SET", "ONOFF", onOff ? "1" : "0");
     relay->setOnOff(onOff);
-    emit model->dataChanged(index, index);
+    emit session.getModel()->dataChanged(index, index);
     ui->labelRelayStatus->setText(onOff ? "1" : "0");
     qDebug() << "REQ" << req;
-    socket.write(req);
+    session.write(req);
 }
 
 void MainWindow::buttonSceneClicked()
@@ -330,8 +162,8 @@ void MainWindow::buttonSceneClicked()
     set.replace(0, set.size() - 1, "SET");
 
     int row = ui->listViewItems->currentIndex().row();
-    iFoxtrotScene *scene = dynamic_cast<iFoxtrotScene *>(model->at(row));
+    iFoxtrotScene *scene = dynamic_cast<iFoxtrotScene *>(session.getModel()->at(row));
     QByteArray req = scene->GTSAP("SET", set, "1");
     qDebug() << req;
-    socket.write(req);
+    session.write(req);
 }

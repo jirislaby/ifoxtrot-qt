@@ -2,20 +2,22 @@
 #include <QList>
 
 #include "ifoxtrotctl.h"
+#include "ifoxtrotsession.h"
 #include "ui_mainwindow.h"
 
-iFoxtrotCtl *iFoxtrotCtl::getOne(const QString &foxType, const QString &foxName)
+iFoxtrotCtl *iFoxtrotCtl::getOne(iFoxtrotSession *session,
+                                 const QString &foxType, const QString &foxName)
 {
     if (foxType == "DISPLAY")
-        return new iFoxtrotDisplay(foxName);
+        return new iFoxtrotDisplay(session, foxName);
     if (foxType == "LIGHT")
-        return new iFoxtrotLight(foxName);
+        return new iFoxtrotLight(session, foxName);
     if (foxType == "RELAY")
-        return new iFoxtrotRelay(foxName);
+        return new iFoxtrotRelay(session, foxName);
     if (foxType == "SCENE")
-        return new iFoxtrotScene(foxName);
+        return new iFoxtrotScene(session, foxName);
     if (foxType == "SHUTTER")
-        return new iFoxtrotShutter(foxName);
+        return new iFoxtrotShutter(session, foxName);
 
     return nullptr;
 }
