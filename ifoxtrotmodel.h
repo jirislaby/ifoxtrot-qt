@@ -10,7 +10,7 @@ class iFoxtrotModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    iFoxtrotModel(QObject *parent = nullptr) : QAbstractListModel(parent), list() { }
+    iFoxtrotModel(QObject *parent = nullptr) : QAbstractListModel(parent) { }
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
 
@@ -18,6 +18,7 @@ public:
 
     void setList(QList<iFoxtrotCtl *> list);
 
+    void clear();
     void sort(int column, Qt::SortOrder order = Qt::AscendingOrder) override;
 
     iFoxtrotCtl *at(int index) const { return list.at(index); }

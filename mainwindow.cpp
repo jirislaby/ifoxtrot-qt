@@ -26,6 +26,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&session, &iFoxtrotSession::error, this, &MainWindow::sockError);
 
     ui->listViewItems->setModel(session.getModel());
+    connect(ui->listViewItems->selectionModel(),
+            &QItemSelectionModel::currentRowChanged, this,
+            &MainWindow::rowChanged);
 
     if (ui->checkBoxAutocon->isChecked())
         emit ui->butConnect->click();
@@ -86,6 +89,7 @@ void MainWindow::disconnected()
     statusBar()->showMessage("Disconnected");
     ui->butConnect->setText("&Connect");
     ui->labelPLC->setText("");
+    ui->stackedWidget->setCurrentIndex(0);
 }
 
 void MainWindow::readyRead()
@@ -97,6 +101,13 @@ void MainWindow::sockError(QAbstractSocket::SocketError socketError)
     qWarning() << "disconnected" << socketError;
     disconnected();
     statusBar()->showMessage("Socket error: " + QString::number(socketError)); // + socket.errorString());
+}
+
+void MainWindow::rowChanged(const QModelIndex &current,
+                            const QModelIndex &previous)
+{
+    Q_UNUSED(previous);
+    on_listViewItems_clicked(current);
 }
 
 void MainWindow::on_listViewItems_clicked(const QModelIndex &index)

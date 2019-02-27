@@ -47,6 +47,13 @@ void iFoxtrotModel::setList(QList<iFoxtrotCtl *> list)
     endResetModel();
 }
 
+void iFoxtrotModel::clear()
+{
+    beginResetModel();
+    list.clear();
+    endResetModel();
+}
+
 static bool foxSortAsc(const iFoxtrotCtl *a, const iFoxtrotCtl *b)
 {
     int typeCmp = a->getFoxType().compare(b->getFoxType());

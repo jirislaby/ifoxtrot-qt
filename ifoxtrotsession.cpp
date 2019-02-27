@@ -78,7 +78,8 @@ void iFoxtrotSession::sockConnected()
     done = false;
     while (!done) {
         if (!socket.waitForReadyRead(5000)) {
-            socket.abort();
+            emit error(QAbstractSocket::SocketTimeoutError);
+            abort();
             return;
         }
 
@@ -124,7 +125,8 @@ void iFoxtrotSession::sockConnected()
     done = false;
     while (!done) {
         if (!socket.waitForReadyRead(5000)) {
-            socket.abort();
+            emit error(QAbstractSocket::SocketTimeoutError);
+            abort();
             return;
         }
 
@@ -163,16 +165,22 @@ void iFoxtrotSession::sockConnected()
     model.sort(0);
 
     connect(&socket, &QTcpSocket::readyRead, this, &iFoxtrotSession::sockReadyRead);
+
+    emit connected();
 }
 
 
 void iFoxtrotSession::sockDisconnected()
 {
+    disconnect(&socket, &QTcpSocket::readyRead, this, &iFoxtrotSession::sockReadyRead);
     state = Disconnected;
+    model.clear();
+    emit disconnected();
 }
 
 void iFoxtrotSession::sockError(QAbstractSocket::SocketError socketError)
 {
+    state = Disconnected;
     emit error(socketError);
 }
 

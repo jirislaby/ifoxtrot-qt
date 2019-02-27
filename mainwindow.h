@@ -27,6 +27,7 @@ private slots:
     void disconnected();
     void readyRead();
     void sockError(QAbstractSocket::SocketError socketError);
+    void rowChanged(const QModelIndex &current, const QModelIndex &previous);
 
     void on_listViewItems_clicked(const QModelIndex &index);
 
