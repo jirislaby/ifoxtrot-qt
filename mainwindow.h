@@ -39,6 +39,14 @@ private slots:
 
     void on_listViewItems_doubleClicked(const QModelIndex &index);
 
+    void on_pushButtonShutUp_clicked();
+
+    void on_pushButtonShutRUp_clicked();
+
+    void on_pushButtonShutRDown_clicked();
+
+    void on_pushButtonShutDown_clicked();
+
 private:
     Ui::MainWindow *ui;
     iFoxtrotSession session;

@@ -13,10 +13,18 @@ int iFoxtrotModel::rowCount(const QModelIndex &parent) const
     return list.size();
 }
 
+int iFoxtrotModel::columnCount(const QModelIndex &parent) const
+{
+    //qDebug() << __PRETTY_FUNCTION__;
+    return 2;
+}
+
 QVariant iFoxtrotModel::data(const QModelIndex &index, int role) const
 {
     if (index.row() < 0 || index.row() >= list.count())
         return QVariant();
+    if (index.column() > 1)
+        qDebug() << __PRETTY_FUNCTION__ << index;
 
     iFoxtrotCtl *item = list.at(index.row());
 

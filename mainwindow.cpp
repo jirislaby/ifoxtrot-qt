@@ -178,3 +178,26 @@ void MainWindow::buttonSceneClicked()
     qDebug() << req;
     session.write(req);
 }
+
+void MainWindow::on_pushButtonShutUp_clicked()
+{
+    QModelIndex index = ui->listViewItems->currentIndex();
+    int row = index.row();
+    iFoxtrotShutter *shutter = dynamic_cast<iFoxtrotShutter *>(session.getModel()->at(row));
+    assert(shutter);
+}
+
+void MainWindow::on_pushButtonShutRUp_clicked()
+{
+
+}
+
+void MainWindow::on_pushButtonShutRDown_clicked()
+{
+
+}
+
+void MainWindow::on_pushButtonShutDown_clicked()
+{
+
+}
