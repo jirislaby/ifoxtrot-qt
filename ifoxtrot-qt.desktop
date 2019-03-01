@@ -2,3 +2,6 @@
 Name=iFoxtrot-Qt
 Exec=ifoxtrot-qt
 Type=Application
+Categories=Network;RemoteAccess;Qt;
+GenericName=Control Tecomat iFoxtrot
+#Icon=
