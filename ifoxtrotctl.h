@@ -34,7 +34,7 @@ public:
     virtual QColor getColor() const { return Qt::white; }
     virtual bool isBold() const { return false; }
 
-    virtual void click() {}
+    virtual void doubleClick(const QModelIndex &index) {}
 
     static iFoxtrotCtl *getOne(iFoxtrotSession *session,
                                const QString &foxType, const QString &foxName);
@@ -52,12 +52,15 @@ public:
 
     bool getOnOff() const { return onOff; }
     void setOnOff(bool onOff) { this->onOff = onOff; }
+    virtual void switchState(const QModelIndex &index);
 
     virtual bool setProp(const QString &prop, const QString &val) override;
 
     virtual bool isBold() const override { return onOff; }
 
-    virtual void click() override;
+    virtual void doubleClick(const QModelIndex &index) override {
+        switchState(index);
+    }
 
 protected:
     bool onOff;
@@ -101,9 +104,6 @@ public:
         iFoxtrotCtl(session, foxName), editable(false), real(false), value(0),
         unit("") {}
 
-    /*bool getOnOff() const { return onOff; }
-    void setOnOff(bool onOff) { this->onOff = onOff; }*/
-
     QString getFoxType() const override { return "DISPLAY"; }
     bool setProp(const QString &prop, const QString &val) override;
 
@@ -122,8 +122,10 @@ public:
     iFoxtrotShutter(iFoxtrotSession *session, const QString &foxName) :
         iFoxtrotCtl(session, foxName) {}
 
-    /*bool getOnOff() const { return onOff; }
-    void setOnOff(bool onOff) { this->onOff = onOff; }*/
+    void up();
+    void down();
+    void rotUp();
+    void rotDown();
 
     QString getFoxType() const override { return "SHUTTER"; }
     bool setProp(const QString &prop, const QString &val) override;

@@ -30,6 +30,8 @@ MainWindow::MainWindow(QWidget *parent) :
             &QItemSelectionModel::currentRowChanged, this,
             &MainWindow::rowChanged);
 
+    ui->butDisconnect->setVisible(false);
+
     if (ui->checkBoxAutocon->isChecked())
         emit ui->butConnect->click();
 }
@@ -50,17 +52,6 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_butConnect_clicked()
 {
-    switch (session.getState()) {
-    case iFoxtrotSession::Connecting:
-        session.abort();
-        return;
-    case iFoxtrotSession::Connected:
-        session.close();
-        return;
-    default:
-        break;
-    }
-
     QString addr = ui->lineEditAddr->text();
     quint16 port = static_cast<quint16>(ui->spinBoxPort->value());
 
@@ -75,7 +66,23 @@ void MainWindow::on_butConnect_clicked()
     session.connectToHost(addr, port);
 
     statusBar()->showMessage("Connecting to " + addr + ":" + QString::number(port));
-    ui->butConnect->setText("&Disconnect");
+    ui->butConnect->setVisible(false);
+    ui->butDisconnect->setVisible(true);
+}
+
+void MainWindow::on_butDisconnect_clicked()
+{
+    switch (session.getState()) {
+    case iFoxtrotSession::Connecting:
+        session.abort();
+        return;
+    case iFoxtrotSession::Connected:
+        session.close();
+        return;
+    default:
+        qWarning() << "bad state in disconnect" << session.getState();
+        break;
+    }
 }
 
 void MainWindow::connected()
@@ -87,13 +94,11 @@ void MainWindow::connected()
 void MainWindow::disconnected()
 {
     statusBar()->showMessage("Disconnected");
-    ui->butConnect->setText("&Connect");
+    ui->butConnect->setVisible(true);
+    ui->butDisconnect->setVisible(false);
+    ui->labelFoxName->setText("");
     ui->labelPLC->setText("");
     ui->stackedWidget->setCurrentIndex(0);
-}
-
-void MainWindow::readyRead()
-{
 }
 
 void MainWindow::sockError(QAbstractSocket::SocketError socketError)
@@ -128,38 +133,14 @@ void MainWindow::on_listViewItems_clicked(const QModelIndex &index)
 void MainWindow::on_listViewItems_doubleClicked(const QModelIndex &index)
 {
     iFoxtrotCtl *item = session.getModel()->at(index.row());
-    qDebug() << "double click" << item->getFoxName();
-    item->click();
+    item->doubleClick(index);
 }
 
 void MainWindow::on_pushButtonLight_clicked()
 {
     QModelIndex index = ui->listViewItems->currentIndex();
-    int row = index.row();
-    iFoxtrotLight *light = dynamic_cast<iFoxtrotLight *>(session.getModel()->at(row));
-    light->click();
-    bool onOff = !light->getOnOff();
-    QByteArray req = light->GTSAP("SET", "ONOFF", onOff ? "1" : "0");
-    light->setOnOff(onOff);
-    emit session.getModel()->dataChanged(index, index);
-    ui->labelLightStatus->setText(onOff ? "1" : "0");
-    qDebug() << "REQ" << req;
-    session.write(req);
-}
-
-void MainWindow::on_pushButtonRelay_clicked()
-{
-    QModelIndex index = ui->listViewItems->currentIndex();
-    int row = index.row();
-    iFoxtrotRelay *relay = dynamic_cast<iFoxtrotRelay *>(session.getModel()->at(row));
-    relay->click();
-    bool onOff = !relay->getOnOff();
-    QByteArray req = relay->GTSAP("SET", "ONOFF", onOff ? "1" : "0");
-    relay->setOnOff(onOff);
-    emit session.getModel()->dataChanged(index, index);
-    ui->labelRelayStatus->setText(onOff ? "1" : "0");
-    qDebug() << "REQ" << req;
-    session.write(req);
+    auto onOff = dynamic_cast<iFoxtrotOnOff *>(session.getModel()->at(index.row()));
+    onOff->switchState(index);
 }
 
 void MainWindow::buttonSceneClicked()
@@ -184,20 +165,29 @@ void MainWindow::on_pushButtonShutUp_clicked()
     QModelIndex index = ui->listViewItems->currentIndex();
     int row = index.row();
     iFoxtrotShutter *shutter = dynamic_cast<iFoxtrotShutter *>(session.getModel()->at(row));
-    assert(shutter);
+    shutter->up();
 }
 
 void MainWindow::on_pushButtonShutRUp_clicked()
 {
-
+    QModelIndex index = ui->listViewItems->currentIndex();
+    int row = index.row();
+    iFoxtrotShutter *shutter = dynamic_cast<iFoxtrotShutter *>(session.getModel()->at(row));
+    shutter->rotUp();
 }
 
 void MainWindow::on_pushButtonShutRDown_clicked()
 {
-
+    QModelIndex index = ui->listViewItems->currentIndex();
+    int row = index.row();
+    iFoxtrotShutter *shutter = dynamic_cast<iFoxtrotShutter *>(session.getModel()->at(row));
+    shutter->rotDown();
 }
 
 void MainWindow::on_pushButtonShutDown_clicked()
 {
-
+    QModelIndex index = ui->listViewItems->currentIndex();
+    int row = index.row();
+    iFoxtrotShutter *shutter = dynamic_cast<iFoxtrotShutter *>(session.getModel()->at(row));
+    shutter->down();
 }

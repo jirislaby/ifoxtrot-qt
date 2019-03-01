@@ -60,6 +60,16 @@ QByteArray iFoxtrotCtl::GTSAP(const QString &prefix, const QString &prop,
     return ret;
 }
 
+void iFoxtrotOnOff::switchState(const QModelIndex &index)
+{
+    onOff = !onOff;
+    QByteArray req = GTSAP("SET", "ONOFF", onOff ? "1" : "0");
+    emit session->getModel()->dataChanged(index, index);
+    //ui->labelLightStatus->setText(onOff ? "1" : "0");
+    qDebug() << "REQ" << req;
+    session->write(req);
+}
+
 bool iFoxtrotOnOff::setProp(const QString &prop, const QString &val)
 {
     if (prop == "ONOFF") {
@@ -68,10 +78,6 @@ bool iFoxtrotOnOff::setProp(const QString &prop, const QString &val)
     }
 
     return iFoxtrotCtl::setProp(prop, val);
-}
-
-void iFoxtrotOnOff::click()
-{
 }
 
 bool iFoxtrotLight::setProp(const QString &prop, const QString &val)
@@ -200,6 +206,22 @@ bool iFoxtrotShutter::setProp(const QString &prop, const QString &val)
 }
 
 void iFoxtrotShutter::setupUI(Ui::MainWindow *ui)
+{
+}
+
+void iFoxtrotShutter::up()
+{
+}
+
+void iFoxtrotShutter::down()
+{
+}
+
+void iFoxtrotShutter::rotUp()
+{
+}
+
+void iFoxtrotShutter::rotDown()
 {
 }
 

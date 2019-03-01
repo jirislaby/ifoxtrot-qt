@@ -23,15 +23,13 @@ public:
 private slots:
 
     void on_butConnect_clicked();
+    void on_butDisconnect_clicked();
     void connected();
     void disconnected();
-    void readyRead();
     void sockError(QAbstractSocket::SocketError socketError);
     void rowChanged(const QModelIndex &current, const QModelIndex &previous);
 
     void on_listViewItems_clicked(const QModelIndex &index);
-
-    void on_pushButtonRelay_clicked();
 
     void on_pushButtonLight_clicked();
 
@@ -46,6 +44,7 @@ private slots:
     void on_pushButtonShutRDown_clicked();
 
     void on_pushButtonShutDown_clicked();
+
 
 private:
     Ui::MainWindow *ui;
