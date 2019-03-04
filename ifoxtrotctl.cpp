@@ -63,8 +63,9 @@ QByteArray iFoxtrotCtl::GTSAP(const QString &prefix, const QString &prop,
 void iFoxtrotOnOff::switchState(const QModelIndex &index)
 {
     onOff = !onOff;
-    QByteArray req = GTSAP("SET", "ONOFF", onOff ? "1" : "0");
     emit session->getModel()->dataChanged(index, index);
+
+    QByteArray req = GTSAP("SET", "ONOFF", onOff ? "1" : "0");
     //ui->labelLightStatus->setText(onOff ? "1" : "0");
     qDebug() << "REQ" << req;
     session->write(req);

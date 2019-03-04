@@ -25,7 +25,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&session, &iFoxtrotSession::disconnected, this, &MainWindow::disconnected);
     connect(&session, &iFoxtrotSession::error, this, &MainWindow::sockError);
 
-    ui->listViewItems->setModel(session.getModel());
+    proxyModel = new QSortFilterProxyModel(this);
+    proxyModel->setSourceModel(session.getModel());
+    ui->listViewItems->setModel(proxyModel);
     connect(ui->listViewItems->selectionModel(),
             &QItemSelectionModel::currentRowChanged, this,
             &MainWindow::rowChanged);
@@ -89,6 +91,7 @@ void MainWindow::connected()
 {
     statusBar()->showMessage("Connected");
     ui->labelPLC->setText(session.getPLCVersion());
+    ui->listViewItems->setFocus();
 }
 
 void MainWindow::disconnected()
@@ -117,6 +120,9 @@ void MainWindow::rowChanged(const QModelIndex &current,
 
 void MainWindow::on_listViewItems_clicked(const QModelIndex &index)
 {
+    if (!index.isValid())
+        return;
+
     iFoxtrotCtl *item = session.getModel()->at(index.row());
     QString name = item->getName();
 
@@ -190,4 +196,9 @@ void MainWindow::on_pushButtonShutDown_clicked()
     int row = index.row();
     iFoxtrotShutter *shutter = dynamic_cast<iFoxtrotShutter *>(session.getModel()->at(row));
     shutter->down();
+}
+
+void MainWindow::on_lineEditFilter_textEdited(const QString &text)
+{
+    proxyModel->setFilterFixedString(text);
 }

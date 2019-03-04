@@ -120,7 +120,29 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QListView" name="listViewItems"/>
+       <layout class="QVBoxLayout" name="verticalLayout_8">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <widget class="QLabel" name="labelFilter">
+            <property name="text">
+             <string>Filter:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="lineEditFilter">
+            <property name="clearButtonEnabled">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QListView" name="listViewItems"/>
+        </item>
+       </layout>
       </item>
       <item>
        <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -537,6 +559,31 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>lineEditAddr</tabstop>
+  <tabstop>spinBoxPort</tabstop>
+  <tabstop>lineEditPLCAddr</tabstop>
+  <tabstop>butConnect</tabstop>
+  <tabstop>butDisconnect</tabstop>
+  <tabstop>checkBoxAutocon</tabstop>
+  <tabstop>lineEditFilter</tabstop>
+  <tabstop>listViewItems</tabstop>
+  <tabstop>doubleSpinBoxDisplayVal</tabstop>
+  <tabstop>pushButtonSc1</tabstop>
+  <tabstop>pushButtonSc2</tabstop>
+  <tabstop>pushButtonSc3</tabstop>
+  <tabstop>pushButtonSc4</tabstop>
+  <tabstop>pushButtonSc5</tabstop>
+  <tabstop>pushButtonSc6</tabstop>
+  <tabstop>pushButtonSc7</tabstop>
+  <tabstop>pushButtonSc8</tabstop>
+  <tabstop>pushButtonShutRUp</tabstop>
+  <tabstop>pushButtonShutRDown</tabstop>
+  <tabstop>pushButtonShutUp</tabstop>
+  <tabstop>pushButtonShutDown</tabstop>
+  <tabstop>pushButtonRelay</tabstop>
+  <tabstop>pushButtonLight</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

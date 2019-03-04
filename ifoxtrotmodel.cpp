@@ -15,6 +15,7 @@ int iFoxtrotModel::rowCount(const QModelIndex &parent) const
 
 int iFoxtrotModel::columnCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent);
     //qDebug() << __PRETTY_FUNCTION__;
     return 2;
 }

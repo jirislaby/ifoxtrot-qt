@@ -2,8 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QStringListModel>
-#include <QTcpSocket>
+#include <QSortFilterProxyModel>
 
 #include "ifoxtrotsession.h"
 #include "ifoxtrotctl.h"
@@ -46,9 +45,12 @@ private slots:
     void on_pushButtonShutDown_clicked();
 
 
+    void on_lineEditFilter_textEdited(const QString &arg1);
+
 private:
     Ui::MainWindow *ui;
     iFoxtrotSession session;
+    QSortFilterProxyModel *proxyModel;
 };
 
 #endif // MAINWINDOW_H
