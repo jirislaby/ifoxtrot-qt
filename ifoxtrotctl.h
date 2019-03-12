@@ -34,14 +34,17 @@ public:
     virtual QColor getColor() const { return Qt::white; }
     virtual bool isBold() const { return false; }
 
-    virtual void doubleClick(const QModelIndex &index) {}
+    virtual void doubleClick() {}
 
     static iFoxtrotCtl *getOne(iFoxtrotSession *session,
                                const QString &foxType, const QString &foxName);
+
 protected:
     iFoxtrotSession *session;
     QString foxName;
     QString name;
+
+    void changed(const QString &prop);
 };
 
 class iFoxtrotOnOff : public iFoxtrotCtl {
@@ -52,15 +55,13 @@ public:
 
     bool getOnOff() const { return onOff; }
     void setOnOff(bool onOff) { this->onOff = onOff; }
-    virtual void switchState(const QModelIndex &index);
+    virtual void switchState();
 
     virtual bool setProp(const QString &prop, const QString &val) override;
 
     virtual bool isBold() const override { return onOff; }
 
-    virtual void doubleClick(const QModelIndex &index) override {
-        switchState(index);
-    }
+    virtual void doubleClick() override { switchState(); }
 
 protected:
     bool onOff;

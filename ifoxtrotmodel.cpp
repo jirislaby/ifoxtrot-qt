@@ -95,3 +95,18 @@ void iFoxtrotModel::sort(int column, Qt::SortOrder order)
         std::sort(list.begin(), list.end(),
                   order == Qt::SortOrder::AscendingOrder ? foxSortAsc : foxSortDesc);
 }
+
+void iFoxtrotModel::changed(const iFoxtrotCtl *ctl)
+{
+    int idx = 0;
+
+    // slow as hell -- how to find an index of an item?
+    for (const auto c: list) {
+        if (ctl == c) {
+            const QModelIndex index = createIndex(idx, 0);
+            emit dataChanged(index, index);
+            return;
+        }
+        idx++;
+    }
+}

@@ -60,12 +60,16 @@ QByteArray iFoxtrotCtl::GTSAP(const QString &prefix, const QString &prop,
     return ret;
 }
 
-void iFoxtrotOnOff::switchState(const QModelIndex &index)
-{
-    onOff = !onOff;
-    emit session->getModel()->dataChanged(index, index);
 
-    QByteArray req = GTSAP("SET", "ONOFF", onOff ? "1" : "0");
+void iFoxtrotCtl::changed(const QString &prop)
+{
+    Q_UNUSED(prop);
+    session->getModel()->changed(this);
+}
+
+void iFoxtrotOnOff::switchState()
+{
+    QByteArray req = GTSAP("SET", "ONOFF", onOff ? "0" : "1");
     //ui->labelLightStatus->setText(onOff ? "1" : "0");
     qDebug() << "REQ" << req;
     session->write(req);
@@ -75,6 +79,7 @@ bool iFoxtrotOnOff::setProp(const QString &prop, const QString &val)
 {
     if (prop == "ONOFF") {
         onOff = (val == "1");
+        changed(prop);
         return true;
     }
 
@@ -93,6 +98,7 @@ bool iFoxtrotLight::setProp(const QString &prop, const QString &val)
     }
     if (prop == "DIMLEVEL") {
         dimlevel = val.toFloat();
+        changed(prop);
         return true;
     }
 
@@ -136,6 +142,7 @@ bool iFoxtrotDisplay::setProp(const QString &prop, const QString &val)
     }
     if (prop == "VALUE") {
         value = val.toDouble();
+        changed(prop);
         return true;
     }
     if (prop == "UNIT") {

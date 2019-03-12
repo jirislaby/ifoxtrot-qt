@@ -2,6 +2,7 @@
 #define IFOXTROTCONN_H
 
 #include <QObject>
+#include <QRegularExpression>
 #include <QTcpSocket>
 
 #include "ifoxtrotmodel.h"
@@ -34,6 +35,8 @@ public:
         state = Disconnected;
     }
 
+    void receive(const QString &req,
+                 const std::function<void(const QString &)> &fun);
     void write(const QByteArray &array) { socket.write(array); }
 
 signals:
@@ -49,9 +52,14 @@ public slots:
 
 private:
     iFoxtrotModel model;
+    QMap<QString, iFoxtrotCtl *> itemsFox;
     QTcpSocket socket;
     enum ConState state;
     QString PLCVersion;
+    QRegularExpression GETRE;
+    QRegularExpression DIFFRE;
+
+    void handleDIFF(const QString &line);
 };
 
 #endif // IFOXTROTCONN_H

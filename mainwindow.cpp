@@ -139,14 +139,14 @@ void MainWindow::on_listViewItems_clicked(const QModelIndex &index)
 void MainWindow::on_listViewItems_doubleClicked(const QModelIndex &index)
 {
     iFoxtrotCtl *item = session.getModel()->at(index.row());
-    item->doubleClick(index);
+    item->doubleClick();
 }
 
 void MainWindow::on_pushButtonLight_clicked()
 {
     QModelIndex index = ui->listViewItems->currentIndex();
     auto onOff = dynamic_cast<iFoxtrotOnOff *>(session.getModel()->at(index.row()));
-    onOff->switchState(index);
+    onOff->switchState();
 }
 
 void MainWindow::buttonSceneClicked()
