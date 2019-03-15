@@ -37,6 +37,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     if (ui->checkBoxAutocon->isChecked())
         emit ui->butConnect->click();
+
+    widgetMapper.setModel(session.getModel());
 }
 
 MainWindow::~MainWindow()
@@ -138,7 +140,9 @@ void MainWindow::on_listViewItems_clicked(const QModelIndex &index)
         }
 
     ui->labelFoxName->setText(name);
-    item->setupUI(ui);
+    widgetMapper.clearMapping();
+    item->setupUI(ui, widgetMapper);
+    widgetMapper.setCurrentIndex(proxyIndex.row());
 }
 
 void MainWindow::on_listViewItems_doubleClicked(const QModelIndex &index)
@@ -207,7 +211,7 @@ iFoxtrotCtl *MainWindow::getCurrentCtl() const
 
 void MainWindow::on_horizontalSliderDimlevel_sliderReleased()
 {
-    int value = ui->horizontalSliderDimlevel->sliderPosition();
+    int value = ui->horizontalSliderDimlevel->value();
     qDebug() << __func__ << value;
     auto light = dynamic_cast<iFoxtrotLight *>(getCurrentCtl());
     QByteArray req = light->GTSAP("SET", "DIMLEVEL", QString::number(value));

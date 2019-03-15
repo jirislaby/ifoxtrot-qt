@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QDataWidgetMapper>
 #include <QMainWindow>
 #include <QSortFilterProxyModel>
 
@@ -55,6 +56,7 @@ private:
     Ui::MainWindow *ui;
     iFoxtrotSession session;
     QSortFilterProxyModel *proxyModel;
+    QDataWidgetMapper widgetMapper;
 
     iFoxtrotCtl *getCurrentCtl() const;
 };

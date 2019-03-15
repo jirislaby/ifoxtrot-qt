@@ -60,6 +60,19 @@ QByteArray iFoxtrotCtl::GTSAP(const QString &prefix, const QString &prop,
     return ret;
 }
 
+QVariant iFoxtrotCtl::data(int column, int role) const
+{
+    if (column > 1)
+        qDebug() << __PRETTY_FUNCTION__ << column;
+
+    if (role == Qt::DisplayRole || role == Qt::EditRole)
+        return getFoxType().mid(0, 1) + ' ' + getName();
+
+    if (role == Qt::BackgroundRole)
+        return QBrush(getColor());
+
+    return QVariant();
+}
 
 void iFoxtrotCtl::changed(const QString &prop)
 {
@@ -86,6 +99,24 @@ bool iFoxtrotOnOff::setProp(const QString &prop, const QString &val)
     return iFoxtrotCtl::setProp(prop, val);
 }
 
+QVariant iFoxtrotOnOff::data(int column, int role) const
+{
+    if (role == Qt::DisplayRole || role == Qt::EditRole) {
+        switch (column) {
+        case 1:
+            return onOff ? "1" : "0";
+        }
+    }
+
+    if (role == Qt::FontRole && onOff) {
+        QFont f;
+        f.setWeight(QFont::Bold);
+        return f;
+    }
+
+    return iFoxtrotCtl::data(column, role);
+}
+
 bool iFoxtrotLight::setProp(const QString &prop, const QString &val)
 {
     if (prop == "TYPE") {
@@ -105,11 +136,28 @@ bool iFoxtrotLight::setProp(const QString &prop, const QString &val)
     return iFoxtrotOnOff::setProp(prop, val);
 }
 
-void iFoxtrotLight::setupUI(Ui::MainWindow *ui)
+void iFoxtrotLight::setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper)
 {
-    ui->labelLightStatus->setText(onOff ? "1" : "0");
+    //ui->labelLightStatus->setText(onOff ? "1" : "0");
     ui->horizontalSliderDimlevel->setVisible(dimmable);
     ui->horizontalSliderDimlevel->setValue((int)dimlevel);
+    widgetMapper.addMapping(ui->labelLightStatus, 1, "text");
+    widgetMapper.addMapping(ui->horizontalSliderDimlevel, 2, "value");
+}
+
+QVariant iFoxtrotLight::data(int column, int role) const
+{
+    if (column > 0)
+        qDebug() << __func__ << column << role;
+
+    if (role == Qt::DisplayRole || role == Qt::EditRole) {
+        switch (column) {
+        case 2:
+            return (int)dimlevel;
+        }
+    }
+
+    return iFoxtrotOnOff::data(column, role);
 }
 
 bool iFoxtrotRelay::setProp(const QString &prop, const QString &val)
@@ -124,9 +172,9 @@ bool iFoxtrotRelay::setProp(const QString &prop, const QString &val)
     return iFoxtrotOnOff::setProp(prop, val);
 }
 
-void iFoxtrotRelay::setupUI(Ui::MainWindow *ui)
+void iFoxtrotRelay::setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper)
 {
-    ui->labelRelayStatus->setText(onOff ? "1" : "0");
+    widgetMapper.addMapping(ui->labelRelayStatus, 1, "text");
 }
 
 bool iFoxtrotDisplay::setProp(const QString &prop, const QString &val)
@@ -175,8 +223,9 @@ bool iFoxtrotDisplay::setProp(const QString &prop, const QString &val)
     return false;
 }
 
-void iFoxtrotDisplay::setupUI(Ui::MainWindow *ui)
+void iFoxtrotDisplay::setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper)
 {
+    Q_UNUSED(widgetMapper);
     ui->doubleSpinBoxDisplayVal->setReadOnly(editable);
     ui->doubleSpinBoxDisplayVal->setValue(value);
     ui->labelDisplayUnit->setText(unit);
@@ -215,8 +264,10 @@ bool iFoxtrotShutter::setProp(const QString &prop, const QString &val)
     return iFoxtrotCtl::setProp(prop, val);
 }
 
-void iFoxtrotShutter::setupUI(Ui::MainWindow *ui)
+void iFoxtrotShutter::setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper)
 {
+    Q_UNUSED(ui);
+    Q_UNUSED(widgetMapper);
 }
 
 void iFoxtrotShutter::up()
@@ -254,8 +305,10 @@ bool iFoxtrotScene::setProp(const QString &prop, const QString &val)
     return iFoxtrotCtl::setProp(prop, val);
 }
 
-void iFoxtrotScene::setupUI(Ui::MainWindow *ui)
+void iFoxtrotScene::setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper)
 {
+    Q_UNUSED(widgetMapper);
+
     for (QPushButton *but : ui->page_SCENE->findChildren<QPushButton *>(QString(),
                                     Qt::FindDirectChildrenOnly)) {
         QString name = but->objectName();

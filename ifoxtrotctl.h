@@ -3,6 +3,7 @@
 
 #include <QByteArray>
 #include <QColor>
+#include <QDataWidgetMapper>
 #include <QObject>
 #include <QString>
 
@@ -24,15 +25,14 @@ public:
     virtual QString getFoxType() const = 0;
     QString getName() const { return name; }
 
-    virtual void setupUI(Ui::MainWindow *ui) = 0;
+    virtual void setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper) = 0;
     virtual bool setProp(const QString &prop, const QString &val);
 
     QByteArray GTSAP(const QString &prefix, const QString &prop,
                      const QString &set = QString()) const;
 
     /* ui */
-    virtual QColor getColor() const { return Qt::white; }
-    virtual bool isBold() const { return false; }
+    virtual QVariant data(int column, int role) const;
 
     virtual void doubleClick() {}
 
@@ -45,6 +45,7 @@ protected:
     QString name;
 
     void changed(const QString &prop);
+    virtual QColor getColor() const { return Qt::white; }
 };
 
 class iFoxtrotOnOff : public iFoxtrotCtl {
@@ -59,7 +60,7 @@ public:
 
     virtual bool setProp(const QString &prop, const QString &val) override;
 
-    virtual bool isBold() const override { return onOff; }
+    virtual QVariant data(int column, int role) const override;
 
     virtual void doubleClick() override { switchState(); }
 
@@ -76,9 +77,13 @@ public:
     QString getFoxType() const override { return "LIGHT"; }
     bool setProp(const QString &prop, const QString &val) override;
 
-    void setupUI(Ui::MainWindow *ui) override;
+    void setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper) override;
 
+    virtual QVariant data(int column, int role) const override;
+
+protected:
     QColor getColor() const override { return QColor(250, 250, 210); }
+
 private:
     bool dimmable;
     bool rgb;
@@ -93,9 +98,11 @@ public:
     QString getFoxType() const override { return "RELAY"; }
     bool setProp(const QString &prop, const QString &val) override;
 
-    void setupUI(Ui::MainWindow *ui) override;
+    void setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper) override;
 
+protected:
     QColor getColor() const override { return QColor(250, 250, 250); }
+
 private:
 };
 
@@ -108,9 +115,11 @@ public:
     QString getFoxType() const override { return "DISPLAY"; }
     bool setProp(const QString &prop, const QString &val) override;
 
-    void setupUI(Ui::MainWindow *ui) override;
+    void setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper) override;
 
+protected:
     QColor getColor() const override { return QColor(210, 210, 255); }
+
 private:
     bool editable;
     bool real;
@@ -131,10 +140,10 @@ public:
     QString getFoxType() const override { return "SHUTTER"; }
     bool setProp(const QString &prop, const QString &val) override;
 
-    void setupUI(Ui::MainWindow *ui) override;
+    void setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper) override;
 
+protected:
     QColor getColor() const override { return QColor(255, 210, 210); }
-private:
 };
 
 class iFoxtrotScene : public iFoxtrotCtl {
@@ -145,9 +154,11 @@ public:
     QString getFoxType() const override { return "SCENE"; }
     bool setProp(const QString &prop, const QString &val) override;
 
-    void setupUI(Ui::MainWindow *ui) override;
+    void setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper) override;
 
+protected:
     QColor getColor() const override { return QColor(210, 255, 210); }
+
 private:
     int scenes;
 };
