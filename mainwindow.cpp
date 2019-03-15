@@ -27,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     proxyModel = new QSortFilterProxyModel(this);
     proxyModel->setSourceModel(session.getModel());
+    proxyModel->setFilterCaseSensitivity(Qt::CaseSensitivity::CaseInsensitive);
     ui->listViewItems->setModel(proxyModel);
     connect(ui->listViewItems->selectionModel(),
             &QItemSelectionModel::currentRowChanged, this,
@@ -123,7 +124,11 @@ void MainWindow::on_listViewItems_clicked(const QModelIndex &index)
     if (!index.isValid())
         return;
 
-    iFoxtrotCtl *item = session.getModel()->at(index.row());
+    const QModelIndex proxyIndex = proxyModel->mapToSource(index);
+    if (!proxyIndex.isValid())
+        return;
+
+    iFoxtrotCtl *item = session.getModel()->at(proxyIndex.row());
     QString name = item->getName();
 
     for (int i = 0; i < ui->stackedWidget->count(); i++)
@@ -138,14 +143,14 @@ void MainWindow::on_listViewItems_clicked(const QModelIndex &index)
 
 void MainWindow::on_listViewItems_doubleClicked(const QModelIndex &index)
 {
-    iFoxtrotCtl *item = session.getModel()->at(index.row());
+    const QModelIndex proxyIndex = proxyModel->mapToSource(index);
+    iFoxtrotCtl *item = session.getModel()->at(proxyIndex.row());
     item->doubleClick();
 }
 
 void MainWindow::on_pushButtonLight_clicked()
 {
-    QModelIndex index = ui->listViewItems->currentIndex();
-    auto onOff = dynamic_cast<iFoxtrotOnOff *>(session.getModel()->at(index.row()));
+    auto onOff = dynamic_cast<iFoxtrotOnOff *>(getCurrentCtl());
     onOff->switchState();
 }
 
@@ -159,8 +164,7 @@ void MainWindow::buttonSceneClicked()
     QString set = s->objectName();
     set.replace(0, set.size() - 1, "SET");
 
-    int row = ui->listViewItems->currentIndex().row();
-    iFoxtrotScene *scene = dynamic_cast<iFoxtrotScene *>(session.getModel()->at(row));
+    auto scene = dynamic_cast<iFoxtrotScene *>(getCurrentCtl());
     QByteArray req = scene->GTSAP("SET", set, "1");
     qDebug() << req;
     session.write(req);
@@ -168,37 +172,35 @@ void MainWindow::buttonSceneClicked()
 
 void MainWindow::on_pushButtonShutUp_clicked()
 {
-    QModelIndex index = ui->listViewItems->currentIndex();
-    int row = index.row();
-    iFoxtrotShutter *shutter = dynamic_cast<iFoxtrotShutter *>(session.getModel()->at(row));
+    auto shutter = dynamic_cast<iFoxtrotShutter *>(getCurrentCtl());
     shutter->up();
 }
 
 void MainWindow::on_pushButtonShutRUp_clicked()
 {
-    QModelIndex index = ui->listViewItems->currentIndex();
-    int row = index.row();
-    iFoxtrotShutter *shutter = dynamic_cast<iFoxtrotShutter *>(session.getModel()->at(row));
+    auto shutter = dynamic_cast<iFoxtrotShutter *>(getCurrentCtl());
     shutter->rotUp();
 }
 
 void MainWindow::on_pushButtonShutRDown_clicked()
 {
-    QModelIndex index = ui->listViewItems->currentIndex();
-    int row = index.row();
-    iFoxtrotShutter *shutter = dynamic_cast<iFoxtrotShutter *>(session.getModel()->at(row));
+    auto shutter = dynamic_cast<iFoxtrotShutter *>(getCurrentCtl());
     shutter->rotDown();
 }
 
 void MainWindow::on_pushButtonShutDown_clicked()
 {
-    QModelIndex index = ui->listViewItems->currentIndex();
-    int row = index.row();
-    iFoxtrotShutter *shutter = dynamic_cast<iFoxtrotShutter *>(session.getModel()->at(row));
+    auto shutter = dynamic_cast<iFoxtrotShutter *>(getCurrentCtl());
     shutter->down();
 }
 
 void MainWindow::on_lineEditFilter_textEdited(const QString &text)
 {
     proxyModel->setFilterFixedString(text);
+}
+
+iFoxtrotCtl *MainWindow::getCurrentCtl() const
+{
+    const QModelIndex idx = proxyModel->mapToSource(ui->listViewItems->currentIndex());
+    return session.getModel()->at(idx.row());
 }

@@ -19,6 +19,7 @@ public:
     explicit iFoxtrotSession(QObject *parent = nullptr);
 
     iFoxtrotModel *getModel() { return &model; }
+    const iFoxtrotModel *getModel() const { return &model; }
     enum ConState getState() const { return state; }
     QString getPLCVersion() const { return PLCVersion; }
 

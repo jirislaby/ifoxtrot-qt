@@ -51,6 +51,8 @@ private:
     Ui::MainWindow *ui;
     iFoxtrotSession session;
     QSortFilterProxyModel *proxyModel;
+
+    iFoxtrotCtl *getCurrentCtl() const;
 };
 
 #endif // MAINWINDOW_H
