@@ -162,7 +162,7 @@
            <bool>true</bool>
           </property>
           <property name="currentIndex">
-           <number>2</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="page_EMPTY"/>
           <widget class="QWidget" name="page_LIGHT">
@@ -206,6 +206,19 @@
              <widget class="QPushButton" name="pushButtonLight">
               <property name="text">
                <string>Přepnout</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSlider" name="horizontalSliderDimlevel">
+              <property name="maximum">
+               <number>100</number>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="tickPosition">
+               <enum>QSlider::NoTicks</enum>
               </property>
              </widget>
             </item>
@@ -609,8 +622,8 @@
    <slot>buttonSceneClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>784</x>
-     <y>327</y>
+     <x>497</x>
+     <y>101</y>
     </hint>
     <hint type="destinationlabel">
      <x>418</x>
@@ -625,8 +638,8 @@
    <slot>buttonSceneClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>784</x>
-     <y>357</y>
+     <x>497</x>
+     <y>103</y>
     </hint>
     <hint type="destinationlabel">
      <x>341</x>
@@ -641,8 +654,8 @@
    <slot>buttonSceneClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>784</x>
-     <y>387</y>
+     <x>497</x>
+     <y>105</y>
     </hint>
     <hint type="destinationlabel">
      <x>402</x>
@@ -657,8 +670,8 @@
    <slot>buttonSceneClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>784</x>
-     <y>297</y>
+     <x>497</x>
+     <y>99</y>
     </hint>
     <hint type="destinationlabel">
      <x>402</x>
@@ -673,8 +686,8 @@
    <slot>buttonSceneClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>784</x>
-     <y>417</y>
+     <x>497</x>
+     <y>107</y>
     </hint>
     <hint type="destinationlabel">
      <x>402</x>
@@ -689,8 +702,8 @@
    <slot>buttonSceneClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>784</x>
-     <y>447</y>
+     <x>497</x>
+     <y>109</y>
     </hint>
     <hint type="destinationlabel">
      <x>402</x>
@@ -705,8 +718,8 @@
    <slot>buttonSceneClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>784</x>
-     <y>477</y>
+     <x>497</x>
+     <y>111</y>
     </hint>
     <hint type="destinationlabel">
      <x>402</x>
@@ -721,8 +734,8 @@
    <slot>buttonSceneClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>784</x>
-     <y>507</y>
+     <x>497</x>
+     <y>113</y>
     </hint>
     <hint type="destinationlabel">
      <x>402</x>
@@ -782,5 +795,6 @@
  <slots>
   <slot>buttonSceneClicked()</slot>
   <slot>on_pushButtonLight_clicked()</slot>
+  <slot>on_horizontalSliderDimlevel_sliderReleased()</slot>
  </slots>
 </ui>

@@ -47,6 +47,10 @@ private slots:
 
     void on_lineEditFilter_textEdited(const QString &arg1);
 
+    void on_horizontalSliderDimlevel_sliderReleased();
+
+    void on_horizontalSliderDimlevel_actionTriggered(int action);
+
 private:
     Ui::MainWindow *ui;
     iFoxtrotSession session;

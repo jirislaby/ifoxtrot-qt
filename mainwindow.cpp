@@ -204,3 +204,19 @@ iFoxtrotCtl *MainWindow::getCurrentCtl() const
     const QModelIndex idx = proxyModel->mapToSource(ui->listViewItems->currentIndex());
     return session.getModel()->at(idx.row());
 }
+
+void MainWindow::on_horizontalSliderDimlevel_sliderReleased()
+{
+    int value = ui->horizontalSliderDimlevel->sliderPosition();
+    qDebug() << __func__ << value;
+    auto light = dynamic_cast<iFoxtrotLight *>(getCurrentCtl());
+    QByteArray req = light->GTSAP("SET", "DIMLEVEL", QString::number(value));
+    qDebug() << req;
+    session.write(req);
+}
+
+void MainWindow::on_horizontalSliderDimlevel_actionTriggered(int action)
+{
+    if (action >= 1 && action <= 6)
+        on_horizontalSliderDimlevel_sliderReleased();
+}

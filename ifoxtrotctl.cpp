@@ -108,6 +108,8 @@ bool iFoxtrotLight::setProp(const QString &prop, const QString &val)
 void iFoxtrotLight::setupUI(Ui::MainWindow *ui)
 {
     ui->labelLightStatus->setText(onOff ? "1" : "0");
+    ui->horizontalSliderDimlevel->setVisible(dimmable);
+    ui->horizontalSliderDimlevel->setValue((int)dimlevel);
 }
 
 bool iFoxtrotRelay::setProp(const QString &prop, const QString &val)
