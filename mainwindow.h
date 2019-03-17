@@ -52,6 +52,8 @@ private slots:
 
     void on_horizontalSliderDimlevel_actionTriggered(int action);
 
+    void on_doubleSpinBoxDisplayVal_valueChanged(double arg1);
+
 private:
     Ui::MainWindow *ui;
     iFoxtrotSession session;

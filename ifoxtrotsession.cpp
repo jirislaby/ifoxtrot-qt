@@ -78,7 +78,8 @@ void iFoxtrotSession::receive(const QString &req,
             }
 
             if (!lineArray.startsWith(requestColon)) {
-                qWarning() << "unexpected line received" << lineArray;
+                qWarning() << __PRETTY_FUNCTION__ << "unexpected line received" <<
+                              lineArray;
                 continue;
             }
 
@@ -209,6 +210,12 @@ void iFoxtrotSession::sockReadyRead()
 
     while (socket.canReadLine()) {
         QByteArray lineArray = socket.readLine();
+
+        if (!lineArray.startsWith("DIFF:")) {
+            qWarning() << __PRETTY_FUNCTION__ << "unexpected line received" <<
+                          lineArray;
+            continue;
+        }
 
         handleDIFF(codec->toUnicode(lineArray.data()));
     }

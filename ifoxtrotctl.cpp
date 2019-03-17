@@ -83,7 +83,6 @@ void iFoxtrotCtl::changed(const QString &prop)
 void iFoxtrotOnOff::switchState()
 {
     QByteArray req = GTSAP("SET", "ONOFF", onOff ? "0" : "1");
-    //ui->labelLightStatus->setText(onOff ? "1" : "0");
     qDebug() << "REQ" << req;
     session->write(req);
 }
@@ -225,49 +224,74 @@ bool iFoxtrotDisplay::setProp(const QString &prop, const QString &val)
 
 void iFoxtrotDisplay::setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper)
 {
-    Q_UNUSED(widgetMapper);
-    ui->doubleSpinBoxDisplayVal->setReadOnly(editable);
-    ui->doubleSpinBoxDisplayVal->setValue(value);
-    ui->labelDisplayUnit->setText(unit);
+    ui->doubleSpinBoxDisplayVal->setReadOnly(!editable);
+    ui->doubleSpinBoxDisplayVal->setSuffix(" " + unit);
+    widgetMapper.addMapping(ui->doubleSpinBoxDisplayVal, 1, "value");
+}
+
+QVariant iFoxtrotDisplay::data(int column, int role) const
+{
+    if (role == Qt::DisplayRole || role == Qt::EditRole) {
+        switch (column) {
+        case 1:
+            return value;
+        }
+    }
+
+    return iFoxtrotCtl::data(column, role);
 }
 
 bool iFoxtrotShutter::setProp(const QString &prop, const QString &val)
 {
     if (prop == "UP") {
+        status = MovingUp;
+        changed(prop);
         return true;
     }
     if (prop == "DOWN") {
+        status = MovingDown;
+        changed(prop);
         return true;
     }
     if (prop == "RUN") {
+        status = Moving;
+        changed(prop);
         return true;
     }
     if (prop == "UPPOS") {
+        status = UpPos;
+        changed(prop);
         return true;
     }
     if (prop == "DOWNPOS") {
+        status = DownPos;
+        changed(prop);
         return true;
     }
-    if (prop == "UP_CONTROL") {
+    if (prop == "UP_CONTROL" ||
+            prop == "DOWN_CONTROL" ||
+            prop == "ROTUP_CONTROL" ||
+            prop == "ROTDOWN_CONTROL")
         return true;
-    }
-    if (prop == "DOWN_CONTROL") {
-        return true;
-    }
-    if (prop == "ROTUP_CONTROL") {
-        return true;
-    }
-    if (prop == "ROTDOWN_CONTROL") {
-        return true;
-    }
 
     return iFoxtrotCtl::setProp(prop, val);
 }
 
 void iFoxtrotShutter::setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper)
 {
-    Q_UNUSED(ui);
-    Q_UNUSED(widgetMapper);
+    widgetMapper.addMapping(ui->labelShutterStatus, 1, "text");
+}
+
+QVariant iFoxtrotShutter::data(int column, int role) const
+{
+    if (role == Qt::DisplayRole || role == Qt::EditRole) {
+        switch (column) {
+        case 1:
+            return QString("not moving");
+        }
+    }
+
+    return iFoxtrotCtl::data(column, role);
 }
 
 void iFoxtrotShutter::up()

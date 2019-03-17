@@ -113,9 +113,12 @@ public:
         unit("") {}
 
     QString getFoxType() const override { return "DISPLAY"; }
+    double getValue() const { return value; }
     bool setProp(const QString &prop, const QString &val) override;
 
     void setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper) override;
+
+    QVariant data(int column, int role) const override;
 
 protected:
     QColor getColor() const override { return QColor(210, 210, 255); }
@@ -129,8 +132,17 @@ private:
 
 class iFoxtrotShutter : public iFoxtrotCtl {
 public:
+    enum ShutterStatus {
+        Steady,
+        Moving,
+        MovingUp,
+        MovingDown,
+        UpPos,
+        DownPos,
+    };
+
     iFoxtrotShutter(iFoxtrotSession *session, const QString &foxName) :
-        iFoxtrotCtl(session, foxName) {}
+        iFoxtrotCtl(session, foxName), status(Steady) {}
 
     void up();
     void down();
@@ -142,8 +154,13 @@ public:
 
     void setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper) override;
 
+    QVariant data(int column, int role) const override;
+
 protected:
     QColor getColor() const override { return QColor(255, 210, 210); }
+
+private:
+    enum ShutterStatus status;
 };
 
 class iFoxtrotScene : public iFoxtrotCtl {

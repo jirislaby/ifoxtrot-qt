@@ -80,6 +80,7 @@ void MainWindow::on_butDisconnect_clicked()
     switch (session.getState()) {
     case iFoxtrotSession::Connecting:
         session.abort();
+        disconnected();
         return;
     case iFoxtrotSession::Connected:
         session.close();
@@ -212,7 +213,6 @@ iFoxtrotCtl *MainWindow::getCurrentCtl() const
 void MainWindow::on_horizontalSliderDimlevel_sliderReleased()
 {
     int value = ui->horizontalSliderDimlevel->value();
-    qDebug() << __func__ << value;
     auto light = dynamic_cast<iFoxtrotLight *>(getCurrentCtl());
     QByteArray req = light->GTSAP("SET", "DIMLEVEL", QString::number(value));
     qDebug() << req;
@@ -223,4 +223,16 @@ void MainWindow::on_horizontalSliderDimlevel_actionTriggered(int action)
 {
     if (action >= 1 && action <= 6)
         on_horizontalSliderDimlevel_sliderReleased();
+}
+
+void MainWindow::on_doubleSpinBoxDisplayVal_valueChanged(double value)
+{
+    auto display = dynamic_cast<iFoxtrotDisplay *>(getCurrentCtl());
+
+    if (abs(display->getValue() - value) < .01)
+        return;
+
+    QByteArray req = display->GTSAP("SET", "VALUESET", QString::number(value));
+    qDebug() << req;
+    session.write(req);
 }
