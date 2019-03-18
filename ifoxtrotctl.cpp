@@ -201,6 +201,7 @@ bool iFoxtrotDisplay::setProp(const QString &prop, const QString &val)
         return true;
     }
     if (prop == "PRECISION") {
+        precision = val.toInt();
         return true;
     }
     if (prop == "URL") {

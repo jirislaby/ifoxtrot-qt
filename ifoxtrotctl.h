@@ -110,10 +110,11 @@ class iFoxtrotDisplay : public iFoxtrotCtl {
 public:
     iFoxtrotDisplay(iFoxtrotSession *session, const QString &foxName) :
         iFoxtrotCtl(session, foxName), editable(false), real(false), value(0),
-        unit("") {}
+        precision(0), unit("") {}
 
     QString getFoxType() const override { return "DISPLAY"; }
     double getValue() const { return value; }
+    double getPrecision() const { return precision; }
     bool setProp(const QString &prop, const QString &val) override;
 
     void setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper) override;
@@ -127,6 +128,7 @@ private:
     bool editable;
     bool real;
     double value;
+    int precision;
     QString unit;
 };
 
