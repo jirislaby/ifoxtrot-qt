@@ -297,18 +297,30 @@ QVariant iFoxtrotShutter::data(int column, int role) const
 
 void iFoxtrotShutter::up()
 {
+    QByteArray req = GTSAP("SET", "UP_CONTROL", "1");
+    qDebug() << req;
+    session->write(req);
 }
 
 void iFoxtrotShutter::down()
 {
+    QByteArray req = GTSAP("SET", "DOWN_CONTROL", "1");
+    qDebug() << req;
+    session->write(req);
 }
 
 void iFoxtrotShutter::rotUp()
 {
+    QByteArray req = GTSAP("SET", "ROTUP_CONTROL", "1");
+    qDebug() << req;
+    session->write(req);
 }
 
 void iFoxtrotShutter::rotDown()
 {
+    QByteArray req = GTSAP("SET", "ROTDOWN_CONTROL", "1");
+    qDebug() << req;
+    session->write(req);
 }
 
 bool iFoxtrotScene::setProp(const QString &prop, const QString &val)
