@@ -245,17 +245,23 @@ QVariant iFoxtrotDisplay::data(int column, int role) const
 bool iFoxtrotShutter::setProp(const QString &prop, const QString &val)
 {
     if (prop == "UP") {
-        status = MovingUp;
-        changed(prop);
+        int value = val.toInt();
+        if (value) {
+            status = MovingUp;
+            changed(prop);
+        }
         return true;
     }
     if (prop == "DOWN") {
-        status = MovingDown;
-        changed(prop);
+        int value = val.toInt();
+        if (value) {
+            status = MovingDown;
+            changed(prop);
+        }
         return true;
     }
     if (prop == "RUN") {
-        status = Moving;
+        status = val.toInt() ? Moving : Steady;
         changed(prop);
         return true;
     }
@@ -288,7 +294,7 @@ QVariant iFoxtrotShutter::data(int column, int role) const
     if (role == Qt::DisplayRole || role == Qt::EditRole) {
         switch (column) {
         case 1:
-            return QString("not moving");
+            return stringStatus();
         }
     }
 
@@ -321,6 +327,25 @@ void iFoxtrotShutter::rotDown()
     QByteArray req = GTSAP("SET", "ROTDOWN_CONTROL", "1");
     qDebug() << req;
     session->write(req);
+}
+
+QString iFoxtrotShutter::stringStatus() const
+{
+    switch (status) {
+    case Steady:
+        return "Not moving";
+    case Moving:
+        return "Moving";
+    case MovingUp:
+        return "Moving Up";
+    case MovingDown:
+        return "Moving Down";
+    case UpPos:
+        return "Up position";
+    case DownPos:
+        return "Down position";
+    }
+    return QString();
 }
 
 bool iFoxtrotScene::setProp(const QString &prop, const QString &val)

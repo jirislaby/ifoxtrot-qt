@@ -227,7 +227,12 @@ void MainWindow::on_horizontalSliderDimlevel_actionTriggered(int action)
 
 void MainWindow::on_doubleSpinBoxDisplayVal_valueChanged(double value)
 {
+    auto s = dynamic_cast<QDoubleSpinBox *>(sender());
     auto display = dynamic_cast<iFoxtrotDisplay *>(getCurrentCtl());
+
+    /* changed by us? */
+    if (s->isReadOnly())
+	    return;
 
     if (abs(display->getValue() - value) < .01)
         return;

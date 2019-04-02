@@ -163,6 +163,8 @@ protected:
 
 private:
     enum ShutterStatus status;
+
+    QString stringStatus() const;
 };
 
 class iFoxtrotScene : public iFoxtrotCtl {
