@@ -136,15 +136,13 @@ class iFoxtrotShutter : public iFoxtrotCtl {
 public:
     enum ShutterStatus {
         Steady,
-        Moving,
         MovingUp,
         MovingDown,
-        UpPos,
-        DownPos,
     };
 
     iFoxtrotShutter(iFoxtrotSession *session, const QString &foxName) :
-        iFoxtrotCtl(session, foxName), status(Steady) {}
+        iFoxtrotCtl(session, foxName), status(Steady), upPos(false),
+        downPos(false), running(false) {}
 
     void up();
     void down();
@@ -163,8 +161,12 @@ protected:
 
 private:
     enum ShutterStatus status;
+    bool upPos;
+    bool downPos;
+    bool running;
 
     QString stringStatus() const;
+    QString stringPosition() const;
 };
 
 class iFoxtrotScene : public iFoxtrotCtl {

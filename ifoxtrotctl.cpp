@@ -245,33 +245,27 @@ QVariant iFoxtrotDisplay::data(int column, int role) const
 bool iFoxtrotShutter::setProp(const QString &prop, const QString &val)
 {
     if (prop == "UP") {
-        int value = val.toInt();
-        if (value) {
-            status = MovingUp;
-            changed(prop);
-        }
+        status = val.toInt() ? MovingUp : Steady;
+        changed(prop);
         return true;
     }
     if (prop == "DOWN") {
-        int value = val.toInt();
-        if (value) {
-            status = MovingDown;
-            changed(prop);
-        }
+        status = val.toInt() ? MovingDown : Steady;
+        changed(prop);
         return true;
     }
     if (prop == "RUN") {
-        status = val.toInt() ? Moving : Steady;
+        running = !!val.toInt();
         changed(prop);
         return true;
     }
     if (prop == "UPPOS") {
-        status = UpPos;
+        upPos = !!val.toInt();
         changed(prop);
         return true;
     }
     if (prop == "DOWNPOS") {
-        status = DownPos;
+        downPos = !!val.toInt();
         changed(prop);
         return true;
     }
@@ -287,6 +281,8 @@ bool iFoxtrotShutter::setProp(const QString &prop, const QString &val)
 void iFoxtrotShutter::setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper)
 {
     widgetMapper.addMapping(ui->labelShutterStatus, 1, "text");
+    widgetMapper.addMapping(ui->labelShutterPos, 2, "text");
+    widgetMapper.addMapping(ui->labelShutterRunning, 3, "text");
 }
 
 QVariant iFoxtrotShutter::data(int column, int role) const
@@ -295,7 +291,17 @@ QVariant iFoxtrotShutter::data(int column, int role) const
         switch (column) {
         case 1:
             return stringStatus();
+        case 2:
+            return stringPosition();
+        case 3:
+            return running ? "Yes" : "No";
         }
+    }
+
+    if (role == Qt::FontRole && running) {
+        QFont f;
+        f.setWeight(QFont::Bold);
+        return f;
     }
 
     return iFoxtrotCtl::data(column, role);
@@ -333,19 +339,23 @@ QString iFoxtrotShutter::stringStatus() const
 {
     switch (status) {
     case Steady:
-        return "Not moving";
-    case Moving:
-        return "Moving";
+        return "Steady";
     case MovingUp:
         return "Moving Up";
     case MovingDown:
         return "Moving Down";
-    case UpPos:
-        return "Up position";
-    case DownPos:
-        return "Down position";
     }
     return QString();
+}
+
+QString iFoxtrotShutter::stringPosition() const
+{
+    if (upPos)
+        return "Up";
+    if (downPos)
+        return "Down";
+
+    return "Unknown";
 }
 
 bool iFoxtrotScene::setProp(const QString &prop, const QString &val)
