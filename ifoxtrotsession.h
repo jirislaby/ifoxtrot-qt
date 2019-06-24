@@ -4,8 +4,52 @@
 #include <QObject>
 #include <QRegularExpression>
 #include <QTcpSocket>
+#include <QTimer>
 
 #include "ifoxtrotmodel.h"
+
+
+class iFoxtrotSession;
+
+class iFoxtrotSessionInit : public QObject
+{
+    Q_OBJECT
+public:
+    explicit iFoxtrotSessionInit(iFoxtrotSession *session,
+                                 QObject *parent = nullptr);
+
+    QString getPLCVersion() const { return PLCVersion; }
+    void setModelList(iFoxtrotModel &model) const { model.setList(list); }
+
+signals:
+    void connected();
+    void error(QAbstractSocket::SocketError socketError);
+    void statusUpdate(const QString &status);
+
+public slots:
+    void sockReadyRead();
+    void timeout();
+
+private:
+    enum ConPhase {
+        PhGetinfo,
+        PhGetEnable,
+        PhGet,
+        PhDone,
+    };
+
+    iFoxtrotSession *session;
+    enum ConPhase phase;
+    QString PLCVersion;
+    QByteArray enableString;
+    QList<iFoxtrotCtl *> list;
+    QRegularExpression GETRE;
+    QTextCodec *codec;
+    QTimer timer;
+
+    bool receive(const QString &req,
+                 const std::function<void(const QString &)> &fun);
+};
 
 class iFoxtrotSession : public QObject
 {
@@ -14,7 +58,7 @@ public:
     enum ConState {
         Disconnected,
         Connecting,
-        Connected
+        Connected,
     };
     explicit iFoxtrotSession(QObject *parent = nullptr);
 
@@ -36,20 +80,35 @@ public:
         state = Disconnected;
     }
 
-    void receive(const QString &req,
-                 const std::function<void(const QString &)> &fun);
     void write(const QByteArray &array) { socket.write(array); }
+    bool canReadLine() const { return socket.canReadLine(); }
+    QByteArray readLine() { return socket.readLine(); }
+    QString getPeerName() const { return socket.peerName(); }
+
+    void itemsFoxInsert(const QString &foxName, iFoxtrotCtl *item) {
+        itemsFox.insert(foxName, item);
+    }
+    QMap<QString, iFoxtrotCtl *>::const_iterator itemsFoxFind(const QString &foxName) const {
+        return itemsFox.find(foxName);
+    }
+    QMap<QString, iFoxtrotCtl *>::const_iterator itemsFoxEnd() const {
+        return itemsFox.end();
+    }
 
 signals:
     void connected();
     void disconnected();
     void error(QAbstractSocket::SocketError socketError);
+    void conStatusUpdate(const QString &status);
 
 public slots:
     void sockConnected();
     void sockDisconnected();
     void sockError(QAbstractSocket::SocketError socketError);
     void sockReadyRead();
+    void initConnected();
+    void initStatusUpdate(const QString &status);
+    void initSockError(QAbstractSocket::SocketError socketError);
 
 private:
     iFoxtrotModel model;
@@ -57,10 +116,11 @@ private:
     QTcpSocket socket;
     enum ConState state;
     QString PLCVersion;
-    QRegularExpression GETRE;
     QRegularExpression DIFFRE;
 
     void handleDIFF(const QString &line);
+
+    friend class iFoxtrotSessionInit;
 };
 
 #endif // IFOXTROTCONN_H

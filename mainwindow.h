@@ -25,6 +25,7 @@ private slots:
     void on_butConnect_clicked();
     void on_butDisconnect_clicked();
     void connected();
+    void conStatusUpdate(const QString &status);
     void disconnected();
     void sockError(QAbstractSocket::SocketError socketError);
     void rowChanged(const QModelIndex &current, const QModelIndex &previous);

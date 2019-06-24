@@ -22,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->checkBoxAutocon->setChecked(settings.value("autoconnect", false).toBool());
 
     connect(&session, &iFoxtrotSession::connected, this, &MainWindow::connected);
+    connect(&session, &iFoxtrotSession::conStatusUpdate, this, &MainWindow::conStatusUpdate);
     connect(&session, &iFoxtrotSession::disconnected, this, &MainWindow::disconnected);
     connect(&session, &iFoxtrotSession::error, this, &MainWindow::sockError);
 
@@ -93,9 +94,14 @@ void MainWindow::on_butDisconnect_clicked()
 
 void MainWindow::connected()
 {
-    statusBar()->showMessage("Connected");
+    statusBar()->showMessage("Connected to " + session.getPeerName());
     ui->labelPLC->setText(session.getPLCVersion());
     ui->listViewItems->setFocus();
+}
+
+void MainWindow::conStatusUpdate(const QString &status)
+{
+    statusBar()->showMessage(session.getPeerName() + ": " + status);
 }
 
 void MainWindow::disconnected()
@@ -112,7 +118,7 @@ void MainWindow::sockError(QAbstractSocket::SocketError socketError)
 {
     qWarning() << "disconnected" << socketError;
     disconnected();
-    statusBar()->showMessage("Socket error: " + QString::number(socketError)); // + socket.errorString());
+    statusBar()->showMessage("Socket error: " + QString::number(socketError));
 }
 
 void MainWindow::rowChanged(const QModelIndex &current,
