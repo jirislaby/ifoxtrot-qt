@@ -7,7 +7,7 @@
 #include "ifoxtrotctl.h"
 #include "ifoxtrotmodel.h"
 
-static const int modelColumns = 10;
+static const int modelColumns = 20;
 
 int iFoxtrotModel::rowCount(const QModelIndex &parent) const
 {

@@ -247,3 +247,19 @@ void MainWindow::on_doubleSpinBoxDisplayVal_valueChanged(double value)
     qDebug() << req;
     session.write(req);
 }
+
+void MainWindow::on_TPW_SB_delta_valueChanged(double value)
+{
+    auto s = dynamic_cast<QDoubleSpinBox *>(sender());
+    auto tpw = dynamic_cast<iFoxtrotTPW *>(getCurrentCtl());
+    double diff = value - tpw->getDelta();
+
+    if (abs(diff) < .01)
+        return;
+
+    /* there is no setdelta... */
+    QByteArray req = tpw->GTSAP("SET",
+                                diff > 0 ? "INCDELTA" : "DECDELTA", "1");
+    qDebug() << req;
+    session.write(req);
+}

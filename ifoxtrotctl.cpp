@@ -18,6 +18,8 @@ iFoxtrotCtl *iFoxtrotCtl::getOne(iFoxtrotSession *session,
         return new iFoxtrotScene(session, foxName);
     if (foxType == "SHUTTER")
         return new iFoxtrotShutter(session, foxName);
+    if (foxType == "TPW")
+        return new iFoxtrotTPW(session, foxName);
 
     return nullptr;
 }
@@ -391,4 +393,167 @@ void iFoxtrotScene::setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper)
         int which = name.remove(0, sizeof "pushButtonSc" - 1).toInt();
         but->setEnabled(which <= scenes);
     }
+}
+
+bool iFoxtrotTPW::setProp(const QString &prop, const QString &val)
+{
+    bool ok;
+
+    if (prop == "DECDELTA") {
+        return true;
+    }
+    if (prop == "FILE") {
+        return true;
+    }
+    if (prop == "INCDELTA") {
+        return true;
+    }
+    if (prop == "MANUALSET") {
+        return true;
+    }
+    if (prop == "MODESET") {
+        return true;
+    }
+    if (prop == "NEXTMODE") {
+        return true;
+    }
+    if (prop == "NEXTPROG") {
+        return true;
+    }
+    if (prop == "TYPE") {
+        type = val.toInt(&ok);
+        if (!ok || type < 1 || type > 3)
+            qWarning() << "invalid TPW type" << val;
+        changed(prop);
+        return true;
+    }
+    if (prop == "FILE") {
+        file = val;
+        return true;
+    }
+    if (prop == "CRC") {
+        crc = val.toUInt(&ok);
+        if (!ok)
+            qWarning() << "invalid TPW crc" << val;
+        return true;
+    }
+    if (prop == "UPDATE") {
+        return true;
+    }
+    if (prop == "MANUAL") {
+        manual = (val == "1");
+        changed(prop);
+        return true;
+    }
+    if (prop == "HOLIDAY") {
+        holiday = (val == "1");
+        changed(prop);
+        return true;
+    }
+    if (prop == "HEAT") {
+        heat = (val == "1");
+        changed(prop);
+        return true;
+    }
+    if (prop == "COOL") {
+        cool = (val == "1");
+        changed(prop);
+        return true;
+    }
+    if (prop == "ROOMTEMP") {
+        roomTemp = val.toDouble(&ok);
+        if (!ok)
+            qWarning() << "invalid TPW room temp" << val;
+        changed(prop);
+        return true;
+    }
+    if (prop == "HEATTEMP") {
+        heatTemp = val.toDouble(&ok);
+        if (!ok)
+            qWarning() << "invalid TPW heat temp" << val;
+        changed(prop);
+        return true;
+    }
+    if (prop == "COOLTEMP") {
+        coolTemp = val.toDouble(&ok);
+        if (!ok)
+            qWarning() << "invalid TPW cool temp" << val;
+        changed(prop);
+        return true;
+    }
+    if (prop == "MODE") {
+        mode = val.toInt(&ok);
+        if (!ok)
+            qWarning() << "invalid TPW mode" << val;
+        changed(prop);
+        return true;
+    }
+    if (prop == "DELTA") {
+        delta = val.toDouble(&ok);
+        if (!ok)
+            qWarning() << "invalid TPW delta" << val;
+        changed(prop);
+        return true;
+    }
+
+    return iFoxtrotCtl::setProp(prop, val);
+}
+
+void iFoxtrotTPW::setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper)
+{
+    widgetMapper.addMapping(ui->TPW_RB_heat, 1, "checked");
+    widgetMapper.addMapping(ui->TPW_RB_cool, 2, "checked");
+    widgetMapper.addMapping(ui->TPW_RB_both, 3, "checked");
+    widgetMapper.addMapping(ui->TPW_CB_manual, 4, "checked");
+    widgetMapper.addMapping(ui->TPW_CB_holiday, 5, "checked");
+    widgetMapper.addMapping(ui->TPW_CB_heat, 6, "checked");
+    widgetMapper.addMapping(ui->TPW_CB_cool, 7, "checked");
+    widgetMapper.addMapping(ui->TPW_SB_room, 8, "value");
+    widgetMapper.addMapping(ui->TPW_SB_heat, 9, "value");
+    widgetMapper.addMapping(ui->TPW_SB_cool, 10, "value");
+    widgetMapper.addMapping(ui->TPW_RB_prot, 11, "checked");
+    widgetMapper.addMapping(ui->TPW_RB_eco, 12, "checked");
+    widgetMapper.addMapping(ui->TPW_RB_low, 13, "checked");
+    widgetMapper.addMapping(ui->TPW_RB_comf, 14, "checked");
+    widgetMapper.addMapping(ui->TPW_SB_delta, 15, "value");
+}
+
+QVariant iFoxtrotTPW::data(int column, int role) const
+{
+    if (role == Qt::DisplayRole || role == Qt::EditRole) {
+        switch (column) {
+        case 1:
+            return type == 1;
+        case 2:
+            return type == 2;
+        case 3:
+            return type == 3;
+        case 4:
+            return manual;
+        case 5:
+            return holiday;
+        case 6:
+            return heat;
+        case 7:
+            return cool;
+        case 8:
+            return roomTemp;
+        case 9:
+            return heatTemp;
+        case 10:
+            return coolTemp;
+        case 11:
+            return mode == 0;
+        case 12:
+            return mode == 1;
+        case 13:
+            return mode == 2;
+        case 14:
+            return mode == 3;
+        case 15:
+            return delta;
+        }
+    }
+
+    return iFoxtrotCtl::data(column, role);
 }

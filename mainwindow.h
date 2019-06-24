@@ -55,6 +55,8 @@ private slots:
 
     void on_doubleSpinBoxDisplayVal_valueChanged(double arg1);
 
+    void on_TPW_SB_delta_valueChanged(double arg1);
+
 private:
     Ui::MainWindow *ui;
     iFoxtrotSession session;

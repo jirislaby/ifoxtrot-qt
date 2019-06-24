@@ -186,4 +186,35 @@ private:
     int scenes;
 };
 
+class iFoxtrotTPW : public iFoxtrotCtl {
+public:
+    iFoxtrotTPW(iFoxtrotSession *session, const QString &foxName) :
+        iFoxtrotCtl(session, foxName) {}
+
+    QString getFoxType() const override { return "TPW"; }
+    double getDelta() const { return delta; }
+    bool setProp(const QString &prop, const QString &val) override;
+
+    void setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper) override;
+
+    QVariant data(int column, int role) const override;
+
+protected:
+    QColor getColor() const override { return QColor(210, 255, 255); }
+
+private:
+    unsigned short type;
+    QString file;
+    quint32 crc;
+    bool manual;
+    bool holiday;
+    bool heat;
+    bool cool;
+    short mode;
+    double roomTemp;
+    double heatTemp;
+    double coolTemp;
+    double delta;
+};
+
 #endif // IFOXTROTCTL_H
