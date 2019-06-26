@@ -228,6 +228,7 @@ bool iFoxtrotDisplay::setProp(const QString &prop, const QString &val)
 void iFoxtrotDisplay::setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper)
 {
     ui->doubleSpinBoxDisplayVal->setReadOnly(!editable);
+    ui->doubleSpinBoxDisplayVal->setDecimals(precision);
     ui->doubleSpinBoxDisplayVal->setSuffix(" " + unit);
     widgetMapper.addMapping(ui->doubleSpinBoxDisplayVal, 1, "value");
 }
