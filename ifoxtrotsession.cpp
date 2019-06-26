@@ -133,7 +133,8 @@ bool iFoxtrotSessionInit::receive(const QString &req,
 
         if (!lineArray.startsWith(requestColon)) {
             qWarning() << __PRETTY_FUNCTION__ << "unexpected line received" <<
-                          lineArray;
+                          lineArray << "expected" << requestColon <<
+                          "phase" << phase;
             continue;
         }
 
