@@ -6,6 +6,7 @@
 
 #include "ifoxtrotctl.h"
 #include "ifoxtrotmodel.h"
+#include "ifoxtrotreceiver.h"
 #include "ifoxtrotsession.h"
 
 iFoxtrotSessionInit::iFoxtrotSessionInit(iFoxtrotSession *session,
@@ -155,7 +156,8 @@ bool iFoxtrotSessionInit::receive(const QString &req,
 
 iFoxtrotSession::iFoxtrotSession(QObject *parent) :
     QObject(parent), state(Disconnected),
-    DIFFRE("^DIFF:(.+)\\.GTSAP1_([^_]+)_(.+),(.+)\r\n$")
+    DIFFRE("^DIFF:(.+)\\.GTSAP1_([^_]+)_(.+),(.+)\r?\n?$"),
+    DIFFrcv(this, this)
 {
     connect(&socket, &QTcpSocket::connected, this, &iFoxtrotSession::sockConnected);
     connect(&socket, &QTcpSocket::disconnected, this, &iFoxtrotSession::sockDisconnected);
@@ -190,7 +192,7 @@ void iFoxtrotSession::handleDIFF(const QString &line)
     iFoxtrotCtl *item = itemIt.value();
     item->setProp(prop, value);
 
-    //qDebug() << __PRETTY_FUNCTION__ << "DIFF" << foxName << foxType << prop << value;
+    qDebug() << __PRETTY_FUNCTION__ << "DIFF" << foxName << foxType << prop << value;
 }
 
 void iFoxtrotSession::sockConnected()
@@ -202,6 +204,10 @@ void iFoxtrotSession::sockConnected()
     state = Connected;
 
     auto sesInit = new iFoxtrotSessionInit(this, this);
+
+    connect(&DIFFrcv, &iFoxtrotReceiver::hasData, this,
+            &iFoxtrotSession::handleDIFF);
+    dataHandlers.insert("DIFF:", &DIFFrcv);
 
     connect(&socket, &QTcpSocket::readyRead, sesInit,
             &iFoxtrotSessionInit::sockReadyRead);
@@ -260,6 +266,7 @@ void iFoxtrotSession::initSockError(QAbstractSocket::SocketError socketError)
 void iFoxtrotSession::sockDisconnected()
 {
     disconnect(&socket, &QTcpSocket::readyRead, this, &iFoxtrotSession::sockReadyRead);
+    dataHandlers.clear();
     state = Disconnected;
     model.clear();
     emit disconnected();
@@ -273,57 +280,51 @@ void iFoxtrotSession::sockError(QAbstractSocket::SocketError socketError)
 
 void iFoxtrotSession::sockReadyRead()
 {
-    QTextCodec *codec = QTextCodec::codecForName("Windows 1250");
+	QByteArray data;
+	bool error = false;
 
-    while (socket.canReadLine()) {
-        QByteArray lineArray = socket.readLine();
-
-        if (lineArray.startsWith("DIFF:")) {
-            handleDIFF(codec->toUnicode(lineArray.data()));
-            continue;
-        }
-
-	bool found = false;
-	for (QMap<QByteArray, std::function<void(QByteArray &)>>::const_iterator it =
-	     dataHandlers.begin(); it != dataHandlers.end(); ++it) {
-		if (lineArray.startsWith(it.key())) {
-			it.value()(lineArray);
-			found = true;
-			break;
+	while (socket.bytesAvailable()) {
+		char c;
+		if (!socket.getChar(&c)) {
+			qWarning() << "socket.getChar failed";
+			continue;
 		}
-	}
-	if (found)
-		continue;
 
-        qWarning() << __PRETTY_FUNCTION__ << "unexpected line received" <<
-                      lineArray;
-    }
+		if (error && c == '\n') {
+			qWarning() << __PRETTY_FUNCTION__ <<
+			              "unexpected line received" << data;
+			data.clear();
+			error = false;
+			continue;
+		}
+
+		data.append(c);
+
+		if (c != ':')
+			continue;
+
+		DataHandlers::const_iterator it = dataHandlers.find(data);
+		if (it != dataHandlers.end())
+			if (it.value()->handleData(data)) {
+				data.clear();
+				continue;
+			}
+
+		error = true;
+	}
 }
 
 void iFoxtrotSession::receiveFile(const QString &file,
               const std::function<void(const QByteArray &)> &fun)
 {
 	QByteArray req("GETFILE:");
-	req.append(file);
-	dataHandlers.insert(req, [this, req, fun](const QByteArray &line) -> void {
-		QByteArray line2 = line.mid(req.length());
-		int br, count;
-
-		if (line2[0] != '[')
-			goto end;
-		br = line2.indexOf(']');
-		if (br < 0)
-			goto end;
-		count = line2.mid(1, br - 1).toInt();
-		qDebug() << count;
-		if (line2[br + 1] != '=')
-			goto end;
-		line2.remove(0, br + 2);
-		qDebug() << __func__ << line2;
-		//fun(line.toLatin1());
-end:
-		dataHandlers.remove(req);
-	});
-	req.append('\n');
+	iFoxtrotReceiverFile *frf = new iFoxtrotReceiverFile(this, file,
+		[this, frf, fun, req](const QByteArray &data) -> void {
+			dataHandlers.remove(req);
+			fun(data);
+			//frf->deleteLater();
+		}, this);
+	dataHandlers.insert(req, frf);
+	req.append(file).append('\n');
 	socket.write(req);
 }

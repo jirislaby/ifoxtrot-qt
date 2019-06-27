@@ -2,6 +2,7 @@
 #define FILETRANSFER_H
 
 #include <QDialog>
+#include <QStringListModel>
 #include <QWidget>
 
 #include "ui_filetransfer.h"
@@ -19,8 +20,9 @@ private slots:
     void on_butDownload_clicked();
 
 private:
-    Ui::FileTransferDialog ftd;
+    Ui::FileTransferDialog ui;
     iFoxtrotSession *session;
+    QStringListModel model;
 };
 
 #endif // FILETRANSFER_H

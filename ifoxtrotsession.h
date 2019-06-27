@@ -7,7 +7,7 @@
 #include <QTimer>
 
 #include "ifoxtrotmodel.h"
-
+#include "ifoxtrotreceiver.h"
 
 class iFoxtrotSession;
 
@@ -80,7 +80,11 @@ public:
         state = Disconnected;
     }
 
+    bool getChar(char *c) { return socket.getChar(c); }
+    qint64 read(char *data, qint64 maxSize) { return socket.read(data, maxSize); }
+    QByteArray read(qint64 maxSize) { return socket.read(maxSize); }
     void write(const QByteArray &array) { socket.write(array); }
+    qint64 bytesAvailable() const { return socket.bytesAvailable(); }
     bool canReadLine() const { return socket.canReadLine(); }
     QByteArray readLine() { return socket.readLine(); }
     QString getPeerName() const { return socket.peerName(); }
@@ -114,13 +118,16 @@ public slots:
     void initSockError(QAbstractSocket::SocketError socketError);
 
 private:
+    typedef QMap<QByteArray, iFoxtrotReceiver *> DataHandlers;
+
     iFoxtrotModel model;
     QMap<QString, iFoxtrotCtl *> itemsFox;
-    QMap<QByteArray, std::function<void(QByteArray &)>> dataHandlers;
+    DataHandlers dataHandlers;
     QTcpSocket socket;
     enum ConState state;
     QString PLCVersion;
     QRegularExpression DIFFRE;
+    iFoxtrotReceiver DIFFrcv;
 
     void handleDIFF(const QString &line);
 
