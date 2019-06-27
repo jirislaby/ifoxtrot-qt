@@ -190,7 +190,7 @@ void iFoxtrotSession::handleDIFF(const QString &line)
     iFoxtrotCtl *item = itemIt.value();
     item->setProp(prop, value);
 
-    qDebug() << __PRETTY_FUNCTION__ << "DIFF" << foxName << foxType << prop << value;
+    //qDebug() << __PRETTY_FUNCTION__ << "DIFF" << foxName << foxType << prop << value;
 }
 
 void iFoxtrotSession::sockConnected()
@@ -278,12 +278,52 @@ void iFoxtrotSession::sockReadyRead()
     while (socket.canReadLine()) {
         QByteArray lineArray = socket.readLine();
 
-        if (!lineArray.startsWith("DIFF:")) {
-            qWarning() << __PRETTY_FUNCTION__ << "unexpected line received" <<
-                          lineArray;
+        if (lineArray.startsWith("DIFF:")) {
+            handleDIFF(codec->toUnicode(lineArray.data()));
             continue;
         }
 
-        handleDIFF(codec->toUnicode(lineArray.data()));
+	bool found = false;
+	for (QMap<QByteArray, std::function<void(QByteArray &)>>::const_iterator it =
+	     dataHandlers.begin(); it != dataHandlers.end(); ++it) {
+		if (lineArray.startsWith(it.key())) {
+			it.value()(lineArray);
+			found = true;
+			break;
+		}
+	}
+	if (found)
+		continue;
+
+        qWarning() << __PRETTY_FUNCTION__ << "unexpected line received" <<
+                      lineArray;
     }
+}
+
+void iFoxtrotSession::receiveFile(const QString &file,
+              const std::function<void(const QByteArray &)> &fun)
+{
+	QByteArray req("GETFILE:");
+	req.append(file);
+	dataHandlers.insert(req, [this, req, fun](const QByteArray &line) -> void {
+		QByteArray line2 = line.mid(req.length());
+		int br, count;
+
+		if (line2[0] != '[')
+			goto end;
+		br = line2.indexOf(']');
+		if (br < 0)
+			goto end;
+		count = line2.mid(1, br - 1).toInt();
+		qDebug() << count;
+		if (line2[br + 1] != '=')
+			goto end;
+		line2.remove(0, br + 2);
+		qDebug() << __func__ << line2;
+		//fun(line.toLatin1());
+end:
+		dataHandlers.remove(req);
+	});
+	req.append('\n');
+	socket.write(req);
 }

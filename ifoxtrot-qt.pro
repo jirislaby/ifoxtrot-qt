@@ -25,6 +25,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+    filetransfer.cpp \
+        ifoxtrotreceiver.cpp \
         main.cpp \
         mainwindow.cpp \
     ifoxtrotctl.cpp \
@@ -32,12 +34,15 @@ SOURCES += \
     ifoxtrotsession.cpp
 
 HEADERS += \
+    filetransfer.h \
+        ifoxtrotreceiver.h \
         mainwindow.h \
     ifoxtrotctl.h \
     ifoxtrotmodel.h \
     ifoxtrotsession.h
 
 FORMS += \
+        filetransfer.ui \
         mainwindow.ui
 
 QMAKE_CXXFLAGS += -Wno-unused-parameter

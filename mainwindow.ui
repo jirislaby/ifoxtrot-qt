@@ -734,7 +734,7 @@
               <item>
                <widget class="QGroupBox" name="groupBox_4">
                 <property name="title">
-                 <string>GroupBox</string>
+                 <string>Input</string>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_12">
                  <item>
@@ -936,6 +936,8 @@
      <string>&amp;File</string>
     </property>
     <addaction name="separator"/>
+    <addaction name="actionFile_transfer"/>
+    <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
    <addaction name="menuFile"/>
@@ -947,6 +949,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionFile_transfer">
+   <property name="text">
+    <string>File &amp;transfer</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
    </property>
   </action>
  </widget>
@@ -1162,11 +1172,27 @@
    <hints>
     <hint type="sourcelabel">
      <x>497</x>
-     <y>107</y>
+     <y>400</y>
     </hint>
     <hint type="destinationlabel">
      <x>787</x>
      <y>40</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionFile_transfer</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>fileTransferTriggered()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>402</x>
+     <y>352</y>
     </hint>
    </hints>
   </connection>
@@ -1175,5 +1201,6 @@
   <slot>buttonSceneClicked()</slot>
   <slot>on_pushButtonLight_clicked()</slot>
   <slot>on_horizontalSliderDimlevel_sliderReleased()</slot>
+  <slot>fileTransferTriggered()</slot>
  </slots>
 </ui>

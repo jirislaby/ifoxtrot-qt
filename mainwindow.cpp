@@ -3,6 +3,7 @@
 
 #include <QtGlobal>
 
+#include "filetransfer.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -181,6 +182,13 @@ void MainWindow::buttonSceneClicked()
     session.write(req);
 }
 
+void MainWindow::fileTransferTriggered()
+{
+    FileTransfer ft(&session, this);
+
+    ft.exec();
+}
+
 void MainWindow::on_pushButtonShutUp_clicked()
 {
     auto shutter = dynamic_cast<iFoxtrotShutter *>(getCurrentCtl());
@@ -250,7 +258,6 @@ void MainWindow::on_doubleSpinBoxDisplayVal_valueChanged(double value)
 
 void MainWindow::on_TPW_SB_delta_valueChanged(double value)
 {
-    auto s = dynamic_cast<QDoubleSpinBox *>(sender());
     auto tpw = dynamic_cast<iFoxtrotTPW *>(getCurrentCtl());
     double diff = value - tpw->getDelta();
 

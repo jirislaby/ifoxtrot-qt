@@ -85,6 +85,9 @@ public:
     QByteArray readLine() { return socket.readLine(); }
     QString getPeerName() const { return socket.peerName(); }
 
+    void receiveFile(const QString &file,
+                     const std::function<void(const QByteArray &)> &fun);
+
     void itemsFoxInsert(const QString &foxName, iFoxtrotCtl *item) {
         itemsFox.insert(foxName, item);
     }
@@ -113,6 +116,7 @@ public slots:
 private:
     iFoxtrotModel model;
     QMap<QString, iFoxtrotCtl *> itemsFox;
+    QMap<QByteArray, std::function<void(QByteArray &)>> dataHandlers;
     QTcpSocket socket;
     enum ConState state;
     QString PLCVersion;

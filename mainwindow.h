@@ -35,6 +35,7 @@ private slots:
     void on_pushButtonLight_clicked();
 
     void buttonSceneClicked();
+    void fileTransferTriggered();
 
     void on_listViewItems_doubleClicked(const QModelIndex &index);
 
