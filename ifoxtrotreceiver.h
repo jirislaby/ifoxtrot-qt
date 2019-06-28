@@ -16,7 +16,7 @@ public:
 	explicit iFoxtrotReceiver(iFoxtrotSession *session,
 	                          QObject *parent = nullptr);
 
-	virtual bool handleData(QByteArray &data);
+	virtual qint64 handleData(QByteArray &data);
 
 signals:
 	void hasData(const QString &line);
@@ -39,12 +39,13 @@ public:
 	                     const CallbackFn &fun,
 	                     QObject *parent = nullptr);
 
-	virtual bool handleData(QByteArray &data) override;
+	virtual qint64 handleData(QByteArray &data) override;
 signals:
 private:
 	QString file;
 	CallbackFn callbackFn;
 	QByteArray fileBuffer;
+	qint64 continuation;
 };
 
 #endif // IFOXTROTRECEIVER_H

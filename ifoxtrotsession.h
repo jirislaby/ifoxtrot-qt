@@ -128,6 +128,7 @@ private:
     QString PLCVersion;
     QRegularExpression DIFFRE;
     iFoxtrotReceiver DIFFrcv;
+    iFoxtrotReceiver *contReceiver;
 
     void handleDIFF(const QString &line);
 

@@ -157,7 +157,8 @@ bool iFoxtrotSessionInit::receive(const QString &req,
 iFoxtrotSession::iFoxtrotSession(QObject *parent) :
     QObject(parent), state(Disconnected),
     DIFFRE("^DIFF:(.+)\\.GTSAP1_([^_]+)_(.+),(.+)\r?\n?$"),
-    DIFFrcv(this, this)
+    DIFFrcv(this, this),
+    contReceiver(nullptr)
 {
     connect(&socket, &QTcpSocket::connected, this, &iFoxtrotSession::sockConnected);
     connect(&socket, &QTcpSocket::disconnected, this, &iFoxtrotSession::sockDisconnected);
@@ -192,7 +193,7 @@ void iFoxtrotSession::handleDIFF(const QString &line)
     iFoxtrotCtl *item = itemIt.value();
     item->setProp(prop, value);
 
-    qDebug() << __PRETTY_FUNCTION__ << "DIFF" << foxName << foxType << prop << value;
+    //qDebug() << __PRETTY_FUNCTION__ << "DIFF" << foxName << foxType << prop << value;
 }
 
 void iFoxtrotSession::sockConnected()
@@ -284,33 +285,48 @@ void iFoxtrotSession::sockReadyRead()
 	bool error = false;
 
 	while (socket.bytesAvailable()) {
-		char c;
-		if (!socket.getChar(&c)) {
-			qWarning() << "socket.getChar failed";
-			continue;
-		}
+		qint64 ret = -1;
 
-		if (error && c == '\n') {
-			qWarning() << __PRETTY_FUNCTION__ <<
-			              "unexpected line received" << data;
-			data.clear();
-			error = false;
-			continue;
-		}
-
-		data.append(c);
-
-		if (c != ':')
-			continue;
-
-		DataHandlers::const_iterator it = dataHandlers.find(data);
-		if (it != dataHandlers.end())
-			if (it.value()->handleData(data)) {
-				data.clear();
+		if (contReceiver) {
+			ret = contReceiver->handleData(data);
+		} else {
+			char c;
+			if (!socket.getChar(&c)) {
+				qWarning() << "socket.getChar failed";
 				continue;
 			}
 
-		error = true;
+			if (error && c == '\n') {
+				qWarning() << __PRETTY_FUNCTION__ <<
+					      "unexpected line received" << data;
+				data.clear();
+				error = false;
+				continue;
+			}
+
+			data.append(c);
+
+			if (c != ':')
+				continue;
+
+			DataHandlers::const_iterator it = dataHandlers.find(data);
+			if (it != dataHandlers.end()) {
+				ret = it.value()->handleData(data);
+				if (ret > 0)
+					contReceiver = it.value();
+			}
+		}
+
+		if (ret == 0) {
+			contReceiver = nullptr;
+			data.clear();
+		} else if (ret > 0) {
+			qDebug() << contReceiver;
+			data.clear();
+		} else {
+			contReceiver = nullptr;
+			error = true;
+		}
 	}
 }
 

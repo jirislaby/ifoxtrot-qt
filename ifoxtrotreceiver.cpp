@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QTime>
 #include <QTextCodec>
 
 #include "ifoxtrotreceiver.h"
@@ -9,7 +10,7 @@ iFoxtrotReceiver::iFoxtrotReceiver(iFoxtrotSession *session, QObject *parent) :
 {
 }
 
-bool iFoxtrotReceiver::handleData(QByteArray &data)
+qint64 iFoxtrotReceiver::handleData(QByteArray &data)
 {
 	while (session->bytesAvailable()) {
 		char c;
@@ -24,69 +25,88 @@ bool iFoxtrotReceiver::handleData(QByteArray &data)
 		if (c == '\n') {
 			QTextCodec *codec = QTextCodec::codecForName("Windows 1250");
 			emit hasData(codec->toUnicode(data.data()));
-			return true;
+			return 0;
 		}
 
 		data.append(c);
 	}
 
-	return false;
+	return -1;
 }
 
 iFoxtrotReceiverFile::iFoxtrotReceiverFile(iFoxtrotSession *session,
                                            const QString &file,
                                            const CallbackFn &fun,
                                            QObject *parent) :
-        iFoxtrotReceiver(session, parent), file(file), callbackFn(fun)
+        iFoxtrotReceiver(session, parent), file(file), callbackFn(fun),
+        continuation(0)
 {
 	byLines = false;
 }
 
-bool iFoxtrotReceiverFile::handleData(QByteArray &data)
+qint64 iFoxtrotReceiverFile::handleData(QByteArray &data)
 {
 	QByteArray buffer;
+	qint64 toRead, toReadInit;
 	char c;
 
-	// GETFILE:file[len]=
-	if (session->bytesAvailable() < file.length() + 4)
-		return false;
+	if (!continuation) {
+		// GETFILE:file[len]=
+		if (session->bytesAvailable() < file.length() + 4)
+			return -1;
 
-	if (session->read(file.length()) != file)
-		return false;
+		if (session->read(file.length()) != file)
+			return -1;
 
-	if (!session->getChar(&c) || c != '[')
-		return false;
+		if (!session->getChar(&c) || c != '[')
+			return -1;
 
-	bool done = false;
-	while (session->bytesAvailable()) {
-		if (!session->getChar(&c)) {
-			qWarning() << "socket.getChar failed";
-			continue;
+		bool done = false;
+		while (session->bytesAvailable()) {
+			if (!session->getChar(&c)) {
+				qWarning() << "socket.getChar failed";
+				continue;
+			}
+
+			if (c == ']') {
+				done = true;
+				break;
+			}
+
+			buffer.append(c);
 		}
 
-		if (c == ']') {
-			done = true;
-			break;
-		}
+		if (!done)
+			return -1;
 
-		buffer.append(c);
-	}
+		if (!session->getChar(&c) || c != '=')
+			return -1;
 
-	if (!done)
-		return false;
+		toRead = buffer.toInt(&done);
+		if (!done)
+			return -1;
+	} else
+		toRead = continuation;
 
-	if (!session->getChar(&c) || c != '=')
-		return false;
+	toReadInit = toRead;
+	qint64 avail = session->bytesAvailable();
 
-	qint64 toRead = buffer.toInt(&done);
-	if (!done)
-		return false;
+	/*qDebug() << QTime::currentTime() << "avail:" << avail <<
+	            "toread:" << toRead;*/
 
-	if (session->bytesAvailable() < toRead)
-		return false;
+	if (avail < toRead)
+		toRead = avail;
 
 	if (toRead)
 		fileBuffer.append(session->read(toRead));
+
+	continuation = toReadInit - toRead;
+	if (continuation) {
+		qDebug() << "not enough bytes in the buffer:" <<
+		            avail << "need:" << toReadInit << "requesting more:" <<
+		            continuation;
+		return continuation;
+	}
 
 	while (session->bytesAvailable()) {
 		if (!session->getChar(&c)) {
@@ -99,11 +119,11 @@ bool iFoxtrotReceiverFile::handleData(QByteArray &data)
 		if (c == '\n')
 			break;
 
-		return false;
+		return -1;
 	}
 
-	if (toRead == 0)
+	if (toReadInit == 0)
 		callbackFn(this, fileBuffer);
 
-	return true;
+	return 0;
 }

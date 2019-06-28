@@ -19,10 +19,16 @@ public:
 private slots:
     void on_butDownload_clicked();
 
+    void on_butReload_clicked();
+
+    void on_treeView_doubleClicked(const QModelIndex &index);
+
 private:
     Ui::FileTransferDialog ui;
     iFoxtrotSession *session;
     QStringListModel model;
+
+    void loadByPath();
 };
 
 #endif // FILETRANSFER_H
