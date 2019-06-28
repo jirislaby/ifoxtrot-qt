@@ -103,7 +103,7 @@ bool iFoxtrotReceiverFile::handleData(QByteArray &data)
 	}
 
 	if (toRead == 0)
-		callbackFn(fileBuffer);
+		callbackFn(this, fileBuffer);
 
 	return true;
 }

@@ -319,10 +319,11 @@ void iFoxtrotSession::receiveFile(const QString &file,
 {
 	QByteArray req("GETFILE:");
 	iFoxtrotReceiverFile *frf = new iFoxtrotReceiverFile(this, file,
-		[this, frf, fun, req](const QByteArray &data) -> void {
+		[this, fun, req](iFoxtrotReceiverFile *frf,
+				const QByteArray &data) -> void {
 			dataHandlers.remove(req);
 			fun(data);
-			//frf->deleteLater();
+			frf->deleteLater();
 		}, this);
 	dataHandlers.insert(req, frf);
 	req.append(file).append('\n');

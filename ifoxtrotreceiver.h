@@ -32,7 +32,8 @@ class iFoxtrotReceiverFile : public iFoxtrotReceiver
 {
 	Q_OBJECT
 public:
-	typedef std::function<void(const QByteArray &)> CallbackFn;
+	typedef std::function<void(iFoxtrotReceiverFile *,
+			const QByteArray &)> CallbackFn;
 
 	iFoxtrotReceiverFile(iFoxtrotSession *session, const QString &file,
 	                     const CallbackFn &fun,
