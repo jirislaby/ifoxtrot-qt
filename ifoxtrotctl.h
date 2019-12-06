@@ -28,6 +28,8 @@ public:
     virtual void setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper) = 0;
     virtual bool setProp(const QString &prop, const QString &val);
 
+    virtual void postReceive() {}
+
     QByteArray GTSAP(const QString &prefix, const QString &prop,
                      const QString &set = QString()) const;
 
@@ -46,6 +48,7 @@ protected:
 
     void changed(const QString &prop);
     virtual QColor getColor() const { return Qt::white; }
+    static QString getFoxString(const QString &val);
 };
 
 class iFoxtrotOnOff : public iFoxtrotCtl {
@@ -176,6 +179,7 @@ public:
 
     QString getFoxType() const override { return "SCENE"; }
     bool setProp(const QString &prop, const QString &val) override;
+    void postReceive() override;
 
     void setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper) override;
 
@@ -184,6 +188,7 @@ protected:
 
 private:
     int scenes;
+    QString filename;
 };
 
 class iFoxtrotTPW : public iFoxtrotCtl {

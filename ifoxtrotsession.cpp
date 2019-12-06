@@ -92,7 +92,7 @@ void iFoxtrotSessionInit::sockReadyRead()
                     QString foxType = match.captured(2);
                     QString prop = match.captured(3);
                     QString value = match.captured(4);
-                    QMap<QString, iFoxtrotCtl *>::const_iterator itemIt =
+                    iFoxtrotSession::ItemsFox::const_iterator itemIt =
                             session->itemsFoxFind(foxName);
                     if (itemIt == session->itemsFoxEnd()) {
                         qWarning() << "cannot find" << foxName << "in items";
@@ -102,6 +102,10 @@ void iFoxtrotSessionInit::sockReadyRead()
                     item->setProp(prop, value);
                 })) {
 
+			for (iFoxtrotSession::ItemsFox::const_iterator it = session->itemsFoxBegin();
+					it != session->itemsFoxEnd(); ++it) {
+				(*it)->postReceive();
+			}
             emit connected();
             phase = PhDone;
         }

@@ -24,19 +24,30 @@ iFoxtrotCtl *iFoxtrotCtl::getOne(iFoxtrotSession *session,
     return nullptr;
 }
 
+QString iFoxtrotCtl::getFoxString(const QString &val)
+{
+	QString ret(val);
+
+	if (!val.startsWith('"') || !val.endsWith('"'))
+		return QString();
+
+	ret.remove(0, 1);
+	ret.chop(1);
+
+	return ret;
+}
+
 bool iFoxtrotCtl::setProp(const QString &prop, const QString &val)
 {
     if (prop == "ENABLE")
         return true;
 
     if (prop == "NAME") {
-        if (!val.startsWith('"') || !val.endsWith('"')) {
-            qWarning() << "wrong name for" << foxName << ":" << val;
-            return false;
-        }
-        name = val;
-        name.remove(0, 1);
-        name.chop(1);
+	    name = getFoxString(val);
+	    if (name == "") {
+		    qWarning() << "wrong name for" << foxName << ":" << val;
+		    return false;
+	    }
 
         return true;
     }
@@ -364,6 +375,11 @@ QString iFoxtrotShutter::stringPosition() const
 bool iFoxtrotScene::setProp(const QString &prop, const QString &val)
 {
     if (prop == "FILE") {
+	    filename = getFoxString(val);
+	    if (filename == "") {
+		    qWarning() << "wrong file for" << foxName << ":" << val;
+		    return false;
+	    }
         return true;
     }
     if (prop == "NUM") {
@@ -378,6 +394,11 @@ bool iFoxtrotScene::setProp(const QString &prop, const QString &val)
     }
 
     return iFoxtrotCtl::setProp(prop, val);
+}
+
+void iFoxtrotScene::postReceive()
+{
+	qDebug() << __PRETTY_FUNCTION__ << foxName << filename;
 }
 
 void iFoxtrotScene::setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper)

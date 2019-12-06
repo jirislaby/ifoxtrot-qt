@@ -60,6 +60,8 @@ public:
         Connecting,
         Connected,
     };
+
+    typedef QMap<QString, iFoxtrotCtl *> ItemsFox;
     explicit iFoxtrotSession(QObject *parent = nullptr);
 
     iFoxtrotModel *getModel() { return &model; }
@@ -95,10 +97,13 @@ public:
     void itemsFoxInsert(const QString &foxName, iFoxtrotCtl *item) {
         itemsFox.insert(foxName, item);
     }
-    QMap<QString, iFoxtrotCtl *>::const_iterator itemsFoxFind(const QString &foxName) const {
+    ItemsFox::const_iterator itemsFoxFind(const QString &foxName) const {
         return itemsFox.find(foxName);
     }
-    QMap<QString, iFoxtrotCtl *>::const_iterator itemsFoxEnd() const {
+    ItemsFox::const_iterator itemsFoxBegin() const {
+        return itemsFox.begin();
+    }
+    ItemsFox::const_iterator itemsFoxEnd() const {
         return itemsFox.end();
     }
 
@@ -121,7 +126,7 @@ private:
     typedef QMap<QByteArray, iFoxtrotReceiver *> DataHandlers;
 
     iFoxtrotModel model;
-    QMap<QString, iFoxtrotCtl *> itemsFox;
+    ItemsFox itemsFox;
     DataHandlers dataHandlers;
     QTcpSocket socket;
     enum ConState state;
