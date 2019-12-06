@@ -1,5 +1,8 @@
 #include <QDebug>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QList>
+#include <QTextCodec>
 
 #include "ifoxtrotctl.h"
 #include "ifoxtrotsession.h"
@@ -376,10 +379,11 @@ bool iFoxtrotScene::setProp(const QString &prop, const QString &val)
 {
     if (prop == "FILE") {
 	    filename = getFoxString(val);
-	    if (filename == "") {
+	    if (filename == "" || !filename.endsWith('?')) {
 		    qWarning() << "wrong file for" << foxName << ":" << val;
 		    return false;
 	    }
+	    filename.chop(1);
         return true;
     }
     if (prop == "NUM") {
@@ -398,7 +402,34 @@ bool iFoxtrotScene::setProp(const QString &prop, const QString &val)
 
 void iFoxtrotScene::postReceive()
 {
-	qDebug() << __PRETTY_FUNCTION__ << foxName << filename;
+	//QTextCodec *codec = QTextCodec::codecForName("Windows 1250");
+	for (int a = 1; a <= scenes; a++) {
+		QString src(filename);
+		src.append(a + '0');
+		qDebug() << __PRETTY_FUNCTION__ << foxName << src;
+#if 0
+		session->receiveFile(src, [this, a, &src, codec](const QByteArray &data) -> void {
+			QJsonParseError error;
+			auto doc = QJsonDocument::fromJson(codec->toUnicode(data).toUtf8(),
+			                                   &error);
+			if (doc.isNull() || !doc.isObject()) {
+				qWarning() << "invalid scene json" << foxName << src <<
+				              error.errorString();
+				return;
+			}
+			auto obj = doc.object();
+			QJsonObject::iterator idx = obj.find("index");
+			QJsonObject::iterator name = obj.find("name");
+			if (idx == obj.end() || name == obj.end() ||
+			                !idx.value().isDouble() || idx.value().toInt() != a ||
+			                !name.value().isString()) {
+				qWarning() << "invalid scene json" << foxName << src;
+				return;
+			}
+			qDebug() << name.value().toString();
+		});
+#endif
+	}
 }
 
 void iFoxtrotScene::setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper)
