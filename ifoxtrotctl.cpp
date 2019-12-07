@@ -306,6 +306,16 @@ QVariant iFoxtrotShutter::data(int column, int role) const
 {
     if (role == Qt::DisplayRole || role == Qt::EditRole) {
         switch (column) {
+        case 0: {
+			QString suffix;
+
+			if (upPos)
+				suffix = " ^";
+			else if (downPos)
+				suffix = " v";
+
+			return iFoxtrotCtl::data(column, role).toString() + suffix;
+		}
         case 1:
             return stringStatus();
         case 2:
