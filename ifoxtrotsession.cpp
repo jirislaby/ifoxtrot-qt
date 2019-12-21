@@ -18,7 +18,7 @@ iFoxtrotSessionInit::iFoxtrotSessionInit(iFoxtrotSession *session,
     connect(&timer, &QTimer::timeout, this,
             QOverload<>::of(&iFoxtrotSessionInit::timeout));
     timer.setSingleShot(true);
-    timer.start(5000);
+    timer.start(sockTimeout);
 }
 
 void iFoxtrotSessionInit::timeout()
@@ -28,7 +28,7 @@ void iFoxtrotSessionInit::timeout()
 
 void iFoxtrotSessionInit::sockReadyRead()
 {
-    timer.start(5000);
+    timer.start(sockTimeout);
 
     switch (phase) {
     case PhGetinfo:

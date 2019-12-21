@@ -20,7 +20,7 @@
       <item>
        <widget class="QLabel" name="labelAddr">
         <property name="text">
-         <string>IP/address:</string>
+         <string>IP/host:</string>
         </property>
        </widget>
       </item>

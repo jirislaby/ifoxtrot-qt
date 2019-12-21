@@ -46,6 +46,7 @@ private:
     QRegularExpression GETRE;
     QTextCodec *codec;
     QTimer timer;
+    const unsigned int sockTimeout = 15000;
 
     bool receive(const QString &req,
                  const std::function<void(const QString &)> &fun);
