@@ -414,28 +414,28 @@
             <item>
              <widget class="QPushButton" name="pushButtonShutUp">
               <property name="text">
-               <string>^^</string>
+               <string>↑↑</string>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QPushButton" name="pushButtonShutRUp">
               <property name="text">
-               <string>^</string>
+               <string>↑</string>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QPushButton" name="pushButtonShutRDown">
               <property name="text">
-               <string>v</string>
+               <string>↓</string>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QPushButton" name="pushButtonShutDown">
               <property name="text">
-               <string>vv</string>
+               <string>↓↓</string>
               </property>
              </widget>
             </item>

@@ -310,9 +310,13 @@ QVariant iFoxtrotShutter::data(int column, int role) const
 			QString suffix;
 
 			if (upPos)
-				suffix = " ^";
+				suffix = " ↑";
 			else if (downPos)
-				suffix = " v";
+				suffix = " ↓";
+			else if (status == MovingUp)
+				suffix = " ⇡";
+			else if (status == MovingDown)
+				suffix = " ⇣";
 
 			return iFoxtrotCtl::data(column, role).toString() + suffix;
 		}
