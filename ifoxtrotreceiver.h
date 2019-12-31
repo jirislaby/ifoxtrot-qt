@@ -15,8 +15,7 @@ class iFoxtrotReceiver : public QObject
 public:
 	explicit iFoxtrotReceiver(iFoxtrotSession *session,
 	                          const QByteArray &prefix,
-	                          const QByteArray &write,
-	                          QObject *parent = nullptr);
+	                          const QByteArray &write);
 
 	virtual bool handleError(QByteArray &data) { return true; }
 	virtual qint64 handleData(QByteArray &data, bool *keep);
@@ -47,8 +46,7 @@ public:
 	iFoxtrotReceiverFile(iFoxtrotSession *session,
 	                     const QByteArray &write,
 	                     const QString &file,
-	                     const CallbackFn &fun,
-	                     QObject *parent = nullptr);
+	                     const CallbackFn &fun);
 
 	virtual bool handleError(QByteArray &data) override;
 	virtual qint64 handleData(QByteArray &data, bool *keep) override;

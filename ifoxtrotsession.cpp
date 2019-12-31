@@ -161,7 +161,7 @@ bool iFoxtrotSessionInit::receive(const QString &req,
 iFoxtrotSession::iFoxtrotSession(QObject *parent) :
     QObject(parent), state(Disconnected),
     DIFFRE("^DIFF:(.+)\\.GTSAP1_([^_]+)_(.+),(.+)\r?\n?$"),
-    DIFFrcv(this, "DIFF:", "", this),
+    DIFFrcv(this, "DIFF:", ""),
     contReceiver(nullptr),
     curReceiver(nullptr)
 {
@@ -380,11 +380,10 @@ void iFoxtrotSession::receiveFile(const QString &file,
 	QByteArray req("GETFILE:");
 	req.append(file).append('\n');
 
-	iFoxtrotReceiverFile *frf = new iFoxtrotReceiverFile(this, req, file,
+	enqueueRcv(new iFoxtrotReceiverFile(this, req, file,
 		[this, fun, req](iFoxtrotReceiverFile *frf,
 				const QByteArray &data) -> void {
 			fun(data);
 			frf->deleteLater();
-		}, this);
-	enqueueRcv(frf);
+	}));
 }
