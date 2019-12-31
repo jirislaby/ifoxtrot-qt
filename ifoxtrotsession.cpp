@@ -161,8 +161,9 @@ bool iFoxtrotSessionInit::receive(const QString &req,
 iFoxtrotSession::iFoxtrotSession(QObject *parent) :
     QObject(parent), state(Disconnected),
     DIFFRE("^DIFF:(.+)\\.GTSAP1_([^_]+)_(.+),(.+)\r?\n?$"),
-    DIFFrcv(this, this),
-    contReceiver(nullptr)
+    DIFFrcv(this, "DIFF:", "", this),
+    contReceiver(nullptr),
+    curReceiver(nullptr)
 {
     connect(&socket, &QTcpSocket::connected, this, &iFoxtrotSession::sockConnected);
     connect(&socket, &QTcpSocket::disconnected, this, &iFoxtrotSession::sockDisconnected);
@@ -212,7 +213,6 @@ void iFoxtrotSession::sockConnected()
 
     connect(&DIFFrcv, &iFoxtrotReceiver::hasData, this,
             &iFoxtrotSession::handleDIFF);
-    dataHandlers.insert("DIFF:", &DIFFrcv);
 
     connect(&socket, &QTcpSocket::readyRead, sesInit,
             &iFoxtrotSessionInit::sockReadyRead);
@@ -271,7 +271,8 @@ void iFoxtrotSession::initSockError(QAbstractSocket::SocketError socketError)
 void iFoxtrotSession::sockDisconnected()
 {
     disconnect(&socket, &QTcpSocket::readyRead, this, &iFoxtrotSession::sockReadyRead);
-    dataHandlers.clear();
+    toSend.clear();
+    curReceiver = nullptr;
     state = Disconnected;
     model.clear();
     emit disconnected();
@@ -290,9 +291,10 @@ void iFoxtrotSession::sockReadyRead()
 
 	while (socket.bytesAvailable()) {
 		qint64 ret = -1;
+		bool isDIFF, keep = false;
 
 		if (contReceiver) {
-			ret = contReceiver->handleData(data);
+			ret = contReceiver->handleData(data, &keep);
 		} else {
 			char c;
 			if (!socket.getChar(&c)) {
@@ -313,17 +315,42 @@ void iFoxtrotSession::sockReadyRead()
 			if (c != ':')
 				continue;
 
-			DataHandlers::const_iterator it = dataHandlers.find(data);
-			if (it != dataHandlers.end()) {
-				ret = it.value()->handleData(data);
+			if (data == "ERROR:") {
+				data = socket.readLine();
+				data.chop(2); // \r\n
+				if (curReceiver) {
+					if (curReceiver->handleError(data))
+						continue;
+					ret = 0;
+				}
+			} else {
+				isDIFF = data == "DIFF:";
+				iFoxtrotReceiver *rcv = isDIFF ? &DIFFrcv : curReceiver;
+				//qDebug() << "rcv" << data;
+				if (!rcv || rcv->getPrefix() != data) {
+					qWarning() << "no receiver for" << data;
+					error = true;
+					continue;
+				}
+				ret = rcv->handleData(data, &keep);
 				if (ret > 0)
-					contReceiver = it.value();
+					contReceiver = rcv;
 			}
 		}
 
 		if (ret == 0) {
 			contReceiver = nullptr;
 			data.clear();
+			if (!isDIFF && !keep) {
+				if (toSend.empty()) {
+					qDebug() << "finished, all done";
+					curReceiver = nullptr;
+				} else {
+					curReceiver = toSend.dequeue();
+					qDebug() << "finished, handling" << curReceiver->getWrite();
+					socket.write(curReceiver->getWrite());
+				}
+			}
 		} else if (ret > 0) {
 			qDebug() << contReceiver;
 			data.clear();
@@ -334,18 +361,30 @@ void iFoxtrotSession::sockReadyRead()
 	}
 }
 
+void iFoxtrotSession::enqueueRcv(iFoxtrotReceiver *rcv)
+{
+	if (!curReceiver) {
+		qDebug() << __func__ << "directly" << rcv->getWrite();
+		curReceiver = rcv;
+		socket.write(rcv->getWrite());
+		return;
+	}
+
+	qDebug() << __func__ << "enqueuing" << rcv->getWrite();
+	toSend.enqueue(rcv);
+}
+
 void iFoxtrotSession::receiveFile(const QString &file,
               const std::function<void(const QByteArray &)> &fun)
 {
 	QByteArray req("GETFILE:");
-	iFoxtrotReceiverFile *frf = new iFoxtrotReceiverFile(this, file,
+	req.append(file).append('\n');
+
+	iFoxtrotReceiverFile *frf = new iFoxtrotReceiverFile(this, req, file,
 		[this, fun, req](iFoxtrotReceiverFile *frf,
 				const QByteArray &data) -> void {
-			dataHandlers.remove(req);
 			fun(data);
 			frf->deleteLater();
 		}, this);
-	dataHandlers.insert(req, frf);
-	req.append(file).append('\n');
-	socket.write(req);
+	enqueueRcv(frf);
 }

@@ -175,7 +175,7 @@ private:
 class iFoxtrotScene : public iFoxtrotCtl {
 public:
     iFoxtrotScene(iFoxtrotSession *session, const QString &foxName) :
-        iFoxtrotCtl(session, foxName), scenes(0) {}
+        iFoxtrotCtl(session, foxName), sceneNames(8), scenes(0) {}
 
     QString getFoxType() const override { return "SCENE"; }
     bool setProp(const QString &prop, const QString &val) override;
@@ -187,6 +187,7 @@ protected:
     QColor getColor() const override { return QColor(210, 255, 210); }
 
 private:
+	QVector<QString> sceneNames;
     int scenes;
     QString filename;
 };

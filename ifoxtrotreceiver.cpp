@@ -5,12 +5,16 @@
 #include "ifoxtrotreceiver.h"
 #include "ifoxtrotsession.h"
 
-iFoxtrotReceiver::iFoxtrotReceiver(iFoxtrotSession *session, QObject *parent) :
-        QObject(parent), session(session), byLines(true)
+iFoxtrotReceiver::iFoxtrotReceiver(iFoxtrotSession *session,
+                                   const QByteArray &prefix,
+                                   const QByteArray &write,
+                                   QObject *parent) :
+        QObject(parent), session(session), prefix(prefix), write(write),
+        byLines(true)
 {
 }
 
-qint64 iFoxtrotReceiver::handleData(QByteArray &data)
+qint64 iFoxtrotReceiver::handleData(QByteArray &data, bool *keep)
 {
 	while (session->bytesAvailable()) {
 		char c;
@@ -35,16 +39,24 @@ qint64 iFoxtrotReceiver::handleData(QByteArray &data)
 }
 
 iFoxtrotReceiverFile::iFoxtrotReceiverFile(iFoxtrotSession *session,
+                                           const QByteArray &write,
                                            const QString &file,
                                            const CallbackFn &fun,
                                            QObject *parent) :
-        iFoxtrotReceiver(session, parent), file(file), callbackFn(fun),
-        continuation(0)
+        iFoxtrotReceiver(session, "GETFILE:", write, parent), file(file),
+        callbackFn(fun), continuation(0)
 {
 	byLines = false;
 }
 
-qint64 iFoxtrotReceiverFile::handleData(QByteArray &data)
+bool iFoxtrotReceiverFile::handleError(QByteArray &data)
+{
+	if (!data.startsWith("41 "))
+		qDebug() << __PRETTY_FUNCTION__ << data;
+	return false;
+}
+
+qint64 iFoxtrotReceiverFile::handleData(QByteArray &data, bool *keep)
 {
 	QByteArray buffer;
 	qint64 toRead, toReadInit;
@@ -55,8 +67,11 @@ qint64 iFoxtrotReceiverFile::handleData(QByteArray &data)
 		if (session->bytesAvailable() < file.length() + 4)
 			return -1;
 
-		if (session->read(file.length()) != file)
+		QByteArray arr = session->read(file.length());
+		if (arr != file) {
+			qWarning() << "unexpected" << arr;
 			return -1;
+		}
 
 		if (!session->getChar(&c) || c != '[')
 			return -1;
@@ -122,8 +137,13 @@ qint64 iFoxtrotReceiverFile::handleData(QByteArray &data)
 		return -1;
 	}
 
-	if (toReadInit == 0)
-		callbackFn(this, fileBuffer);
 
+	if (toReadInit == 0) {
+		callbackFn(this, fileBuffer);
+		return 0;
+	}
+
+	// we will receive GETFILE:file[0]=
+	*keep = true;
 	return 0;
 }

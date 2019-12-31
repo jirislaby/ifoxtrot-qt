@@ -416,12 +416,12 @@ bool iFoxtrotScene::setProp(const QString &prop, const QString &val)
 
 void iFoxtrotScene::postReceive()
 {
-	//QTextCodec *codec = QTextCodec::codecForName("Windows 1250");
+	QTextCodec *codec = QTextCodec::codecForName("Windows 1250");
 	for (int a = 1; a <= scenes; a++) {
 		QString src(filename);
 		src.append(a + '0');
 		qDebug() << __PRETTY_FUNCTION__ << foxName << src;
-#if 0
+#if 1
 		session->receiveFile(src, [this, a, &src, codec](const QByteArray &data) -> void {
 			QJsonParseError error;
 			auto doc = QJsonDocument::fromJson(codec->toUnicode(data).toUtf8(),
@@ -441,6 +441,7 @@ void iFoxtrotScene::postReceive()
 				return;
 			}
 			qDebug() << name.value().toString();
+			sceneNames[a - 1] = name.value().toString();
 		});
 #endif
 	}
@@ -459,6 +460,10 @@ void iFoxtrotScene::setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper)
 
         int which = name.remove(0, sizeof "pushButtonSc" - 1).toInt();
         but->setEnabled(which <= scenes);
+        if (sceneNames[which - 1] != "")
+			but->setText(sceneNames[which - 1]);
+		else
+			but->setText("Scene " + QString::number(which));
     }
 }
 

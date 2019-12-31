@@ -14,9 +14,16 @@ class iFoxtrotReceiver : public QObject
 	Q_OBJECT
 public:
 	explicit iFoxtrotReceiver(iFoxtrotSession *session,
+	                          const QByteArray &prefix,
+	                          const QByteArray &write,
 	                          QObject *parent = nullptr);
 
-	virtual qint64 handleData(QByteArray &data);
+	virtual bool handleError(QByteArray &data) { return true; }
+	virtual qint64 handleData(QByteArray &data, bool *keep);
+
+	const QByteArray &getPrefix() const { return prefix; }
+
+	const QByteArray &getWrite() const { return write; }
 
 signals:
 	void hasData(const QString &line);
@@ -25,6 +32,8 @@ public slots:
 
 protected:
 	iFoxtrotSession *session;
+	const QByteArray prefix;
+	const QByteArray write;
 	bool byLines;
 };
 
@@ -35,11 +44,14 @@ public:
 	typedef std::function<void(iFoxtrotReceiverFile *,
 			const QByteArray &)> CallbackFn;
 
-	iFoxtrotReceiverFile(iFoxtrotSession *session, const QString &file,
+	iFoxtrotReceiverFile(iFoxtrotSession *session,
+	                     const QByteArray &write,
+	                     const QString &file,
 	                     const CallbackFn &fun,
 	                     QObject *parent = nullptr);
 
-	virtual qint64 handleData(QByteArray &data) override;
+	virtual bool handleError(QByteArray &data) override;
+	virtual qint64 handleData(QByteArray &data, bool *keep) override;
 signals:
 private:
 	QString file;

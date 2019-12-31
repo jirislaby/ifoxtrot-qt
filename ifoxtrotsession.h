@@ -1,7 +1,9 @@
 #ifndef IFOXTROTCONN_H
 #define IFOXTROTCONN_H
 
+#include <QMap>
 #include <QObject>
+#include <QQueue>
 #include <QRegularExpression>
 #include <QTcpSocket>
 #include <QTimer>
@@ -92,6 +94,7 @@ public:
     QByteArray readLine() { return socket.readLine(); }
     QString getPeerName() const { return socket.peerName(); }
 
+	void enqueueRcv(iFoxtrotReceiver *rcv);
     void receiveFile(const QString &file,
                      const std::function<void(const QByteArray &)> &fun);
 
@@ -124,17 +127,17 @@ public slots:
     void initSockError(QAbstractSocket::SocketError socketError);
 
 private:
-    typedef QMap<QByteArray, iFoxtrotReceiver *> DataHandlers;
 
     iFoxtrotModel model;
     ItemsFox itemsFox;
-    DataHandlers dataHandlers;
+    QQueue<iFoxtrotReceiver *> toSend;
     QTcpSocket socket;
     enum ConState state;
     QString PLCVersion;
     QRegularExpression DIFFRE;
     iFoxtrotReceiver DIFFrcv;
     iFoxtrotReceiver *contReceiver;
+    iFoxtrotReceiver *curReceiver;
 
     void handleDIFF(const QString &line);
 
