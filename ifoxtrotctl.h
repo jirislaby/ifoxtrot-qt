@@ -6,6 +6,7 @@
 #include <QDataWidgetMapper>
 #include <QObject>
 #include <QString>
+#include <QVector>
 
 class iFoxtrotSession;
 
