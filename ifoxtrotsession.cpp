@@ -291,7 +291,7 @@ void iFoxtrotSession::sockReadyRead()
 
 	while (socket.bytesAvailable()) {
 		qint64 ret = -1;
-		bool isDIFF, keep = false;
+		bool isDIFF = false, keep = false;
 
 		if (contReceiver) {
 			ret = contReceiver->handleData(data, &keep);
