@@ -51,15 +51,22 @@ QMAKE_CXXFLAGS += -Wno-unused-parameter
 qnx: target.path = /tmp/$${TARGET}/bin
 
 unix:!android {
-	isEmpty(PREFIX) {
-		PREFIX = /usr
-	}
+	isEmpty(PREFIX): PREFIX = /usr
 	BINDIR = $$PREFIX/bin
 	DATADIR = $$PREFIX/share
 
-	DEFINES += DATADIR=\\\"$$DATADIR\\\"
-
 	target.path = $$BINDIR
 }
+
+win32 {
+	isEmpty(bindir): bindir = bin
+	isEmpty(datadir): datadir = share
+
+	DATADIR = $$datadir
+
+	target.path = $$bindir
+}
+
+!isEmpty(DATADIR): DEFINES += DATADIR=\\\"$$DATADIR\\\"
 
 !isEmpty(target.path): INSTALLS += target
