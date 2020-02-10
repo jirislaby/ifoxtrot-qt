@@ -381,7 +381,7 @@ void iFoxtrotSession::receiveFile(const QString &file,
 	req.append(file).append('\n');
 
 	enqueueRcv(new iFoxtrotReceiverFile(this, req, file,
-		[this, fun, req](iFoxtrotReceiverFile *frf,
+		[fun, req](iFoxtrotReceiverFile *frf,
 				const QByteArray &data) -> void {
 			fun(data);
 			frf->deleteLater();
