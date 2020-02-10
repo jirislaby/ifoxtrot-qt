@@ -2,6 +2,7 @@
 #include <QTime>
 #include <QTextCodec>
 
+#include "ifoxtrotctl.h"
 #include "ifoxtrotreceiver.h"
 #include "ifoxtrotsession.h"
 
@@ -46,13 +47,41 @@ qint64 iFoxtrotReceiverLine::handleData(QByteArray &data, bool *keep)
 }
 
 iFoxtrotReceiverDIFF::iFoxtrotReceiverDIFF(iFoxtrotSession *session) :
-        iFoxtrotReceiverLine(session, "DIFF:", "")
+        iFoxtrotReceiverLine(session, "DIFF:", ""),
+        DIFFRE("^DIFF:(.+)\\.GTSAP1_([^_]+)_(.+),(.+)\r?\n?$")
 {
+}
+
+void iFoxtrotReceiverDIFF::handleDIFF(iFoxtrotSession *session,
+                                      const QString &line)
+{
+	QRegularExpression DIFFRE("^DIFF:(.+)\\.GTSAP1_([^_]+)_(.+),(.+)\r?\n?$");
+	QRegularExpressionMatch match = DIFFRE.match(line);
+
+	if (!match.hasMatch()) {
+		qDebug() << __PRETTY_FUNCTION__ << " unexpected DIFF line" << line;
+		return;
+	}
+
+	QString foxName = match.captured(1);
+	QString foxType = match.captured(2);
+	QString prop = match.captured(3);
+	QString value = match.captured(4);
+
+	auto itemIt = session->itemsFoxFind(foxName);
+	if (itemIt == session->itemsFoxEnd()) {
+		qWarning() << "cannot find" << foxName << "in items";
+		return;
+	}
+	iFoxtrotCtl *item = itemIt.value();
+	item->setProp(prop, value);
+
+	//qDebug() << __PRETTY_FUNCTION__ << "DIFF" << foxName << foxType << prop << value;
 }
 
 void iFoxtrotReceiverDIFF::pushLine(const QString &line)
 {
-	session->handleDIFF(line);
+	handleDIFF(session, line);
 }
 
 iFoxtrotReceiverFile::iFoxtrotReceiverFile(iFoxtrotSession *session,

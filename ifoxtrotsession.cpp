@@ -132,7 +132,8 @@ bool iFoxtrotSessionInit::receive(const QString &req,
         QByteArray lineArray = session->readLine();
 
         if (lineArray.startsWith("DIFF:")) {
-            session->handleDIFF(codec->toUnicode(lineArray.data()));
+            iFoxtrotReceiverDIFF::handleDIFF(session,
+	                                     codec->toUnicode(lineArray.data()));
             continue;
         }
 
@@ -160,7 +161,6 @@ bool iFoxtrotSessionInit::receive(const QString &req,
 
 iFoxtrotSession::iFoxtrotSession(QObject *parent) :
     QObject(parent), state(Disconnected),
-    DIFFRE("^DIFF:(.+)\\.GTSAP1_([^_]+)_(.+),(.+)\r?\n?$"),
     DIFFrcv(this),
     contReceiver(nullptr),
     curReceiver(nullptr)
@@ -174,31 +174,6 @@ iFoxtrotSession::iFoxtrotSession(QObject *parent) :
     connect(&socket, static_cast<void (QAbstractSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::error),
             this, &iFoxtrotSession::sockError);
 #endif
-}
-
-void iFoxtrotSession::handleDIFF(const QString &line)
-{
-    QRegularExpressionMatch match = DIFFRE.match(line);
-
-    if (!match.hasMatch()) {
-        qDebug() << __PRETTY_FUNCTION__ << " unexpected DIFF line" << line;
-        return;
-    }
-
-    QString foxName = match.captured(1);
-    QString foxType = match.captured(2);
-    QString prop = match.captured(3);
-    QString value = match.captured(4);
-
-    QMap<QString, iFoxtrotCtl *>::const_iterator itemIt = itemsFox.find(foxName);
-    if (itemIt == itemsFox.end()) {
-        qWarning() << "cannot find" << foxName << "in items";
-        return;
-    }
-    iFoxtrotCtl *item = itemIt.value();
-    item->setProp(prop, value);
-
-    //qDebug() << __PRETTY_FUNCTION__ << "DIFF" << foxName << foxType << prop << value;
 }
 
 void iFoxtrotSession::sockConnected()

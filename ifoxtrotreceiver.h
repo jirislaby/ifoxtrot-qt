@@ -5,6 +5,7 @@
 
 #include <QByteArray>
 #include <QObject>
+#include <QRegularExpression>
 #include <QString>
 
 class iFoxtrotSession;
@@ -46,6 +47,10 @@ public:
 	iFoxtrotReceiverDIFF(iFoxtrotSession *session);
 
 	virtual void pushLine(const QString &line) override;
+
+	static void handleDIFF(iFoxtrotSession *session, const QString &line);
+private:
+	QRegularExpression DIFFRE;
 };
 
 class iFoxtrotReceiverFile : public iFoxtrotReceiver
