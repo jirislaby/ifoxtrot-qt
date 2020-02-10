@@ -33,7 +33,6 @@ protected:
 	iFoxtrotSession *session;
 	const QByteArray prefix;
 	const QByteArray write;
-	bool byLines;
 };
 
 class iFoxtrotReceiverFile : public iFoxtrotReceiver

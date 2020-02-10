@@ -8,8 +8,7 @@
 iFoxtrotReceiver::iFoxtrotReceiver(iFoxtrotSession *session,
                                    const QByteArray &prefix,
                                    const QByteArray &write) :
-        QObject(session), session(session), prefix(prefix), write(write),
-        byLines(true)
+        QObject(session), session(session), prefix(prefix), write(write)
 {
 }
 
@@ -44,7 +43,6 @@ iFoxtrotReceiverFile::iFoxtrotReceiverFile(iFoxtrotSession *session,
         iFoxtrotReceiver(session, "GETFILE:", write), file(file),
         callbackFn(fun), continuation(0)
 {
-	byLines = false;
 }
 
 bool iFoxtrotReceiverFile::handleError(QByteArray &data)
