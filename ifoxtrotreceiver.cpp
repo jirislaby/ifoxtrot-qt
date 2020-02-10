@@ -16,7 +16,8 @@ iFoxtrotReceiver::iFoxtrotReceiver(iFoxtrotSession *session,
 iFoxtrotReceiverLine::iFoxtrotReceiverLine(iFoxtrotSession *session,
                                            const QByteArray &prefix,
                                            const QByteArray &write) :
-        iFoxtrotReceiver(session, prefix, write)
+        iFoxtrotReceiver(session, prefix, write),
+        multiline(false)
 {
 }
 
@@ -35,6 +36,11 @@ qint64 iFoxtrotReceiverLine::handleData(QByteArray &data, bool *keep)
 			continue;
 
 		if (c == '\n') {
+			if (multiline) {
+				if (data == prefix)
+					return 0;
+				*keep = true;
+			}
 			QTextCodec *codec = QTextCodec::codecForName("Windows 1250");
 			pushLine(codec->toUnicode(data.data()));
 			return 0;

@@ -39,6 +39,8 @@ public:
 
 	virtual qint64 handleData(QByteArray &data, bool *keep) override;
 	virtual void pushLine(const QString &line) = 0;
+protected:
+    bool multiline;
 };
 
 class iFoxtrotReceiverDIFF : public iFoxtrotReceiverLine {
