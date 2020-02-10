@@ -17,7 +17,7 @@ public:
 	                          const QByteArray &prefix,
 	                          const QByteArray &write);
 
-	virtual bool handleError(QByteArray &data) { return true; }
+	virtual bool handleError(QByteArray &data) { Q_UNUSED(data); return true; }
 	virtual qint64 handleData(QByteArray &data, bool *keep);
 
 	const QByteArray &getPrefix() const { return prefix; }

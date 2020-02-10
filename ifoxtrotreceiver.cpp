@@ -14,6 +14,8 @@ iFoxtrotReceiver::iFoxtrotReceiver(iFoxtrotSession *session,
 
 qint64 iFoxtrotReceiver::handleData(QByteArray &data, bool *keep)
 {
+	Q_UNUSED(keep); // one-line data only
+
 	while (session->bytesAvailable()) {
 		char c;
 		if (!session->getChar(&c)) {
@@ -57,6 +59,8 @@ qint64 iFoxtrotReceiverFile::handleData(QByteArray &data, bool *keep)
 	QByteArray buffer;
 	qint64 toRead, toReadInit;
 	char c;
+
+	Q_UNUSED(data); // it contains only "GETFILE:"
 
 	if (!continuation) {
 		// GETFILE:file[len]=
