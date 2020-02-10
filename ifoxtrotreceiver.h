@@ -18,21 +18,34 @@ public:
 	                          const QByteArray &write);
 
 	virtual bool handleError(QByteArray &data) { Q_UNUSED(data); return true; }
-	virtual qint64 handleData(QByteArray &data, bool *keep);
+	virtual qint64 handleData(QByteArray &data, bool *keep) = 0;
 
 	const QByteArray &getPrefix() const { return prefix; }
-
 	const QByteArray &getWrite() const { return write; }
-
-signals:
-	void hasData(const QString &line);
-
-public slots:
 
 protected:
 	iFoxtrotSession *session;
 	const QByteArray prefix;
 	const QByteArray write;
+};
+
+class iFoxtrotReceiverLine : public iFoxtrotReceiver {
+	Q_OBJECT
+public:
+	explicit iFoxtrotReceiverLine(iFoxtrotSession *session,
+	                              const QByteArray &prefix,
+	                              const QByteArray &write);
+
+	virtual qint64 handleData(QByteArray &data, bool *keep) override;
+	virtual void pushLine(const QString &line) = 0;
+};
+
+class iFoxtrotReceiverDIFF : public iFoxtrotReceiverLine {
+	Q_OBJECT
+public:
+	iFoxtrotReceiverDIFF(iFoxtrotSession *session);
+
+	virtual void pushLine(const QString &line) override;
 };
 
 class iFoxtrotReceiverFile : public iFoxtrotReceiver
@@ -49,7 +62,7 @@ public:
 
 	virtual bool handleError(QByteArray &data) override;
 	virtual qint64 handleData(QByteArray &data, bool *keep) override;
-signals:
+
 private:
 	QString file;
 	CallbackFn callbackFn;

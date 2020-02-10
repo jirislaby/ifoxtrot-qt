@@ -161,7 +161,7 @@ bool iFoxtrotSessionInit::receive(const QString &req,
 iFoxtrotSession::iFoxtrotSession(QObject *parent) :
     QObject(parent), state(Disconnected),
     DIFFRE("^DIFF:(.+)\\.GTSAP1_([^_]+)_(.+),(.+)\r?\n?$"),
-    DIFFrcv(this, "DIFF:", ""),
+    DIFFrcv(this),
     contReceiver(nullptr),
     curReceiver(nullptr)
 {
@@ -210,9 +210,6 @@ void iFoxtrotSession::sockConnected()
     state = Connected;
 
     auto sesInit = new iFoxtrotSessionInit(this, this);
-
-    connect(&DIFFrcv, &iFoxtrotReceiver::hasData, this,
-            &iFoxtrotSession::handleDIFF);
 
     connect(&socket, &QTcpSocket::readyRead, sesInit,
             &iFoxtrotSessionInit::sockReadyRead);

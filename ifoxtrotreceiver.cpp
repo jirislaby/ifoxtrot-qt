@@ -12,7 +12,14 @@ iFoxtrotReceiver::iFoxtrotReceiver(iFoxtrotSession *session,
 {
 }
 
-qint64 iFoxtrotReceiver::handleData(QByteArray &data, bool *keep)
+iFoxtrotReceiverLine::iFoxtrotReceiverLine(iFoxtrotSession *session,
+                                           const QByteArray &prefix,
+                                           const QByteArray &write) :
+        iFoxtrotReceiver(session, prefix, write)
+{
+}
+
+qint64 iFoxtrotReceiverLine::handleData(QByteArray &data, bool *keep)
 {
 	Q_UNUSED(keep); // one-line data only
 
@@ -28,7 +35,7 @@ qint64 iFoxtrotReceiver::handleData(QByteArray &data, bool *keep)
 
 		if (c == '\n') {
 			QTextCodec *codec = QTextCodec::codecForName("Windows 1250");
-			emit hasData(codec->toUnicode(data.data()));
+			pushLine(codec->toUnicode(data.data()));
 			return 0;
 		}
 
@@ -36,6 +43,16 @@ qint64 iFoxtrotReceiver::handleData(QByteArray &data, bool *keep)
 	}
 
 	return -1;
+}
+
+iFoxtrotReceiverDIFF::iFoxtrotReceiverDIFF(iFoxtrotSession *session) :
+        iFoxtrotReceiverLine(session, "DIFF:", "")
+{
+}
+
+void iFoxtrotReceiverDIFF::pushLine(const QString &line)
+{
+	session->handleDIFF(line);
 }
 
 iFoxtrotReceiverFile::iFoxtrotReceiverFile(iFoxtrotSession *session,

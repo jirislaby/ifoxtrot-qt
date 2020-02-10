@@ -135,13 +135,14 @@ private:
     enum ConState state;
     QString PLCVersion;
     QRegularExpression DIFFRE;
-    iFoxtrotReceiver DIFFrcv;
+    iFoxtrotReceiverDIFF DIFFrcv;
     iFoxtrotReceiver *contReceiver;
     iFoxtrotReceiver *curReceiver;
 
     void handleDIFF(const QString &line);
 
     friend class iFoxtrotSessionInit;
+    friend class iFoxtrotReceiverDIFF; // temporary
 };
 
 #endif // IFOXTROTCONN_H
