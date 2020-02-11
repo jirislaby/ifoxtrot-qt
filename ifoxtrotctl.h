@@ -201,6 +201,7 @@ public:
     QString getFoxType() const override { return "TPW"; }
     double getDelta() const { return delta; }
     bool setProp(const QString &prop, const QString &val) override;
+    void postReceive() override;
 
     void setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper) override;
 
@@ -211,6 +212,7 @@ protected:
 
 private:
     unsigned short type;
+    QString name;
     QString file;
     quint32 crc;
     bool manual;

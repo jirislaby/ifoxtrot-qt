@@ -571,6 +571,34 @@ bool iFoxtrotTPW::setProp(const QString &prop, const QString &val)
     return iFoxtrotCtl::setProp(prop, val);
 }
 
+void iFoxtrotTPW::postReceive()
+{
+	QTextCodec *codec = QTextCodec::codecForName("Windows 1250");
+
+	session->receiveFile(file, [this, codec](const QByteArray &data) {
+		QJsonParseError error;
+		auto doc = QJsonDocument::fromJson(codec->toUnicode(data).toUtf8(),
+		                                   &error);
+		if (doc.isNull() || !doc.isObject()) {
+			qWarning() << "invalid TPW json" << foxName << file <<
+			              error.errorString();
+			return;
+		}
+		auto obj = doc.object();
+		QJsonObject::iterator name = obj.find("Name");
+		QJsonObject::iterator TPW = obj.find("timeProgWeekData");
+		if (name == obj.end() || TPW == obj.end() ||
+		                !name.value().isString() ||
+		                !TPW.value().isObject()) {
+			qWarning() << "invalid scene json" << foxName << file;
+			return;
+		}
+		/*auto TPWo = TPW.value().toObject();
+		qDebug() << TPWo;*/
+		this->name = name.value().toString();
+	});
+}
+
 void iFoxtrotTPW::setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper)
 {
     widgetMapper.addMapping(ui->TPW_RB_heat, 1, "checked");
@@ -588,6 +616,7 @@ void iFoxtrotTPW::setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper)
     widgetMapper.addMapping(ui->TPW_RB_low, 13, "checked");
     widgetMapper.addMapping(ui->TPW_RB_comf, 14, "checked");
     widgetMapper.addMapping(ui->TPW_SB_delta, 15, "value");
+    widgetMapper.addMapping(ui->TPW_name, 16, "text");
 }
 
 QVariant iFoxtrotTPW::data(int column, int role) const
@@ -624,6 +653,8 @@ QVariant iFoxtrotTPW::data(int column, int role) const
             return mode == 3;
         case 15:
             return delta;
+        case 16:
+            return name;
         }
     }
 
