@@ -496,8 +496,12 @@ bool iFoxtrotTPW::setProp(const QString &prop, const QString &val)
         return true;
     }
     if (prop == "FILE") {
-        file = val;
-        return true;
+	    file = getFoxString(val);
+	    if (file == "") {
+		    qWarning() << "wrong file for" << foxName << ":" << val;
+		    return false;
+	    }
+	    return true;
     }
     if (prop == "CRC") {
         crc = val.toUInt(&ok);
