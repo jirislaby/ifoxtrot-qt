@@ -53,15 +53,13 @@ qint64 iFoxtrotReceiverLine::handleData(QByteArray &data, bool *keep)
 }
 
 iFoxtrotReceiverDIFF::iFoxtrotReceiverDIFF(iFoxtrotSession *session) :
-        iFoxtrotReceiverLine(session, "DIFF:", ""),
-        DIFFRE("^DIFF:(.+)\\.GTSAP1_([^_]+)_(.+),(.+)\r?\n?$")
+        iFoxtrotReceiverLine(session, "DIFF:", "")
 {
 }
 
-void iFoxtrotReceiverDIFF::handleDIFF(iFoxtrotSession *session,
-                                      const QString &line)
+void iFoxtrotReceiverDIFF::pushLine(const QString &line)
 {
-	QRegularExpression DIFFRE("^DIFF:(.+)\\.GTSAP1_([^_]+)_(.+),(.+)\r?\n?$");
+	static QRegularExpression DIFFRE("^DIFF:(.+)\\.GTSAP1_([^_]+)_(.+),(.+)$");
 	QRegularExpressionMatch match = DIFFRE.match(line);
 
 	if (!match.hasMatch()) {
@@ -83,11 +81,6 @@ void iFoxtrotReceiverDIFF::handleDIFF(iFoxtrotSession *session,
 	item->setProp(prop, value);
 
 	//qDebug() << __PRETTY_FUNCTION__ << "DIFF" << foxName << foxType << prop << value;
-}
-
-void iFoxtrotReceiverDIFF::pushLine(const QString &line)
-{
-	handleDIFF(session, line);
 }
 
 iFoxtrotReceiverGETINFO::iFoxtrotReceiverGETINFO(iFoxtrotSession *session) :
