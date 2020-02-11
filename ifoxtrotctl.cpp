@@ -473,9 +473,6 @@ bool iFoxtrotTPW::setProp(const QString &prop, const QString &val)
     if (prop == "DECDELTA") {
         return true;
     }
-    if (prop == "FILE") {
-        return true;
-    }
     if (prop == "INCDELTA") {
         return true;
     }
