@@ -64,6 +64,12 @@ iFoxtrotSession::iFoxtrotSession(QObject *parent) :
 #endif
 }
 
+iFoxtrotSession::~iFoxtrotSession()
+{
+	for (auto it = itemsFoxBegin(); it != itemsFoxEnd(); ++it)
+		delete *it;
+}
+
 void iFoxtrotSession::sockConnected()
 {
     state = Connected;

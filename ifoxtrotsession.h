@@ -23,6 +23,7 @@ public:
 
     typedef QMap<QString, iFoxtrotCtl *> ItemsFox;
     explicit iFoxtrotSession(QObject *parent = nullptr);
+    ~iFoxtrotSession();
 
     iFoxtrotModel *getModel() { return &model; }
     const iFoxtrotModel *getModel() const { return &model; }
