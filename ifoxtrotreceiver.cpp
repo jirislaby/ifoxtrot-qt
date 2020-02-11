@@ -23,8 +23,6 @@ iFoxtrotReceiverLine::iFoxtrotReceiverLine(iFoxtrotSession *session,
 
 qint64 iFoxtrotReceiverLine::handleData(QByteArray &data, bool *keep)
 {
-	Q_UNUSED(keep); // one-line data only
-
 	while (session->bytesAvailable()) {
 		char c;
 		if (!session->getChar(&c)) {
