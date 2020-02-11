@@ -421,8 +421,8 @@ void iFoxtrotScene::postReceive()
 		QString src(filename);
 		src.append(a + '0');
 		qDebug() << __PRETTY_FUNCTION__ << foxName << src;
-#if 1
-		session->receiveFile(src, [this, a, &src, codec](const QByteArray &data) -> void {
+
+		session->receiveFile(src, [this, a, src, codec](const QByteArray &data) {
 			QJsonParseError error;
 			auto doc = QJsonDocument::fromJson(codec->toUnicode(data).toUtf8(),
 			                                   &error);
@@ -443,7 +443,6 @@ void iFoxtrotScene::postReceive()
 			qDebug() << name.value().toString();
 			sceneNames[a - 1] = name.value().toString();
 		});
-#endif
 	}
 }
 
