@@ -88,7 +88,7 @@ void iFoxtrotModel::changed(const iFoxtrotCtl *ctl)
     for (const auto c: list) {
         if (ctl == c) {
             const QModelIndex from = createIndex(idx, 0);
-            const QModelIndex to = createIndex(idx, modelColumns);
+            const QModelIndex to = createIndex(idx, modelColumns - 1);
             emit dataChanged(from, to);
             return;
         }
