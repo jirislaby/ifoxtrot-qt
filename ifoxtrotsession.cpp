@@ -9,176 +9,42 @@
 #include "ifoxtrotreceiver.h"
 #include "ifoxtrotsession.h"
 
-iFoxtrotSessionInit::iFoxtrotSessionInit(iFoxtrotSession *session,
-                                         QObject *parent) :
-    QObject(parent), session(session), phase(PhGetinfo), enableString("DI:\n"),
-    GETRE("^GET:(.+)\\.GTSAP1_([^_]+)_(.+),(.+)\r\n$"),
-    codec(QTextCodec::codecForName("Windows 1250"))
-{
-    connect(&timer, &QTimer::timeout, this,
-            QOverload<>::of(&iFoxtrotSessionInit::timeout));
-    timer.setSingleShot(true);
-    timer.start(sockTimeout);
-}
-
-void iFoxtrotSessionInit::timeout()
-{
-    emit error(QAbstractSocket::SocketTimeoutError);
-}
-
-bool iFoxtrotSessionInit::parseGETLine(const QString &line,
-                                       QString &foxName,
-                                       QString &foxType,
-                                       QString &prop,
-                                       QString &value)
-{
-	QRegularExpressionMatch match = GETRE.match(line);
-	if (!match.hasMatch()) {
-		qDebug() << "wrong GET line" << line;
-		return false;
-	}
-
-	foxName = match.captured(1);
-	foxType = match.captured(2);
-	prop = match.captured(3);
-	value = match.captured(4);
-
-	return true;
-}
-
-void iFoxtrotSessionInit::addItem(const QString &foxName,
-                                  const QString &foxType,
-                                  const QString &prop,
-                                  const QString &value)
+void iFoxtrotSession::addItem(const QString &foxName,
+                              const QString &foxType,
+                              const QString &prop,
+                              const QString &value,
+                              QList<iFoxtrotCtl *> *listFox,
+                              QByteArray *enableString)
 {
 	if (value != "1")
 		return;
 
-	iFoxtrotCtl *item = iFoxtrotCtl::getOne(session, foxType, foxName);
+	iFoxtrotCtl *item = iFoxtrotCtl::getOne(this, foxType, foxName);
 	if (!item) {
 		qWarning() << "unsupported type" << foxType << "for" << foxName;
 		return;
 	}
-	list.append(item);
-	session->itemsFoxInsert(foxName, item);
-	enableString.append("EN:").append(foxName).append(".GTSAP1_").append(foxType).append("_*\n");
+	listFox->append(item);
+	itemsFoxInsert(foxName, item);
+	enableString->append("EN:").append(foxName).append(".GTSAP1_").append(foxType).append("_*\n");
 
 	Q_UNUSED(prop);
-	//qDebug() << foxName << foxType << prop << value;
+	// qDebug() << foxName << foxType << prop << value;
 }
-void iFoxtrotSessionInit::updateItem(const QString &foxName,
-                                     const QString &foxType,
-                                     const QString &prop,
-                                     const QString &value)
+void iFoxtrotSession::updateItem(const QString &foxName,
+                                 const QString &foxType,
+                                 const QString &prop,
+                                 const QString &value)
 {
 	Q_UNUSED(foxType);
 
-	auto itemIt = session->itemsFoxFind(foxName);
-	if (itemIt == session->itemsFoxEnd()) {
+	auto itemIt = itemsFoxFind(foxName);
+	if (itemIt == itemsFoxEnd()) {
 		qWarning() << "cannot find" << foxName << "in items";
 		return;
 	}
 	iFoxtrotCtl *item = itemIt.value();
 	item->setProp(prop, value);
-}
-
-void iFoxtrotSessionInit::sockReadyRead()
-{
-    timer.start(sockTimeout);
-
-    switch (phase) {
-    case PhGetinfo:
-        if (receive("GETINFO", [this](const QString &line) -> void {
-                    if (line.startsWith("GETINFO:VERSION_PLC,")) {
-                        PLCVersion = line.mid(sizeof("GETINFO:VERSION_PLC,") - 1);
-                        PLCVersion.chop(2); // \r\n
-                    }
-                })) {
-
-            session->write("DI:\n"
-                     "EN:*_ENABLE\n"
-                     "GET:\n");
-
-            emit statusUpdate("Got info, receiving items");
-            phase = PhGetEnable;
-        }
-        break;
-    case PhGetEnable:
-        if (receive("GET", [this](const QString &line) -> void {
-				    QString foxName, foxType, prop, value;
-				    if (parseGETLine(line, foxName, foxType, prop, value))
-					    addItem(foxName, foxType, prop, value);
-                })) {
-
-            enableString.append("GET:\n");
-            session->write(enableString);
-
-            emit statusUpdate("Received items, receiving states");
-            phase = PhGet;
-        }
-        break;
-    case PhGet:
-        if (receive("GET", [this](const QString &line) -> void {
-				    QString foxName, foxType, prop, value;
-				    if (parseGETLine(line, foxName, foxType, prop, value))
-					    updateItem(foxName, foxType, prop, value);
-                })) {
-
-			for (iFoxtrotSession::ItemsFox::const_iterator it = session->itemsFoxBegin();
-					it != session->itemsFoxEnd(); ++it) {
-				(*it)->postReceive();
-			}
-            emit connected();
-            phase = PhDone;
-        }
-        break;
-    case PhDone:
-        qWarning() << __PRETTY_FUNCTION__ << "superfluous call";
-        break;
-    }
-
-}
-
-bool iFoxtrotSessionInit::receive(const QString &req,
-                              const std::function<void(const QString &)> &fun)
-{
-    static const QSet<QByteArray>skip {
-        "__PF_CRC",
-        "__PLC_RUN"
-    };
-    const QByteArray requestColon = req.toLatin1() + ":";
-    const QByteArray requestEOL = requestColon + "\r\n";
-    const unsigned reqSize = requestColon.size();
-
-    while (session->canReadLine()) {
-        QByteArray lineArray = session->readLine();
-
-        if (lineArray.startsWith("DIFF:")) {
-            iFoxtrotReceiverDIFF::handleDIFF(session,
-	                                     codec->toUnicode(lineArray.data()));
-            continue;
-        }
-
-        if (!lineArray.startsWith(requestColon)) {
-            qWarning() << __PRETTY_FUNCTION__ << "unexpected line received" <<
-                          lineArray << "expected" << requestColon <<
-                          "phase" << phase;
-            continue;
-        }
-
-        QByteArray crop = lineArray.mid(reqSize);
-        crop.truncate(crop.indexOf(','));
-        if (skip.contains(crop))
-            continue;
-
-        if (lineArray == requestEOL)
-            return true;
-
-        QString line = codec->toUnicode(lineArray.data());
-        fun(line);
-    }
-
-    return false;
 }
 
 iFoxtrotSession::iFoxtrotSession(QObject *parent) :
@@ -200,22 +66,8 @@ iFoxtrotSession::iFoxtrotSession(QObject *parent) :
 
 void iFoxtrotSession::sockConnected()
 {
-    static const QSet<QByteArray>skip {
-        "__PF_CRC",
-        "__PLC_RUN"
-    };
     state = Connected;
-
-    auto sesInit = new iFoxtrotSessionInit(this, this);
-
-    connect(&socket, &QTcpSocket::readyRead, sesInit,
-            &iFoxtrotSessionInit::sockReadyRead);
-    connect(sesInit, &iFoxtrotSessionInit::connected, this,
-            &iFoxtrotSession::initConnected);
-    connect(sesInit, &iFoxtrotSessionInit::error, this,
-            &iFoxtrotSession::initSockError);
-    connect(sesInit, &iFoxtrotSessionInit::statusUpdate, this,
-            &iFoxtrotSession::conStatusUpdate);
+    connect(&socket, &QTcpSocket::readyRead, this, &iFoxtrotSession::sockReadyRead);
 
 #ifdef SETCONF
     QString setconf("SETCONF:ipaddr,");
@@ -228,38 +80,50 @@ void iFoxtrotSession::sockConnected()
 #endif
 
     QByteArray lineArray = socket.readLine();
-    socket.write("GETINFO:\n");
-}
+    auto GETINFOrcv = new iFoxtrotReceiverGETINFO(this);
+    connect(GETINFOrcv, &iFoxtrotReceiver::done, [this, GETINFOrcv] {
+	    emit conStatusUpdate("Got info, receiving items");
+	    PLCVersion = GETINFOrcv->getPLCVersion();
+	    GETINFOrcv->deleteLater();
+    });
+    enqueueRcv(GETINFOrcv);
 
-void iFoxtrotSession::initConnected()
-{
-    auto sesInit = dynamic_cast<iFoxtrotSessionInit *>(sender());
+    auto listFox = new QList<iFoxtrotCtl *>();
+    auto enableString = new QByteArray("DI:\n");
 
-    connect(&socket, &QTcpSocket::readyRead, this, &iFoxtrotSession::sockReadyRead);
-
-    PLCVersion = sesInit->getPLCVersion();
-
-    sesInit->setModelList(model);
-    model.sort(0);
-
-    sesInit->deleteLater();
-
-    emit connected();
-}
-
-void iFoxtrotSession::initStatusUpdate(const QString &status)
-{
-    emit conStatusUpdate(status);
-}
-
-void iFoxtrotSession::initSockError(QAbstractSocket::SocketError socketError)
-{
-    auto sesInit = dynamic_cast<iFoxtrotSessionInit *>(sender());
-
-    sesInit->deleteLater();
-
-    abort();
-    emit error(socketError);
+    auto GETrcv = new iFoxtrotReceiverGET(this, "DI:\n"
+                                                "EN:*_ENABLE\n"
+                                                "GET:\n",
+				  [this, listFox, enableString](const QString &foxName,
+                                          const QString &foxType,
+                                          const QString &prop,
+                                          const QString &value) {
+	    addItem(foxName, foxType, prop, value, listFox, enableString);
+    });
+    connect(GETrcv, &iFoxtrotReceiver::done, [this, GETrcv, listFox, enableString] {
+	    emit conStatusUpdate("Received items, receiving states");
+	    model.setList(*listFox);
+	    delete listFox;
+	    GETrcv->deleteLater();
+	    enableString->append("GET:\n");
+	    auto GETrcv2 = new iFoxtrotReceiverGET(this, *enableString,
+				  [this](const QString &foxName,
+					   const QString &foxType,
+					   const QString &prop,
+					   const QString &value) {
+		    updateItem(foxName, foxType, prop, value);
+	    });
+	    connect(GETrcv2, &iFoxtrotReceiver::done, [this, GETrcv2, enableString] {
+		    GETrcv2->deleteLater();
+		    delete enableString;
+			for (auto it = itemsFoxBegin(); it != itemsFoxEnd(); ++it)
+				(*it)->postReceive();
+		    model.sort(0);
+		    emit connected();
+	    });
+	    enqueueRcv(GETrcv2);
+    });
+    enqueueRcv(GETrcv);
 }
 
 void iFoxtrotSession::sockDisconnected()

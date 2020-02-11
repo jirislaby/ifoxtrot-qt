@@ -58,6 +58,32 @@ private:
 	QRegularExpression DIFFRE;
 };
 
+class iFoxtrotReceiverGETINFO : public iFoxtrotReceiverLine {
+	Q_OBJECT
+public:
+	iFoxtrotReceiverGETINFO(iFoxtrotSession *session);
+
+	virtual void pushLine(const QString &line) override;
+	const QString &getPLCVersion() const { return PLCVersion; }
+
+private:
+	QString PLCVersion;
+};
+
+class iFoxtrotReceiverGET : public iFoxtrotReceiverLine {
+	Q_OBJECT
+public:
+	typedef std::function<void(const QString &, const QString &,
+	                           const QString &, const QString &)> CallbackFn;
+
+	iFoxtrotReceiverGET(iFoxtrotSession *session, const QByteArray &write,
+	                    const CallbackFn &callbackFn);
+
+	virtual void pushLine(const QString &line) override;
+private:
+	const CallbackFn callbackFn;
+};
+
 class iFoxtrotReceiverFile : public iFoxtrotReceiver
 {
 	Q_OBJECT

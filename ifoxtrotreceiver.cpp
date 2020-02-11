@@ -90,6 +90,54 @@ void iFoxtrotReceiverDIFF::pushLine(const QString &line)
 	handleDIFF(session, line);
 }
 
+iFoxtrotReceiverGETINFO::iFoxtrotReceiverGETINFO(iFoxtrotSession *session) :
+        iFoxtrotReceiverLine(session, "GETINFO:", "GETINFO:\n")
+{
+	multiline = true;
+}
+
+void iFoxtrotReceiverGETINFO::pushLine(const QString &line)
+{
+	if (line.startsWith("GETINFO:VERSION_PLC,"))
+		PLCVersion = line.mid(sizeof("GETINFO:VERSION_PLC,") - 1);
+}
+
+
+iFoxtrotReceiverGET::iFoxtrotReceiverGET(iFoxtrotSession *session,
+                                         const QByteArray &write,
+                                         const CallbackFn &callbackFn) :
+        iFoxtrotReceiverLine(session, "GET:", write), callbackFn(callbackFn)
+{
+	multiline = true;
+}
+
+void iFoxtrotReceiverGET::pushLine(const QString &line)
+{
+	static const QSet<QString> skip {
+		"__PF_CRC",
+		"__PLC_RUN"
+	};
+	static QRegularExpression GETRE("^GET:(.+)\\.GTSAP1_([^_]+)_(.+),(.+)$");
+
+	QString crop = line.mid(4);
+	crop.truncate(crop.indexOf(','));
+	if (skip.contains(crop))
+		return;
+
+	QRegularExpressionMatch match = GETRE.match(line);
+	if (!match.hasMatch()) {
+		qDebug() << "wrong GET line" << line;
+		return;
+	}
+
+	QString foxName = match.captured(1);
+	QString foxType = match.captured(2);
+	QString prop = match.captured(3);
+	QString value = match.captured(4);
+
+	callbackFn(foxName, foxType, prop, value);
+}
+
 iFoxtrotReceiverFile::iFoxtrotReceiverFile(iFoxtrotSession *session,
                                            const QByteArray &write,
                                            const QString &file,

@@ -11,55 +11,6 @@
 #include "ifoxtrotmodel.h"
 #include "ifoxtrotreceiver.h"
 
-class iFoxtrotSession;
-
-class iFoxtrotSessionInit : public QObject
-{
-    Q_OBJECT
-public:
-    explicit iFoxtrotSessionInit(iFoxtrotSession *session,
-                                 QObject *parent = nullptr);
-
-    QString getPLCVersion() const { return PLCVersion; }
-    void setModelList(iFoxtrotModel &model) const { model.setList(list); }
-
-signals:
-    void connected();
-    void error(QAbstractSocket::SocketError socketError);
-    void statusUpdate(const QString &status);
-
-public slots:
-    void sockReadyRead();
-    void timeout();
-
-private:
-    enum ConPhase {
-        PhGetinfo,
-        PhGetEnable,
-        PhGet,
-        PhDone,
-    };
-
-    iFoxtrotSession *session;
-    enum ConPhase phase;
-    QString PLCVersion;
-    QByteArray enableString;
-    QList<iFoxtrotCtl *> list;
-    QRegularExpression GETRE;
-    QTextCodec *codec;
-    QTimer timer;
-    const unsigned int sockTimeout = 15000;
-
-    bool parseGETLine(const QString &line, QString &foxName, QString &foxType,
-                      QString &prop, QString &value);
-    void addItem(const QString &foxName, const QString &foxType,
-                 const QString &prop, const QString &value);
-    void updateItem(const QString &foxName, const QString &foxType,
-                    const QString &prop, const QString &value);
-    bool receive(const QString &req,
-                 const std::function<void(const QString &)> &fun);
-};
-
 class iFoxtrotSession : public QObject
 {
     Q_OBJECT
@@ -128,11 +79,13 @@ public slots:
     void sockDisconnected();
     void sockError(QAbstractSocket::SocketError socketError);
     void sockReadyRead();
-    void initConnected();
-    void initStatusUpdate(const QString &status);
-    void initSockError(QAbstractSocket::SocketError socketError);
 
 private:
+    void addItem(const QString &foxName, const QString &foxType,
+                 const QString &prop, const QString &value,
+                 QList<iFoxtrotCtl *> *listFox, QByteArray *enableString);
+    void updateItem(const QString &foxName, const QString &foxType,
+                    const QString &prop, const QString &value);
 
     iFoxtrotModel model;
     ItemsFox itemsFox;
@@ -144,8 +97,6 @@ private:
     iFoxtrotReceiverDIFF DIFFrcv;
     iFoxtrotReceiver *contReceiver;
     iFoxtrotReceiver *curReceiver;
-
-    friend class iFoxtrotSessionInit;
 };
 
 #endif // IFOXTROTCONN_H
