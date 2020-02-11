@@ -173,6 +173,25 @@ private:
     QString stringPosition() const;
 };
 
+class iFoxtrotPIRSENSOR : public iFoxtrotCtl {
+public:
+    iFoxtrotPIRSENSOR(iFoxtrotSession *session, const QString &foxName) :
+        iFoxtrotCtl(session, foxName), value(0) {}
+
+    QString getFoxType() const override { return "PIRSENSOR"; }
+    bool setProp(const QString &prop, const QString &val) override;
+
+    void setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper) override;
+
+    QVariant data(int column, int role) const override;
+
+protected:
+    QColor getColor() const override { return QColor(100, 210, 210); }
+
+private:
+    int value;
+};
+
 class iFoxtrotScene : public iFoxtrotCtl {
 public:
     iFoxtrotScene(iFoxtrotSession *session, const QString &foxName) :

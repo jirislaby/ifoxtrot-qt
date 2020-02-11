@@ -15,6 +15,8 @@ iFoxtrotCtl *iFoxtrotCtl::getOne(iFoxtrotSession *session,
         return new iFoxtrotDisplay(session, foxName);
     if (foxType == "LIGHT")
         return new iFoxtrotLight(session, foxName);
+    if (foxType == "PIRSENSOR")
+        return new iFoxtrotPIRSENSOR(session, foxName);
     if (foxType == "RELAY")
         return new iFoxtrotRelay(session, foxName);
     if (foxType == "SCENE")
@@ -248,6 +250,37 @@ void iFoxtrotDisplay::setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMappe
 }
 
 QVariant iFoxtrotDisplay::data(int column, int role) const
+{
+    if (role == Qt::DisplayRole || role == Qt::EditRole) {
+        switch (column) {
+        case 1:
+            return value;
+        }
+    }
+
+    return iFoxtrotCtl::data(column, role);
+}
+
+bool iFoxtrotPIRSENSOR::setProp(const QString &prop, const QString &val)
+{
+    if (prop == "VALUE") {
+	    bool ok;
+        value = val.toInt(&ok);
+        if (!ok)
+            qWarning() << "invalid PIR value" << val;
+        changed(prop);
+        return true;
+    }
+
+    return iFoxtrotCtl::setProp(prop, val);
+}
+
+void iFoxtrotPIRSENSOR::setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper)
+{
+    widgetMapper.addMapping(ui->labelPIRSENSORValue, 1, "text");
+}
+
+QVariant iFoxtrotPIRSENSOR::data(int column, int role) const
 {
     if (role == Qt::DisplayRole || role == Qt::EditRole) {
         switch (column) {
