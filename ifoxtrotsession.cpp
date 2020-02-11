@@ -25,7 +25,7 @@ void iFoxtrotSession::addItem(const QString &foxName,
 		return;
 	}
 	listFox->append(item);
-	itemsFoxInsert(foxName, item);
+	itemsFox.insert(foxName, item);
 	enableString->append("EN:").append(foxName).append(".GTSAP1_").append(foxType).append("_*\n");
 
 	Q_UNUSED(prop);

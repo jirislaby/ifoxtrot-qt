@@ -55,9 +55,6 @@ public:
     void receiveFile(const QString &file,
                      const std::function<void(const QByteArray &)> &fun);
 
-    void itemsFoxInsert(const QString &foxName, iFoxtrotCtl *item) {
-        itemsFox.insert(foxName, item);
-    }
     ItemsFox::const_iterator itemsFoxFind(const QString &foxName) const {
         return itemsFox.find(foxName);
     }
