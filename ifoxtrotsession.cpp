@@ -244,6 +244,7 @@ void iFoxtrotSession::sockDisconnected()
 {
     disconnect(&socket, &QTcpSocket::readyRead, this, &iFoxtrotSession::sockReadyRead);
     toSend.clear();
+    sockData.clear();
     curReceiver = nullptr;
     state = Disconnected;
     model.clear();
@@ -258,7 +259,6 @@ void iFoxtrotSession::sockError(QAbstractSocket::SocketError socketError)
 
 void iFoxtrotSession::sockReadyRead()
 {
-	QByteArray data;
 	bool error = false;
 
 	while (socket.bytesAvailable()) {
@@ -266,7 +266,7 @@ void iFoxtrotSession::sockReadyRead()
 		bool isDIFF = false, keep = false;
 
 		if (contReceiver) {
-			ret = contReceiver->handleData(data, &keep);
+			ret = contReceiver->handleData(sockData, &keep);
 		} else {
 			char c;
 			if (!socket.getChar(&c)) {
@@ -276,35 +276,35 @@ void iFoxtrotSession::sockReadyRead()
 
 			if (error && c == '\n') {
 				qWarning() << __PRETTY_FUNCTION__ <<
-					      "unexpected line received" << data;
-				data.clear();
+					      "unexpected line received" << sockData;
+				sockData.clear();
 				error = false;
 				continue;
 			}
 
-			data.append(c);
+			sockData.append(c);
 
 			if (c != ':')
 				continue;
 
-			if (data == "ERROR:") {
-				data = socket.readLine();
-				data.chop(2); // \r\n
+			if (sockData == "ERROR:") {
+				sockData = socket.readLine();
+				sockData.chop(2); // \r\n
 				if (curReceiver) {
-					if (curReceiver->handleError(data))
+					if (curReceiver->handleError(sockData))
 						continue;
 					ret = 0;
 				}
 			} else {
-				isDIFF = data == "DIFF:";
+				isDIFF = sockData == "DIFF:";
 				iFoxtrotReceiver *rcv = isDIFF ? &DIFFrcv : curReceiver;
 				//qDebug() << "rcv" << data;
-				if (!rcv || rcv->getPrefix() != data) {
-					qWarning() << "no receiver for" << data;
+				if (!rcv || rcv->getPrefix() != sockData) {
+					qWarning() << "no receiver for" << sockData;
 					error = true;
 					continue;
 				}
-				ret = rcv->handleData(data, &keep);
+				ret = rcv->handleData(sockData, &keep);
 				if (ret > 0)
 					contReceiver = rcv;
 			}
@@ -312,7 +312,7 @@ void iFoxtrotSession::sockReadyRead()
 
 		if (ret == 0) {
 			contReceiver = nullptr;
-			data.clear();
+			sockData.clear();
 			if (!isDIFF && !keep) {
 				if (toSend.empty()) {
 					qDebug() << "finished, all done";
@@ -325,7 +325,6 @@ void iFoxtrotSession::sockReadyRead()
 			}
 		} else if (ret > 0) {
 			qDebug() << contReceiver;
-			data.clear();
 		} else {
 			contReceiver = nullptr;
 			error = true;

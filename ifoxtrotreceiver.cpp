@@ -47,7 +47,7 @@ qint64 iFoxtrotReceiverLine::handleData(QByteArray &data, bool *keep)
 		data.append(c);
 	}
 
-	return -1;
+	return 1;
 }
 
 iFoxtrotReceiverDIFF::iFoxtrotReceiverDIFF(iFoxtrotSession *session) :
@@ -170,6 +170,7 @@ qint64 iFoxtrotReceiverFile::handleData(QByteArray &data, bool *keep)
 		qDebug() << "not enough bytes in the buffer:" <<
 		            avail << "need:" << toReadInit << "requesting more:" <<
 		            continuation;
+		data.clear();
 		return continuation;
 	}
 

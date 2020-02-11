@@ -132,6 +132,7 @@ private:
     ItemsFox itemsFox;
     QQueue<iFoxtrotReceiver *> toSend;
     QTcpSocket socket;
+    QByteArray sockData;
     enum ConState state;
     QString PLCVersion;
     iFoxtrotReceiverDIFF DIFFrcv;
