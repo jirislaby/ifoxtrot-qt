@@ -26,6 +26,62 @@ void iFoxtrotSessionInit::timeout()
     emit error(QAbstractSocket::SocketTimeoutError);
 }
 
+bool iFoxtrotSessionInit::parseGETLine(const QString &line,
+                                       QString &foxName,
+                                       QString &foxType,
+                                       QString &prop,
+                                       QString &value)
+{
+	QRegularExpressionMatch match = GETRE.match(line);
+	if (!match.hasMatch()) {
+		qDebug() << "wrong GET line" << line;
+		return false;
+	}
+
+	foxName = match.captured(1);
+	foxType = match.captured(2);
+	prop = match.captured(3);
+	value = match.captured(4);
+
+	return true;
+}
+
+void iFoxtrotSessionInit::addItem(const QString &foxName,
+                                  const QString &foxType,
+                                  const QString &prop,
+                                  const QString &value)
+{
+	if (value != "1")
+		return;
+
+	iFoxtrotCtl *item = iFoxtrotCtl::getOne(session, foxType, foxName);
+	if (!item) {
+		qWarning() << "unsupported type" << foxType << "for" << foxName;
+		return;
+	}
+	list.append(item);
+	session->itemsFoxInsert(foxName, item);
+	enableString.append("EN:").append(foxName).append(".GTSAP1_").append(foxType).append("_*\n");
+
+	Q_UNUSED(prop);
+	//qDebug() << foxName << foxType << prop << value;
+}
+void iFoxtrotSessionInit::updateItem(const QString &foxName,
+                                     const QString &foxType,
+                                     const QString &prop,
+                                     const QString &value)
+{
+	Q_UNUSED(foxType);
+
+	auto itemIt = session->itemsFoxFind(foxName);
+	if (itemIt == session->itemsFoxEnd()) {
+		qWarning() << "cannot find" << foxName << "in items";
+		return;
+	}
+	iFoxtrotCtl *item = itemIt.value();
+	item->setProp(prop, value);
+}
+
 void iFoxtrotSessionInit::sockReadyRead()
 {
     timer.start(sockTimeout);
@@ -49,29 +105,9 @@ void iFoxtrotSessionInit::sockReadyRead()
         break;
     case PhGetEnable:
         if (receive("GET", [this](const QString &line) -> void {
-                    QRegularExpressionMatch match = GETRE.match(line);
-                    if (!match.hasMatch()) {
-                        qDebug() << "wrong GET line" << line;
-                        return;
-                    }
-
-                    QString foxName = match.captured(1);
-                    QString foxType = match.captured(2);
-                    QString prop = match.captured(3);
-                    QString value = match.captured(4);
-                    if (value != "1")
-                        return;
-
-                    iFoxtrotCtl *item = iFoxtrotCtl::getOne(session, foxType,
-                                                            foxName);
-                    if (!item) {
-                        qWarning() << "unsupported type" << foxType << "for" << foxName;
-                        return;
-                    }
-                    list.append(item);
-                    session->itemsFoxInsert(foxName, item);
-                    enableString.append("EN:").append(foxName).append(".GTSAP1_").append(foxType).append("_*\n");
-                    //qDebug() << foxName << foxType << prop << value;
+				    QString foxName, foxType, prop, value;
+				    if (parseGETLine(line, foxName, foxType, prop, value))
+					    addItem(foxName, foxType, prop, value);
                 })) {
 
             enableString.append("GET:\n");
@@ -83,23 +119,9 @@ void iFoxtrotSessionInit::sockReadyRead()
         break;
     case PhGet:
         if (receive("GET", [this](const QString &line) -> void {
-                    QRegularExpressionMatch match = GETRE.match(line);
-                    if (!match.hasMatch()) {
-                        qDebug() << "wrong GET line" << line;
-                        return;
-                    }
-                    QString foxName = match.captured(1);
-                    QString foxType = match.captured(2);
-                    QString prop = match.captured(3);
-                    QString value = match.captured(4);
-                    iFoxtrotSession::ItemsFox::const_iterator itemIt =
-                            session->itemsFoxFind(foxName);
-                    if (itemIt == session->itemsFoxEnd()) {
-                        qWarning() << "cannot find" << foxName << "in items";
-                        return;
-                    }
-                    iFoxtrotCtl *item = itemIt.value();
-                    item->setProp(prop, value);
+				    QString foxName, foxType, prop, value;
+				    if (parseGETLine(line, foxName, foxType, prop, value))
+					    updateItem(foxName, foxType, prop, value);
                 })) {
 
 			for (iFoxtrotSession::ItemsFox::const_iterator it = session->itemsFoxBegin();

@@ -50,6 +50,12 @@ private:
     QTimer timer;
     const unsigned int sockTimeout = 15000;
 
+    bool parseGETLine(const QString &line, QString &foxName, QString &foxType,
+                      QString &prop, QString &value);
+    void addItem(const QString &foxName, const QString &foxType,
+                 const QString &prop, const QString &value);
+    void updateItem(const QString &foxName, const QString &foxType,
+                    const QString &prop, const QString &value);
     bool receive(const QString &req,
                  const std::function<void(const QString &)> &fun);
 };
