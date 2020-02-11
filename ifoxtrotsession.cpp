@@ -341,7 +341,7 @@ void iFoxtrotSession::sockReadyRead()
 					curReceiver = nullptr;
 				} else {
 					curReceiver = toSend.dequeue();
-					qDebug() << "finished, handling" << curReceiver->getWrite();
+					qDebug() << "finished, handling" << curReceiver->getWrite().left(40);
 					socket.write(curReceiver->getWrite());
 				}
 			}
@@ -357,13 +357,13 @@ void iFoxtrotSession::sockReadyRead()
 void iFoxtrotSession::enqueueRcv(iFoxtrotReceiver *rcv)
 {
 	if (!curReceiver) {
-		qDebug() << __func__ << "directly" << rcv->getWrite();
+		qDebug() << __func__ << "directly" << rcv->getWrite().left(40);
 		curReceiver = rcv;
 		socket.write(rcv->getWrite());
 		return;
 	}
 
-	qDebug() << __func__ << "enqueuing" << rcv->getWrite();
+	qDebug() << __func__ << "enqueuing" << rcv->getWrite().left(40);
 	toSend.enqueue(rcv);
 }
 
