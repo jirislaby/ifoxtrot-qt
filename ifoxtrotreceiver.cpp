@@ -35,8 +35,10 @@ qint64 iFoxtrotReceiverLine::handleData(QByteArray &data, bool *keep)
 
 		if (c == '\n') {
 			if (multiline) {
-				if (data == prefix)
+				if (data == prefix) {
+					emit done();
 					return 0;
+				}
 				*keep = true;
 			}
 			QTextCodec *codec = QTextCodec::codecForName("Windows 1250");
@@ -191,6 +193,7 @@ qint64 iFoxtrotReceiverFile::handleData(QByteArray &data, bool *keep)
 
 	if (toReadInit == 0) {
 		callbackFn(this, fileBuffer);
+		emit done();
 		return 0;
 	}
 

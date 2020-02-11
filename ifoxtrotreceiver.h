@@ -24,6 +24,9 @@ public:
 	const QByteArray &getPrefix() const { return prefix; }
 	const QByteArray &getWrite() const { return write; }
 
+signals:
+    void done();
+
 protected:
 	iFoxtrotSession *session;
 	const QByteArray prefix;
