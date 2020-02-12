@@ -3,6 +3,7 @@
 #include <QJsonObject>
 #include <QList>
 #include <QTextCodec>
+#include <QtMath>
 
 #include "ifoxtrotctl.h"
 #include "ifoxtrotsession.h"
@@ -245,6 +246,8 @@ void iFoxtrotDisplay::setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMappe
 {
     ui->doubleSpinBoxDisplayVal->setReadOnly(!editable);
     ui->doubleSpinBoxDisplayVal->setDecimals(precision);
+    qreal step = qPow(10, -precision);
+    ui->doubleSpinBoxDisplayVal->setSingleStep(step);
     ui->doubleSpinBoxDisplayVal->setSuffix(" " + unit);
     widgetMapper.addMapping(ui->doubleSpinBoxDisplayVal, 1, "value");
 }
