@@ -58,10 +58,10 @@ iFoxtrotSession::iFoxtrotSession(QObject *parent) :
     connect(&socket, &QTcpSocket::disconnected, this, &iFoxtrotSession::sockDisconnected);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
     connect(&socket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error),
-            this, &iFoxtrotSession::sockError);
+            this, &iFoxtrotSession::lowSockError);
 #else
     connect(&socket, static_cast<void (QAbstractSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::error),
-            this, &iFoxtrotSession::sockError);
+            this, &iFoxtrotSession::lowSockError);
 #endif
 }
 
@@ -141,10 +141,10 @@ void iFoxtrotSession::sockDisconnected()
     emit disconnected();
 }
 
-void iFoxtrotSession::sockError(QAbstractSocket::SocketError socketError)
+void iFoxtrotSession::lowSockError(QAbstractSocket::SocketError socketError)
 {
     state = Disconnected;
-    emit error(socketError);
+    emit sockError(socketError);
 }
 
 void iFoxtrotSession::sockReadyRead()

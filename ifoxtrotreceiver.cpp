@@ -106,7 +106,7 @@ bool iFoxtrotReceiverSETCONF::handleError(QByteArray &data)
 	if (!data.startsWith("10 "))
 		qWarning() << __func__ << "unknown error" << data;
 
-	session->close();
+	session->conFailed("Cannot " + getWrite());
 
 	return false;
 }

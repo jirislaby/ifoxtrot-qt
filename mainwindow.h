@@ -28,6 +28,7 @@ private slots:
     void conStatusUpdate(const QString &status);
     void disconnected();
     void sockError(QAbstractSocket::SocketError socketError);
+    void conError(const QString &reason);
     void rowChanged(const QModelIndex &current, const QModelIndex &previous);
 
     void on_listViewItems_clicked(const QModelIndex &index);

@@ -25,7 +25,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&session, &iFoxtrotSession::connected, this, &MainWindow::connected);
     connect(&session, &iFoxtrotSession::conStatusUpdate, this, &MainWindow::conStatusUpdate);
     connect(&session, &iFoxtrotSession::disconnected, this, &MainWindow::disconnected);
-    connect(&session, &iFoxtrotSession::error, this, &MainWindow::sockError);
+    connect(&session, &iFoxtrotSession::sockError, this, &MainWindow::sockError);
+    connect(&session, &iFoxtrotSession::conError, this, &MainWindow::conError);
 
     proxyModel = new QSortFilterProxyModel(this);
     proxyModel->setSourceModel(session.getModel());
@@ -114,6 +115,13 @@ void MainWindow::disconnected()
     ui->labelFoxName->setText("");
     ui->labelPLC->setText("");
     ui->stackedWidget->setCurrentIndex(0);
+}
+
+void MainWindow::conError(const QString &reason)
+{
+	qWarning() << "connection error" << reason;
+	disconnected();
+	statusBar()->showMessage("Connection error: " + reason);
 }
 
 void MainWindow::sockError(QAbstractSocket::SocketError socketError)

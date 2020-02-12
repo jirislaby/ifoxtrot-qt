@@ -35,6 +35,10 @@ public:
         socket.connectToHost(host, port);
         state = Connecting;
     }
+    void conFailed(const QString &reason) {
+	    close();
+	    emit conError(reason);
+    }
     void close() {
         socket.close();
         state = Disconnected;
@@ -70,13 +74,14 @@ public:
 signals:
     void connected();
     void disconnected();
-    void error(QAbstractSocket::SocketError socketError);
+    void sockError(QAbstractSocket::SocketError socketError);
+    void conError(const QString &reason);
     void conStatusUpdate(const QString &status);
 
 public slots:
     void sockConnected();
     void sockDisconnected();
-    void sockError(QAbstractSocket::SocketError socketError);
+    void lowSockError(QAbstractSocket::SocketError socketError);
     void sockReadyRead();
 
 private:
