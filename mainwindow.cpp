@@ -198,6 +198,20 @@ void MainWindow::fileTransferTriggered()
     ft.exec();
 }
 
+void MainWindow::aboutTriggered()
+{
+	QMessageBox::about(this, "iFoxtrot",
+	                   "Copyright © 2018-2020 <b>Jiri Slaby</b><br/>"
+	                   "Licensed under GPLv2<br/>"
+	                   "Web: <a href=\"http://consultctl.eu\">http://consultctl.eu</a><br/>"
+	                   "E-mail: <a href=\"mailto:jirislaby@gmail.com\">jirislaby@gmail.com</a>");
+}
+
+void MainWindow::aboutQtTriggered()
+{
+	QMessageBox::aboutQt(this);
+}
+
 void MainWindow::on_pushButtonShutUp_clicked()
 {
     auto shutter = dynamic_cast<iFoxtrotShutter *>(getCurrentCtl());

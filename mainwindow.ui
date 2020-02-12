@@ -1002,7 +1002,15 @@
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
+   <widget class="QMenu" name="menuAbout">
+    <property name="title">
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="actionAbout"/>
+    <addaction name="actionAbout_Qt"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionQuit">
@@ -1019,6 +1027,16 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+T</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>&amp;About</string>
+   </property>
+  </action>
+  <action name="actionAbout_Qt">
+   <property name="text">
+    <string>About &amp;Qt</string>
    </property>
   </action>
  </widget>
@@ -1217,12 +1235,12 @@
    <slot>click()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>468</x>
-     <y>53</y>
+     <x>460</x>
+     <y>54</y>
     </hint>
     <hint type="destinationlabel">
-     <x>552</x>
-     <y>39</y>
+     <x>546</x>
+     <y>54</y>
     </hint>
    </hints>
   </connection>
@@ -1258,11 +1276,45 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionAbout</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>aboutTriggered()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>402</x>
+     <y>352</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionAbout_Qt</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>aboutQtTriggered()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>402</x>
+     <y>352</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>buttonSceneClicked()</slot>
   <slot>on_pushButtonLight_clicked()</slot>
   <slot>on_horizontalSliderDimlevel_sliderReleased()</slot>
   <slot>fileTransferTriggered()</slot>
+  <slot>aboutTriggered()</slot>
+  <slot>aboutQtTriggered()</slot>
  </slots>
 </ui>
