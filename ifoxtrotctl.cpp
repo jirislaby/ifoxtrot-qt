@@ -248,7 +248,7 @@ void iFoxtrotDisplay::setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMappe
     ui->doubleSpinBoxDisplayVal->setDecimals(precision);
     qreal step = qPow(10, -precision);
     ui->doubleSpinBoxDisplayVal->setSingleStep(step);
-    ui->doubleSpinBoxDisplayVal->setSuffix(" " + unit);
+    ui->doubleSpinBoxDisplayVal->setSuffix(unit.isEmpty() ? "" : " " + unit);
     widgetMapper.addMapping(ui->doubleSpinBoxDisplayVal, 1, "value");
 }
 
