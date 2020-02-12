@@ -9,7 +9,8 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    changingVals(false)
 {
     QSettings settings("jirislaby", "ifoxtrot");
 
@@ -157,9 +158,11 @@ void MainWindow::on_listViewItems_clicked(const QModelIndex &index)
         }
 
     ui->labelFoxName->setText(name);
+    changingVals = true;
     widgetMapper.clearMapping();
     item->setupUI(ui, widgetMapper);
     widgetMapper.setCurrentIndex(proxyIndex.row());
+    changingVals = false;
 }
 
 void MainWindow::on_listViewItems_doubleClicked(const QModelIndex &index)
@@ -264,11 +267,9 @@ void MainWindow::on_horizontalSliderDimlevel_actionTriggered(int action)
 
 void MainWindow::on_doubleSpinBoxDisplayVal_valueChanged(double value)
 {
-    auto s = dynamic_cast<QDoubleSpinBox *>(sender());
     auto display = dynamic_cast<iFoxtrotDisplay *>(getCurrentCtl());
 
-    /* changed by us? */
-    if (s->isReadOnly())
+    if (changingVals)
 	    return;
 
     if (abs(display->getValue() - value) < .01)
@@ -283,6 +284,9 @@ void MainWindow::on_TPW_SB_delta_valueChanged(double value)
 {
     auto tpw = dynamic_cast<iFoxtrotTPW *>(getCurrentCtl());
     double diff = value - tpw->getDelta();
+
+    if (changingVals)
+	    return;
 
     if (abs(diff) < .01)
         return;

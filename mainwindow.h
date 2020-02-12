@@ -66,6 +66,7 @@ private:
     iFoxtrotSession session;
     QSortFilterProxyModel *proxyModel;
     QDataWidgetMapper widgetMapper;
+    bool changingVals;
 
     iFoxtrotCtl *getCurrentCtl() const;
 };
