@@ -30,7 +30,8 @@ public:
     enum ConState getState() const { return state; }
     QString getPLCVersion() const { return PLCVersion; }
 
-    void connectToHost(const QString &host, quint16 port) {
+    void connectToHost(const QString &host, quint16 port, const QString &PLC) {
+	    PLCAddr = PLC;
         socket.connectToHost(host, port);
         state = Connecting;
     }
@@ -91,6 +92,7 @@ private:
     QTcpSocket socket;
     QByteArray sockData;
     enum ConState state;
+    QString PLCAddr;
     QString PLCVersion;
     iFoxtrotReceiverDIFF DIFFrcv;
     iFoxtrotReceiver *contReceiver;

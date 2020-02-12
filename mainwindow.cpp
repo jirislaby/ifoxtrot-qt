@@ -60,9 +60,10 @@ MainWindow::~MainWindow()
 void MainWindow::on_butConnect_clicked()
 {
     QString addr = ui->lineEditAddr->text();
+    QString PLCAddr = ui->lineEditPLCAddr->text();
     quint16 port = static_cast<quint16>(ui->spinBoxPort->value());
 
-    if (addr.length() == 0) {
+    if (addr.isEmpty() || PLCAddr.isEmpty()) {
         QMessageBox mbox;
         mbox.setIcon(QMessageBox::Critical);
         mbox.setText("Empty address!");
@@ -70,7 +71,7 @@ void MainWindow::on_butConnect_clicked()
         return;
     }
 
-    session.connectToHost(addr, port);
+    session.connectToHost(addr, port, PLCAddr);
 
     statusBar()->showMessage("Connecting to " + addr + ":" + QString::number(port));
     ui->butConnect->setVisible(false);

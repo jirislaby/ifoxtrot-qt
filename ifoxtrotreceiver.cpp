@@ -95,6 +95,28 @@ void iFoxtrotReceiverGETINFO::pushLine(const QString &line)
 		PLCVersion = line.mid(sizeof("GETINFO:VERSION_PLC,") - 1);
 }
 
+iFoxtrotReceiverSETCONF::iFoxtrotReceiverSETCONF(iFoxtrotSession *session,
+                                                 const QByteArray &conf) :
+        iFoxtrotReceiverLine(session, "WARNING:", conf)
+{
+}
+
+bool iFoxtrotReceiverSETCONF::handleError(QByteArray &data)
+{
+	if (!data.startsWith("10 "))
+		qWarning() << __func__ << "unknown error" << data;
+
+	session->close();
+
+	return false;
+}
+
+void iFoxtrotReceiverSETCONF::pushLine(const QString &line)
+{
+	if (line.startsWith("WARNING:250 ") || line.startsWith("WARNING:251 "))
+		return;
+	qWarning() << __func__ << "unhandled " << line;
+}
 
 iFoxtrotReceiverGET::iFoxtrotReceiverGET(iFoxtrotSession *session,
                                          const QByteArray &write,

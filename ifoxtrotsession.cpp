@@ -49,6 +49,7 @@ void iFoxtrotSession::updateItem(const QString &foxName,
 
 iFoxtrotSession::iFoxtrotSession(QObject *parent) :
     QObject(parent), state(Disconnected),
+    PLCAddr(""),
     DIFFrcv(this),
     contReceiver(nullptr),
     curReceiver(nullptr)
@@ -75,15 +76,12 @@ void iFoxtrotSession::sockConnected()
     state = Connected;
     connect(&socket, &QTcpSocket::readyRead, this, &iFoxtrotSession::sockReadyRead);
 
-#ifdef SETCONF
-    QString setconf("SETCONF:ipaddr,");
-    setconf.append(ui->lineEditPLCAddr->text()).append('\n');
-    socket.write(setconf);
-    if (!socket.waitForReadyRead(5000)) {
-        socket.abort();
-        return;
+    if (!PLCAddr.isEmpty()) {
+	    QByteArray setconf("SETCONF:ipaddr,");
+	    setconf.append(PLCAddr).append('\n');
+	    auto SETCONFrcv = new iFoxtrotReceiverSETCONF(this, setconf);
+	    enqueueRcv(SETCONFrcv);
     }
-#endif
 
     QByteArray lineArray = socket.readLine();
     auto GETINFOrcv = new iFoxtrotReceiverGETINFO(this);

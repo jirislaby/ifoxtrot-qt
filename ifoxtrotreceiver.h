@@ -66,6 +66,15 @@ private:
 	QString PLCVersion;
 };
 
+class iFoxtrotReceiverSETCONF : public iFoxtrotReceiverLine {
+	Q_OBJECT
+public:
+	iFoxtrotReceiverSETCONF(iFoxtrotSession *session, const QByteArray &conf);
+
+	virtual bool handleError(QByteArray &data) override;
+	virtual void pushLine(const QString &line) override;
+};
+
 class iFoxtrotReceiverGET : public iFoxtrotReceiverLine {
 	Q_OBJECT
 public:
