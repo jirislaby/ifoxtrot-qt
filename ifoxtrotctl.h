@@ -245,4 +245,23 @@ private:
     double delta;
 };
 
+class iFoxtrotWebConf : public iFoxtrotCtl {
+public:
+    iFoxtrotWebConf(iFoxtrotSession *session, const QString &foxName) :
+        iFoxtrotCtl(session, foxName) {}
+
+    QString getFoxType() const override { return "WEBCONF"; }
+    bool setProp(const QString &prop, const QString &val) override;
+
+    void setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper) override;
+
+    QVariant data(int column, int role) const override;
+
+protected:
+    QColor getColor() const override { return QColor(210, 155, 255); }
+
+private:
+    QString url;
+};
+
 #endif // IFOXTROTCTL_H

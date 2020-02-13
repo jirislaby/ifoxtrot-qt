@@ -676,7 +676,7 @@
           <widget class="QWidget" name="page_TPW">
            <layout class="QVBoxLayout" name="verticalLayout_9">
             <item>
-             <widget class="QLabel" name="labelThermostat">
+             <widget class="QLabel" name="labelTPW">
               <property name="text">
                <string>Time Prog Week</string>
               </property>
@@ -967,6 +967,56 @@
                <size>
                 <width>20</width>
                 <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="page_WEBCONF">
+           <layout class="QVBoxLayout" name="verticalLayout_16">
+            <item>
+             <widget class="QLabel" name="labelWEBCONF">
+              <property name="text">
+               <string>Web Configuration</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_16">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="labelWEBCONF_URL">
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+              <property name="openExternalLinks">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_15">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>255</height>
                </size>
               </property>
              </spacer>

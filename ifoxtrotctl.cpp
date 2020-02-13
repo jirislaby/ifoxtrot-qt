@@ -26,6 +26,8 @@ iFoxtrotCtl *iFoxtrotCtl::getOne(iFoxtrotSession *session,
         return new iFoxtrotShutter(session, foxName);
     if (foxType == "TPW")
         return new iFoxtrotTPW(session, foxName);
+    if (foxType == "WEBCONF")
+        return new iFoxtrotWebConf(session, foxName);
 
     return nullptr;
 }
@@ -692,6 +694,39 @@ QVariant iFoxtrotTPW::data(int column, int role) const
         case 16:
             return name;
         }
+    }
+
+    return iFoxtrotCtl::data(column, role);
+}
+
+bool iFoxtrotWebConf::setProp(const QString &prop, const QString &val)
+{
+    if (prop == "SYMBOL") {
+	    return true;
+    }
+    if (prop == "URL") {
+	    url = getFoxString(val);
+	    if (url == "") {
+		    qWarning() << "wrong url for" << foxName << ":" << val;
+		    return false;
+	    }
+	    return true;
+    }
+    return iFoxtrotCtl::setProp(prop, val);
+}
+
+void iFoxtrotWebConf::setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper)
+{
+    widgetMapper.addMapping(ui->labelWEBCONF_URL, 1, "text");
+}
+
+QVariant iFoxtrotWebConf::data(int column, int role) const
+{
+    if (role == Qt::DisplayRole || role == Qt::EditRole) {
+        switch (column) {
+        case 1:
+            return "<a href=\"" + url + "\">" + url + "</a>";
+		}
     }
 
     return iFoxtrotCtl::data(column, role);
