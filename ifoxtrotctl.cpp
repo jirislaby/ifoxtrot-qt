@@ -12,6 +12,8 @@
 iFoxtrotCtl *iFoxtrotCtl::getOne(iFoxtrotSession *session,
                                  const QString &foxType, const QString &foxName)
 {
+    if (foxType == "CAMERA")
+        return new iFoxtrotWebCam(session, foxName);
     if (foxType == "DISPLAY")
         return new iFoxtrotDisplay(session, foxName);
     if (foxType == "LIGHT")
@@ -694,6 +696,36 @@ QVariant iFoxtrotTPW::data(int column, int role) const
         case 16:
             return name;
         }
+    }
+
+    return iFoxtrotCtl::data(column, role);
+}
+
+bool iFoxtrotWebCam::setProp(const QString &prop, const QString &val)
+{
+    if (prop == "URL") {
+	    url = getFoxString(val);
+	    if (url == "") {
+		    qWarning() << "wrong url for" << foxName << ":" << val;
+		    return false;
+	    }
+	    return true;
+    }
+    return iFoxtrotCtl::setProp(prop, val);
+}
+
+void iFoxtrotWebCam::setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper)
+{
+    widgetMapper.addMapping(ui->labelWEBCAM_URL, 1, "text");
+}
+
+QVariant iFoxtrotWebCam::data(int column, int role) const
+{
+    if (role == Qt::DisplayRole || role == Qt::EditRole) {
+        switch (column) {
+        case 1:
+            return "<a href=\"" + url + "\">" + url + "</a>";
+		}
     }
 
     return iFoxtrotCtl::data(column, role);

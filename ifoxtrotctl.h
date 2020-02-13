@@ -245,6 +245,25 @@ private:
     double delta;
 };
 
+class iFoxtrotWebCam : public iFoxtrotCtl {
+public:
+    iFoxtrotWebCam(iFoxtrotSession *session, const QString &foxName) :
+        iFoxtrotCtl(session, foxName) {}
+
+    QString getFoxType() const override { return "WEBCAM"; }
+    bool setProp(const QString &prop, const QString &val) override;
+
+    void setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper) override;
+
+    QVariant data(int column, int role) const override;
+
+protected:
+    QColor getColor() const override { return QColor(230, 155, 155); }
+
+private:
+    QString url;
+};
+
 class iFoxtrotWebConf : public iFoxtrotCtl {
 public:
     iFoxtrotWebConf(iFoxtrotSession *session, const QString &foxName) :
