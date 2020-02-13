@@ -65,7 +65,7 @@ void MainWindow::on_butConnect_clicked()
     QString PLCAddr = ui->lineEditPLCAddr->text();
     quint16 port = static_cast<quint16>(ui->spinBoxPort->value());
 
-    if (addr.isEmpty() || PLCAddr.isEmpty()) {
+    if (addr.isEmpty()) {
         QMessageBox mbox;
         mbox.setIcon(QMessageBox::Critical);
         mbox.setText("Empty address!");
