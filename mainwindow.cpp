@@ -246,7 +246,18 @@ void MainWindow::on_lineEditFilter_textEdited(const QString &text)
 
 iFoxtrotCtl *MainWindow::getCurrentCtl() const
 {
-    const QModelIndex idx = proxyModel->mapToSource(ui->listViewItems->currentIndex());
+    const auto curIdx = ui->listViewItems->currentIndex();
+    if (!curIdx.isValid()) {
+        qWarning() << "invalid current index";
+        return nullptr;
+    }
+
+    const auto idx = proxyModel->mapToSource(curIdx);
+    if (!idx.isValid()) {
+        qWarning() << "invalid proxy index";
+        return nullptr;
+    }
+
     return session.getModel()->at(idx.row());
 }
 
