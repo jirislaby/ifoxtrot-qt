@@ -174,7 +174,13 @@ void MainWindow::on_listViewItems_doubleClicked(const QModelIndex &index)
 
 void MainWindow::on_pushButtonLight_clicked()
 {
-    auto onOff = dynamic_cast<iFoxtrotOnOff *>(getCurrentCtl());
+    auto ctl = getCurrentCtl();
+    auto onOff = dynamic_cast<iFoxtrotOnOff *>(ctl);
+    if (!onOff) {
+        qWarning() << "invalid ctl" << __LINE__ << ctl->getFoxType() <<
+                      ctl->getFoxName();
+        return;
+    }
     onOff->switchState();
 }
 
@@ -188,7 +194,13 @@ void MainWindow::buttonSceneClicked()
     QString set = s->objectName();
     set.replace(0, set.size() - 1, "SET");
 
-    auto scene = dynamic_cast<iFoxtrotScene *>(getCurrentCtl());
+    auto ctl = getCurrentCtl();
+    auto scene = dynamic_cast<iFoxtrotScene *>(ctl);
+    if (!scene) {
+        qWarning() << "invalid ctl" << __LINE__ << ctl->getFoxType() <<
+                      ctl->getFoxName();
+        return;
+    }
     QByteArray req = scene->GTSAP("SET", set, "1");
     qDebug() << req;
     session.write(req);
@@ -217,25 +229,49 @@ void MainWindow::aboutQtTriggered()
 
 void MainWindow::on_pushButtonShutUp_clicked()
 {
-    auto shutter = dynamic_cast<iFoxtrotShutter *>(getCurrentCtl());
+    auto ctl = getCurrentCtl();
+    auto shutter = dynamic_cast<iFoxtrotShutter *>(ctl);
+    if (!shutter) {
+        qWarning() << "invalid ctl" << __LINE__ << ctl->getFoxType() <<
+                      ctl->getFoxName();
+        return;
+    }
     shutter->up();
 }
 
 void MainWindow::on_pushButtonShutRUp_clicked()
 {
-    auto shutter = dynamic_cast<iFoxtrotShutter *>(getCurrentCtl());
+    auto ctl = getCurrentCtl();
+    auto shutter = dynamic_cast<iFoxtrotShutter *>(ctl);
+    if (!shutter) {
+        qWarning() << "invalid ctl" << __LINE__ << ctl->getFoxType() <<
+                      ctl->getFoxName();
+        return;
+    }
     shutter->rotUp();
 }
 
 void MainWindow::on_pushButtonShutRDown_clicked()
 {
-    auto shutter = dynamic_cast<iFoxtrotShutter *>(getCurrentCtl());
+    auto ctl = getCurrentCtl();
+    auto shutter = dynamic_cast<iFoxtrotShutter *>(ctl);
+    if (!shutter) {
+        qWarning() << "invalid ctl" << __LINE__ << ctl->getFoxType() <<
+                      ctl->getFoxName();
+        return;
+    }
     shutter->rotDown();
 }
 
 void MainWindow::on_pushButtonShutDown_clicked()
 {
-    auto shutter = dynamic_cast<iFoxtrotShutter *>(getCurrentCtl());
+    auto ctl = getCurrentCtl();
+    auto shutter = dynamic_cast<iFoxtrotShutter *>(ctl);
+    if (!shutter) {
+        qWarning() << "invalid ctl" << __LINE__ << ctl->getFoxType() <<
+                      ctl->getFoxName();
+        return;
+    }
     shutter->down();
 }
 
@@ -264,7 +300,13 @@ iFoxtrotCtl *MainWindow::getCurrentCtl() const
 void MainWindow::on_horizontalSliderDimlevel_sliderReleased()
 {
     int value = ui->horizontalSliderDimlevel->value();
-    auto light = dynamic_cast<iFoxtrotLight *>(getCurrentCtl());
+    auto ctl = getCurrentCtl();
+    auto light = dynamic_cast<iFoxtrotLight *>(ctl);
+    if (!light) {
+        qWarning() << "invalid ctl" << __LINE__ << ctl->getFoxType() <<
+                      ctl->getFoxName();
+        return;
+    }
     QByteArray req = light->GTSAP("SET", "DIMLEVEL", QString::number(value));
     qDebug() << req;
     session.write(req);
@@ -278,7 +320,13 @@ void MainWindow::on_horizontalSliderDimlevel_actionTriggered(int action)
 
 void MainWindow::on_doubleSpinBoxDisplayVal_valueChanged(double value)
 {
-    auto display = dynamic_cast<iFoxtrotDisplay *>(getCurrentCtl());
+    auto ctl = getCurrentCtl();
+    auto display = dynamic_cast<iFoxtrotDisplay *>(ctl);
+    if (!display) {
+        qWarning() << "invalid ctl" << __LINE__ << ctl->getFoxType() <<
+                      ctl->getFoxName();
+        return;
+    }
 
     if (changingVals)
 	    return;
@@ -293,7 +341,13 @@ void MainWindow::on_doubleSpinBoxDisplayVal_valueChanged(double value)
 
 void MainWindow::on_TPW_SB_delta_valueChanged(double value)
 {
-    auto tpw = dynamic_cast<iFoxtrotTPW *>(getCurrentCtl());
+    auto ctl = getCurrentCtl();
+    auto tpw = dynamic_cast<iFoxtrotTPW *>(ctl);
+    if (!tpw) {
+        qWarning() << "invalid ctl" << __LINE__ << ctl->getFoxType() <<
+                      ctl->getFoxName();
+        return;
+    }
     double diff = value - tpw->getDelta();
 
     if (changingVals)
