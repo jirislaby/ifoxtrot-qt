@@ -107,7 +107,8 @@ void iFoxtrotSession::sockConnected()
     connect(GETrcv, &iFoxtrotReceiver::done, [this, GETrcv, listFox, enableString] {
 	    emit conStatusUpdate("Received items, receiving states");
 	    model.setList(*listFox);
-	    delete listFox;
+        model.sort(0);
+        delete listFox;
 	    GETrcv->deleteLater();
 	    enableString->append("GET:\n");
 	    auto GETrcv2 = new iFoxtrotReceiverGET(this, *enableString,
