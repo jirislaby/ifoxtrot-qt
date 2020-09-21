@@ -462,7 +462,7 @@ void iFoxtrotScene::postReceive()
 		src.append(a + '0');
 		qDebug() << __PRETTY_FUNCTION__ << foxName << src;
 
-		session->receiveFile(src, [this, a, src, codec](const QByteArray &data) {
+        session->receiveFile(src, [this, a, &src, codec](const QByteArray &data) {
 			QJsonParseError error;
 			auto doc = QJsonDocument::fromJson(codec->toUnicode(data).toUtf8(),
 			                                   &error);
@@ -482,7 +482,8 @@ void iFoxtrotScene::postReceive()
 			}
 			qDebug() << name.value().toString();
 			sceneNames[a - 1] = name.value().toString();
-		});
+            changed("");
+        });
 	}
 }
 
@@ -499,11 +500,23 @@ void iFoxtrotScene::setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper)
 
         int which = name.remove(0, sizeof "pushButtonSc" - 1).toInt();
         but->setEnabled(which <= scenes);
-        if (sceneNames[which - 1] != "")
-			but->setText(sceneNames[which - 1]);
-		else
-			but->setText("Scene " + QString::number(which));
+        widgetMapper.addMapping(but, which, "text");
     }
+}
+
+QVariant iFoxtrotScene::data(int column, int role) const
+{
+    if (role == Qt::DisplayRole || role == Qt::EditRole) {
+        switch (column) {
+        case 1 ... 8:
+            QString ret = sceneNames[column - 1];
+            if (ret == "")
+                ret = "Scene " + QString::number(column);
+            return ret;
+        }
+    }
+
+    return iFoxtrotCtl::data(column, role);
 }
 
 bool iFoxtrotTPW::setProp(const QString &prop, const QString &val)

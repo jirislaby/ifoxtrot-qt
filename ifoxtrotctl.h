@@ -203,6 +203,8 @@ public:
 
     void setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper) override;
 
+    QVariant data(int column, int role) const override;
+
 protected:
     QColor getColor() const override { return QColor(210, 255, 210); }
 
