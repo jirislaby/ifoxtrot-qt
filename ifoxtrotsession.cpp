@@ -58,8 +58,11 @@ iFoxtrotSession::iFoxtrotSession(QObject *parent) :
 {
     connect(&socket, &QTcpSocket::connected, this, &iFoxtrotSession::sockConnected);
     connect(&socket, &QTcpSocket::disconnected, this, &iFoxtrotSession::sockDisconnected);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
     connect(&socket, &QAbstractSocket::errorOccurred,
+            this, &iFoxtrotSession::lowSockError);
+#elif QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+    connect(&socket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error),
             this, &iFoxtrotSession::lowSockError);
 #else
     connect(&socket, static_cast<void (QAbstractSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::error),
