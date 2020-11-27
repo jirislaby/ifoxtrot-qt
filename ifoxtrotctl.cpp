@@ -461,7 +461,7 @@ void iFoxtrotScene::postReceive()
 		QString src(filename);
 		src.append(a + '0');
 
-        session->receiveFile(src, [this, a, &src, codec](const QByteArray &data) {
+        session->receiveFile(src, [this, a, src, codec](const QByteArray &data) {
 			QJsonParseError error;
 			auto doc = QJsonDocument::fromJson(codec->toUnicode(data).toUtf8(),
 			                                   &error);
