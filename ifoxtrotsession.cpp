@@ -26,7 +26,9 @@ void iFoxtrotSession::addItem(const QString &foxName,
 	}
 	listFox->append(item);
 	itemsFox.insert(foxName, item);
-	enableString->append("EN:").append(foxName).append(".GTSAP1_").append(foxType).append("_*\n");
+    QString en("EN:");
+    en.append(foxName).append(".GTSAP1_").append(foxType).append("_*\n");
+    enableString->append(en.toUtf8());
 
 	Q_UNUSED(prop);
 	// qDebug() << foxName << foxType << prop << value;
