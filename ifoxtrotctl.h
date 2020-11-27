@@ -4,6 +4,8 @@
 #include <QByteArray>
 #include <QColor>
 #include <QDataWidgetMapper>
+#include <QJsonObject>
+#include <QList>
 #include <QObject>
 #include <QString>
 #include <QVector>
@@ -194,6 +196,12 @@ private:
 
 class iFoxtrotScene : public iFoxtrotCtl {
 public:
+    struct SceneCfg {
+        iFoxtrotCtl *ctl;
+        QString gtsap;
+        QString val;
+    };
+
     iFoxtrotScene(iFoxtrotSession *session, const QString &foxName) :
         iFoxtrotCtl(session, foxName), sceneNames(8), scenes(0) {}
 
@@ -209,9 +217,13 @@ protected:
     QColor getColor() const override { return QColor(210, 255, 210); }
 
 private:
-	QVector<QString> sceneNames;
+    QVector<QString> sceneNames;
     int scenes;
     QString filename;
+    QList<struct SceneCfg> sceneCfg[8];
+
+    void walkSceneDFS(const int number, const QJsonObject &scene,
+                      QString prefix = "");
 };
 
 class iFoxtrotTPW : public iFoxtrotCtl {

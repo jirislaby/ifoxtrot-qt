@@ -454,6 +454,54 @@ bool iFoxtrotScene::setProp(const QString &prop, const QString &val)
     return iFoxtrotCtl::setProp(prop, val);
 }
 
+void iFoxtrotScene::walkSceneDFS(const int number, const QJsonObject &scene,
+                                 QString prefix)
+{
+    QString prefixd(prefix);
+
+    if (prefixd != "")
+        prefixd += '.';
+
+    for (const auto &k: scene.keys()) {
+        const auto scene_k = scene[k];
+
+        if (!k.startsWith("GTSAP1_")) {
+            walkSceneDFS(number, scene_k.toObject(), prefixd + k);
+            continue;
+        }
+
+        const auto item = session->itemsFoxFind(prefix);
+        if (item == session->itemsFoxEnd()) {
+            qWarning() << "invalid item" << prefixd + k << "in scene" <<
+                  sceneNames[number];
+            continue;
+        }
+
+        QString val;
+        if (scene_k.isBool())
+            val = scene_k.toBool() ? "1" : "0";
+        else if (scene_k.isDouble())
+            val = QString::number(scene_k.toDouble());
+        else if (scene_k.isString())
+            val = scene_k.toString();
+        else {
+            qWarning() << "invalid value for" << (*item)->getName() <<
+                       k << "in scene" << name;
+            continue;
+        }
+        sceneCfg[number].append(SceneCfg{*item, k, val});
+        //qDebug() << prefix << (*item)->getName() << val;
+        continue;
+    }
+}
+
+QDebug &operator<<(QDebug &debug, const iFoxtrotScene::SceneCfg &cfg)
+{
+    debug << '[' << cfg.ctl->getFoxName() << ", " << cfg.gtsap << ", " <<
+             cfg.val << ']';
+    return debug;
+}
+
 void iFoxtrotScene::postReceive()
 {
 	QTextCodec *codec = QTextCodec::codecForName("Windows 1250");
@@ -481,6 +529,14 @@ void iFoxtrotScene::postReceive()
 			}
 			sceneNames[a - 1] = name.value().toString();
             changed("");
+
+            auto scene = obj.find("scene");
+            if (scene == obj.end() || !scene->isObject()) {
+                qWarning() << "invalid scene json" << foxName << src;
+                return;
+            }
+            walkSceneDFS(a - 1, scene->toObject());
+            qDebug() << sceneCfg[a - 1];
         });
 	}
 }
