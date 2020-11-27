@@ -70,9 +70,9 @@ bool iFoxtrotCtl::setProp(const QString &prop, const QString &val)
 QByteArray iFoxtrotCtl::GTSAP(const QString &prefix, const QString &prop,
                               const QString &set) const
 {
-    QByteArray ret;
+    QString ret(prefix);
 
-    ret.append(prefix).append(':').append(getFoxName()).append(".GTSAP1_").
+    ret.append(':').append(getFoxName()).append(".GTSAP1_").
             append(getFoxType()).append('_').append(prop);
 
     if (!set.isEmpty())
@@ -80,7 +80,7 @@ QByteArray iFoxtrotCtl::GTSAP(const QString &prefix, const QString &prop,
 
     ret.append('\n');
 
-    return ret;
+    return ret.toUtf8();
 }
 
 QVariant iFoxtrotCtl::data(int column, int role) const

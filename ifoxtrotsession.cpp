@@ -77,9 +77,9 @@ void iFoxtrotSession::sockConnected()
     connect(&socket, &QTcpSocket::readyRead, this, &iFoxtrotSession::sockReadyRead);
 
     if (!PLCAddr.isEmpty()) {
-	    QByteArray setconf("SETCONF:ipaddr,");
+        QString setconf("SETCONF:ipaddr,");
 	    setconf.append(PLCAddr).append('\n');
-	    auto SETCONFrcv = new iFoxtrotReceiverSETCONF(this, setconf);
+        auto SETCONFrcv = new iFoxtrotReceiverSETCONF(this, setconf.toUtf8());
 	    enqueueRcv(SETCONFrcv);
     }
 
@@ -239,10 +239,10 @@ void iFoxtrotSession::enqueueRcv(iFoxtrotReceiver *rcv)
 void iFoxtrotSession::receiveFile(const QString &file,
               const std::function<void(const QByteArray &)> &fun)
 {
-	QByteArray req("GETFILE:");
+    QString req("GETFILE:");
 	req.append(file).append('\n');
 
-	enqueueRcv(new iFoxtrotReceiverFile(this, req, file,
+    enqueueRcv(new iFoxtrotReceiverFile(this, req.toUtf8(), file,
 		[fun, req](iFoxtrotReceiverFile *frf,
 				const QByteArray &data) -> void {
 			fun(data);
