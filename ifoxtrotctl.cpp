@@ -9,6 +9,12 @@
 #include "ifoxtrotsession.h"
 #include "ui_mainwindow.h"
 
+QDebug &operator<<(QDebug &debug, const iFoxtrotCtl *ctl)
+{
+    debug << ctl->getFoxType() << ":" << ctl->getFoxName();
+    return debug;
+}
+
 iFoxtrotCtl *iFoxtrotCtl::getOne(iFoxtrotSession *session,
                                  const QString &foxType, const QString &foxName)
 {
@@ -443,8 +449,13 @@ bool iFoxtrotScene::setProp(const QString &prop, const QString &val)
     if (prop == "NUM") {
         bool ok;
         scenes = val.toInt(&ok);
-        if (!ok || (scenes != 4 && scenes != 8))
+        if (!ok || (scenes != 4 && scenes != 8)) {
             qWarning() << "invalid scene NUM" << val;
+        } else {
+            sceneNames.resize(scenes);
+            sceneCfg.resize(scenes);
+        }
+
         return true;
     }
     if (prop.length() == 4 && prop.startsWith("SET") && prop.at(3).isDigit()) {
@@ -489,23 +500,17 @@ void iFoxtrotScene::walkSceneDFS(const int number, const QJsonObject &scene,
                        k << "in scene" << name;
             continue;
         }
-        sceneCfg[number].append(SceneCfg{*item, k, val});
+        sceneCfg[number].add(*item, k, val);
         //qDebug() << prefix << (*item)->getName() << val;
         continue;
     }
 }
 
-QDebug &operator<<(QDebug &debug, const iFoxtrotScene::SceneCfg &cfg)
-{
-    debug << '[' << cfg.ctl->getFoxName() << ", " << cfg.gtsap << ", " <<
-             cfg.val << ']';
-    return debug;
-}
-
 void iFoxtrotScene::postReceive()
 {
 	QTextCodec *codec = QTextCodec::codecForName("Windows 1250");
-	for (int a = 1; a <= scenes; a++) {
+
+    for (int a = 1; a <= scenes; a++) {
 		QString src(filename);
 		src.append(a + '0');
 
@@ -535,8 +540,10 @@ void iFoxtrotScene::postReceive()
                 qWarning() << "invalid scene json" << foxName << src;
                 return;
             }
+
             walkSceneDFS(a - 1, scene->toObject());
-            qDebug() << sceneCfg[a - 1];
+            changed("");
+            //qDebug() << sceneCfg[a - 1].getMembers();
         });
 	}
 }
@@ -563,9 +570,14 @@ QVariant iFoxtrotScene::data(int column, int role) const
     if (role == Qt::DisplayRole || role == Qt::EditRole) {
         switch (column) {
         case 1 ... 8:
-            QString ret = sceneNames[column - 1];
+            QString ret = sceneNames.value(column - 1);
             if (ret == "")
-                ret = "Scene " + QString::number(column);
+                ret.append("Scene ").append(QString::number(column));
+            ret.append(" (").
+                    append(QString::number(sceneCfg.value(column - 1).getLights())).append(" L, ").
+                    append(QString::number(sceneCfg.value(column - 1).getRelays())).append(" R, ").
+                    append(QString::number(sceneCfg.value(column - 1).getShutters())).append(" S, ").
+                    append(QString::number(sceneCfg.value(column - 1).getOthers())).append(" O)");
             return ret;
         }
     }

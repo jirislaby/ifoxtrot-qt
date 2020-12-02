@@ -7,6 +7,7 @@
 #include <QJsonObject>
 #include <QList>
 #include <QObject>
+#include <QPair>
 #include <QString>
 #include <QVector>
 
@@ -196,14 +197,37 @@ private:
 
 class iFoxtrotScene : public iFoxtrotCtl {
 public:
-    struct SceneCfg {
-        iFoxtrotCtl *ctl;
-        QString gtsap;
-        QString val;
+    class SceneCfg {
+    public:
+        typedef QPair<iFoxtrotCtl *, QPair<QString, QString>> member;
+
+        SceneCfg() : lights(0), relays(0), shutters(0), others(0) {};
+
+        void add(iFoxtrotCtl *ctl, QString gtsap, QString val) {
+            if (dynamic_cast<iFoxtrotLight *>(ctl))
+                lights++;
+            else if (dynamic_cast<iFoxtrotRelay *>(ctl))
+                relays++;
+            else if (dynamic_cast<iFoxtrotShutter *>(ctl))
+                shutters++;
+            else
+                others++;
+            members.append(member(ctl, member::second_type(gtsap, val)));
+        }
+
+        QList<member> getMembers() const { return members; }
+
+        int getLights() const { return lights; }
+        int getRelays() const { return relays; }
+        int getShutters() const { return shutters; }
+        int getOthers() const { return others; }
+    private:
+        QList<member> members;
+        int lights, relays, shutters, others;
     };
 
     iFoxtrotScene(iFoxtrotSession *session, const QString &foxName) :
-        iFoxtrotCtl(session, foxName), sceneNames(8), scenes(0) {}
+        iFoxtrotCtl(session, foxName), sceneNames(8), scenes(0), sceneCfg(8) {}
 
     QString getFoxType() const override { return "SCENE"; }
     bool setProp(const QString &prop, const QString &val) override;
@@ -220,7 +244,7 @@ private:
     QVector<QString> sceneNames;
     int scenes;
     QString filename;
-    QList<struct SceneCfg> sceneCfg[8];
+    QVector<SceneCfg> sceneCfg;
 
     void walkSceneDFS(const int number, const QJsonObject &scene,
                       QString prefix = "");
