@@ -24,7 +24,7 @@ public:
 
     iFoxtrotCtl *at(int index) const { return list.at(index); }
 
-    void changed(const iFoxtrotCtl *ctl);
+    void changed(iFoxtrotCtl *ctl);
 
 private:
     QList<iFoxtrotCtl *> list;

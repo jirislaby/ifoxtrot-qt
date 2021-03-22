@@ -80,18 +80,10 @@ void iFoxtrotModel::sort(int column, Qt::SortOrder order)
                   order == Qt::SortOrder::AscendingOrder ? foxSortAsc : foxSortDesc);
 }
 
-void iFoxtrotModel::changed(const iFoxtrotCtl *ctl)
+void iFoxtrotModel::changed(iFoxtrotCtl *ctl)
 {
-    int idx = 0;
-
-    // slow as hell -- how to find an index of an item?
-    for (const auto c: list) {
-        if (ctl == c) {
-            const QModelIndex from = createIndex(idx, 0);
-            const QModelIndex to = createIndex(idx, modelColumns - 1);
-            emit dataChanged(from, to);
-            return;
-        }
-        idx++;
-    }
+	auto idx = list.indexOf(ctl);
+	auto from = createIndex(idx, 0);
+	auto to = createIndex(idx, modelColumns - 1);
+	emit dataChanged(from, to);
 }
