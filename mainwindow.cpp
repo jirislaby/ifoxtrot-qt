@@ -1,4 +1,5 @@
 #include <QMessageBox>
+#include <QScreen>
 #include <QSettings>
 
 #include <QtGlobal>
@@ -18,6 +19,21 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->stackedWidget->setCurrentIndex(0);
 
     // settings
+    settings.beginGroup("mainwindow");
+    if (settings.contains("size") && settings.contains("pos")) {
+	    auto size = settings.value("size").toSize();
+	    auto pos = settings.value("pos").toPoint();
+
+	    for (auto scr : QGuiApplication::screens()) {
+		    if (scr->geometry().contains(pos)) {
+			    resize(size);
+			    move(pos);
+			    break;
+		    }
+	    }
+    }
+    settings.endGroup();
+
     ui->lineEditPLCAddr->setText(settings.value("PLCaddr").toString());
     ui->lineEditAddr->setText(settings.value("IPaddr").toString());
     ui->spinBoxPort->setValue(settings.value("port", "5010").toInt());
@@ -50,6 +66,11 @@ MainWindow::~MainWindow()
     QSettings settings("jirislaby", "ifoxtrot");
 
     session.close();
+
+    settings.beginGroup("mainwindow");
+    settings.setValue("size", size());
+    settings.setValue("pos", pos());
+    settings.endGroup();
 
     settings.setValue("PLCaddr", ui->lineEditPLCAddr->text());
     settings.setValue("IPaddr", ui->lineEditAddr->text());
