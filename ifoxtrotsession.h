@@ -30,11 +30,7 @@ public:
     enum ConState getState() const { return state; }
     QString getPLCVersion() const { return PLCVersion; }
 
-    void connectToHost(const QString &host, quint16 port, const QString &PLC) {
-	    PLCAddr = PLC;
-        socket.connectToHost(host, port);
-        state = Connecting;
-    }
+    void connectToHost(const QString &host, quint16 port, const QString &PLC);
     void conFailed(const QString &reason) {
 	    close();
 	    emit conError(reason);
@@ -86,6 +82,8 @@ public slots:
     void sockReadyRead();
 
 private:
+    QString getSettingsGrp();
+
     void addItem(const QString &foxName, const QString &foxType,
                  const QString &prop, const QString &value,
                  QList<iFoxtrotCtl *> *listFox, QByteArray *enableString);
@@ -95,9 +93,12 @@ private:
     iFoxtrotModel model;
     ItemsFox itemsFox;
     QQueue<iFoxtrotReceiver *> toSend;
+    QMap<QString, QString> namesCache;
     QTcpSocket socket;
     QByteArray sockData;
     enum ConState state;
+    QString host;
+    quint16 port;
     QString PLCAddr;
     QString PLCVersion;
     iFoxtrotReceiverDIFF DIFFrcv;

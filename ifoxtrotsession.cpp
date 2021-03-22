@@ -1,6 +1,7 @@
 #include <QByteArray>
 #include <QRegularExpression>
 #include <QSet>
+#include <QSettings>
 #include <QTcpSocket>
 #include <QTextCodec>
 
@@ -8,6 +9,32 @@
 #include "ifoxtrotmodel.h"
 #include "ifoxtrotreceiver.h"
 #include "ifoxtrotsession.h"
+
+QString iFoxtrotSession::getSettingsGrp()
+{
+	QString grp("name_cache_");
+	grp.append(host).append('_').append(QString::number(port)).append('_').
+			append(PLCAddr);
+	return grp;
+}
+
+void iFoxtrotSession::connectToHost(const QString &host, quint16 port,
+				    const QString &PLC)
+{
+	this->host = host;
+	this->port = port;
+	PLCAddr = PLC;
+
+	QSettings settings("jirislaby", "ifoxtrot");
+	settings.beginGroup(getSettingsGrp());
+	for (auto k : settings.childKeys()) {
+		namesCache.insert(k, settings.value(k).toString());
+	}
+	settings.endGroup();
+
+	socket.connectToHost(host, port);
+	state = Connecting;
+}
 
 void iFoxtrotSession::addItem(const QString &foxName,
                               const QString &foxType,
@@ -24,11 +51,16 @@ void iFoxtrotSession::addItem(const QString &foxName,
 		qWarning() << "unsupported type" << foxType << "for" << foxName;
 		return;
 	}
+
+	QString cachedName = namesCache.value(foxName);
+	if (cachedName != "")
+		item->setName(cachedName);
+
 	listFox->append(item);
 	itemsFox.insert(foxName, item);
-    QString en("EN:");
-    en.append(foxName).append(".GTSAP1_").append(foxType).append("_*\n");
-    enableString->append(en.toUtf8());
+	QString en("EN:");
+	en.append(foxName).append(".GTSAP1_").append(foxType).append("_*\n");
+	enableString->append(en.toUtf8());
 
 	Q_UNUSED(prop);
 	// qDebug() << foxName << foxType << prop << value;
@@ -72,8 +104,15 @@ iFoxtrotSession::iFoxtrotSession(QObject *parent) :
 
 iFoxtrotSession::~iFoxtrotSession()
 {
-	for (auto it = itemsFoxBegin(); it != itemsFoxEnd(); ++it)
-		delete *it;
+	QSettings settings("jirislaby", "ifoxtrot");
+	settings.beginGroup(getSettingsGrp());
+	for (auto i : itemsFox) {
+		auto name = i->getName();
+		if (name != "")
+			settings.setValue(i->getFoxName(), i->getName());
+		delete i;
+	}
+	settings.endGroup();
 }
 
 void iFoxtrotSession::sockConnected()
@@ -114,6 +153,7 @@ void iFoxtrotSession::sockConnected()
 	    model.setList(*listFox);
 	    emit received();
 	    delete listFox;
+	    namesCache.clear();
 	    GETrcv->deleteLater();
 	    enableString->append("GET:\n");
 	    auto GETrcv2 = new iFoxtrotReceiverGET(this, *enableString,

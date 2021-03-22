@@ -27,6 +27,7 @@ public:
 
     QString getFoxName() const { return foxName; }
     virtual QString getFoxType() const = 0;
+    bool setName(const QString &name);
     QString getName() const { return name; }
 
     virtual void setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper) = 0;

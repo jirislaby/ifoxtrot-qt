@@ -53,24 +53,31 @@ QString iFoxtrotCtl::getFoxString(const QString &val)
 	return ret;
 }
 
+bool iFoxtrotCtl::setName(const QString &name)
+{
+	if (name == "") {
+		qWarning() << "wrong name for" << foxName << ":" << name;
+		return false;
+	}
+	this->name = name;
+
+	return true;
+}
+
 bool iFoxtrotCtl::setProp(const QString &prop, const QString &val)
 {
-    if (prop == "ENABLE")
-        return true;
+	if (prop == "ENABLE")
+		return true;
 
-    if (prop == "NAME") {
-	    name = getFoxString(val);
-	    if (name == "") {
-		    qWarning() << "wrong name for" << foxName << ":" << val;
-		    return false;
-	    }
+	if (prop == "NAME") {
+		return setName(getFoxString(val));
 
-        return true;
-    }
+		return true;
+	}
 
-    qWarning() << "unknown property" << prop << "for" << getFoxType();
+	qWarning() << "unknown property" << prop << "for" << getFoxType();
 
-    return false;
+	return false;
 }
 
 QByteArray iFoxtrotCtl::GTSAP(const QString &prefix, const QString &prop,
