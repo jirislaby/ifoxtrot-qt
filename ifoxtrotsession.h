@@ -72,6 +72,7 @@ public:
     }
 
 signals:
+    void received();
     void connected();
     void disconnected();
     void sockError(QAbstractSocket::SocketError socketError);

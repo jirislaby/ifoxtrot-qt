@@ -112,8 +112,8 @@ void iFoxtrotSession::sockConnected()
     connect(GETrcv, &iFoxtrotReceiver::done, [this, GETrcv, listFox, enableString] {
 	    emit conStatusUpdate("Received items, receiving states");
 	    model.setList(*listFox);
-        model.sort(0);
-        delete listFox;
+	    emit received();
+	    delete listFox;
 	    GETrcv->deleteLater();
 	    enableString->append("GET:\n");
 	    auto GETrcv2 = new iFoxtrotReceiverGET(this, *enableString,
@@ -128,7 +128,6 @@ void iFoxtrotSession::sockConnected()
 		    delete enableString;
 			for (auto it = itemsFoxBegin(); it != itemsFoxEnd(); ++it)
 				(*it)->postReceive();
-		    model.sort(0);
 		    emit connected();
 	    });
 	    enqueueRcv(GETrcv2);

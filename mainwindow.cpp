@@ -39,6 +39,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->spinBoxPort->setValue(settings.value("port", "5010").toInt());
     ui->checkBoxAutocon->setChecked(settings.value("autoconnect", false).toBool());
 
+    connect(&session, &iFoxtrotSession::received, [this] {
+	    proxyModel->sort(0);
+    });
     connect(&session, &iFoxtrotSession::connected, this, &MainWindow::connected);
     connect(&session, &iFoxtrotSession::conStatusUpdate, this, &MainWindow::conStatusUpdate);
     connect(&session, &iFoxtrotSession::disconnected, this, &MainWindow::disconnected);
@@ -119,9 +122,10 @@ void MainWindow::on_butDisconnect_clicked()
 
 void MainWindow::connected()
 {
-    statusBar()->showMessage("Connected to " + session.getPeerName());
-    ui->labelPLC->setText(session.getPLCVersion());
-    ui->listViewItems->setFocus();
+	proxyModel->sort(0);
+	statusBar()->showMessage("Connected to " + session.getPeerName());
+	ui->labelPLC->setText(session.getPLCVersion());
+	ui->listViewItems->setFocus();
 }
 
 void MainWindow::conStatusUpdate(const QString &status)
