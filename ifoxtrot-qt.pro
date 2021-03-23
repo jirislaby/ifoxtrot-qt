@@ -25,28 +25,30 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
-    filetransfer.cpp \
-        ifoxtrotreceiver.cpp \
-        main.cpp \
-        mainwindow.cpp \
-    ifoxtrotctl.cpp \
-    ifoxtrotmodel.cpp \
-    ifoxtrotsession.cpp
+	filetransfer.cpp \
+	ifoxtrotreceiver.cpp \
+	main.cpp \
+	mainwindow.cpp \
+	ifoxtrotctl.cpp \
+	ifoxtrotmodel.cpp \
+	ifoxtrotsession.cpp
 
 HEADERS += \
-    filetransfer.h \
-        ifoxtrotreceiver.h \
-        mainwindow.h \
-    ifoxtrotctl.h \
-    ifoxtrotmodel.h \
-    ifoxtrotsession.h
+	filetransfer.h \
+	ifoxtrotreceiver.h \
+	mainwindow.h \
+	ifoxtrotctl.h \
+	ifoxtrotmodel.h \
+	ifoxtrotsession.h
 
 FORMS += \
         filetransfer.ui \
         mainwindow.ui
 
 TRANSLATIONS += \
-    trans/ifoxtrot-qt_cs.ts
+	trans/ifoxtrot-qt_cs.ts
+
+trans.files += trans/ifoxtrot-qt_cs.qm
 
 QMAKE_CXXFLAGS += -Wno-unused-parameter
 
@@ -57,8 +59,16 @@ unix:!android {
 	isEmpty(PREFIX): PREFIX = /usr
 	BINDIR = $$PREFIX/bin
 	DATADIR = $$PREFIX/share
+	TRANS_DIR = "$${DATADIR}/$$TARGET/trans"
 
 	target.path = $$BINDIR
+
+	desktop.path = "$${DATADIR}/applications"
+	desktop.files += ifoxtrot-qt.desktop
+
+	trans.path = "$$TRANS_DIR"
+
+	INSTALLS += desktop
 }
 
 win32 {
@@ -66,10 +76,13 @@ win32 {
 	isEmpty(datadir): datadir = share
 
 	DATADIR = $$datadir
+	TRANS_DIR = "$${DATADIR}/$$TARGET/trans"
 
 	target.path = $$bindir
+	trans.path = "$$TRANS_DIR"
 }
 
 !isEmpty(DATADIR): DEFINES += DATADIR=\\\"$$DATADIR\\\"
 
 !isEmpty(target.path): INSTALLS += target
+!isEmpty(trans.path): INSTALLS += trans
