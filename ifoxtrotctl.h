@@ -57,6 +57,7 @@ protected:
 };
 
 class iFoxtrotOnOff : public iFoxtrotCtl {
+    Q_OBJECT
 public:
     iFoxtrotOnOff(iFoxtrotSession *session, const QString &foxName) :
             iFoxtrotCtl(session, foxName), onOff(false) {}
@@ -77,6 +78,7 @@ protected:
 };
 
 class iFoxtrotLight : public iFoxtrotOnOff {
+    Q_OBJECT
 public:
     iFoxtrotLight(iFoxtrotSession *session, const QString &foxName) :
         iFoxtrotOnOff(session, foxName), dimmable(false), rgb(false),
@@ -99,6 +101,7 @@ private:
 };
 
 class iFoxtrotRelay : public iFoxtrotOnOff {
+    Q_OBJECT
 public:
     iFoxtrotRelay(iFoxtrotSession *session, const QString &foxName) :
         iFoxtrotOnOff(session, foxName) { }
@@ -115,6 +118,7 @@ private:
 };
 
 class iFoxtrotDisplay : public iFoxtrotCtl {
+    Q_OBJECT
 public:
     iFoxtrotDisplay(iFoxtrotSession *session, const QString &foxName) :
         iFoxtrotCtl(session, foxName), editable(false), real(false), value(0),
@@ -141,6 +145,7 @@ private:
 };
 
 class iFoxtrotShutter : public iFoxtrotCtl {
+    Q_OBJECT
 public:
     enum ShutterStatus {
         Steady,
@@ -178,6 +183,7 @@ private:
 };
 
 class iFoxtrotPIRSENSOR : public iFoxtrotCtl {
+    Q_OBJECT
 public:
     iFoxtrotPIRSENSOR(iFoxtrotSession *session, const QString &foxName) :
         iFoxtrotCtl(session, foxName), value(0) {}
@@ -197,6 +203,7 @@ private:
 };
 
 class iFoxtrotScene : public iFoxtrotCtl {
+    Q_OBJECT
 public:
     class SceneCfg {
     public:
@@ -252,6 +259,7 @@ private:
 };
 
 class iFoxtrotTPW : public iFoxtrotCtl {
+    Q_OBJECT
 public:
     iFoxtrotTPW(iFoxtrotSession *session, const QString &foxName) :
         iFoxtrotCtl(session, foxName) {}
@@ -285,6 +293,7 @@ private:
 };
 
 class iFoxtrotWebCam : public iFoxtrotCtl {
+    Q_OBJECT
 public:
     iFoxtrotWebCam(iFoxtrotSession *session, const QString &foxName) :
         iFoxtrotCtl(session, foxName) {}
@@ -304,6 +313,7 @@ private:
 };
 
 class iFoxtrotWebConf : public iFoxtrotCtl {
+    Q_OBJECT
 public:
     iFoxtrotWebConf(iFoxtrotSession *session, const QString &foxName) :
         iFoxtrotCtl(session, foxName) {}
