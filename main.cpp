@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include <QApplication>
+#include <QDir>
 #include <QStandardPaths>
 #include <QTranslator>
 
@@ -11,8 +12,10 @@ int main(int argc, char *argv[])
 	auto paths = QStandardPaths::standardLocations(QStandardPaths::DataLocation);
 	paths.prepend(a.applicationDirPath());
 	for (auto p : paths) {
-		if (translator.load(QLocale(), "ifoxtrot-qt", "_",
-				    p + "/trans")) {
+		QDir dir(p);
+		if (dir.cd("trans") &&
+				translator.load(QLocale(), "ifoxtrot-qt", "_",
+						       dir.absolutePath())) {
 			a.installTranslator(&translator);
 			break;
 		}
