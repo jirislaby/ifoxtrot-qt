@@ -45,6 +45,9 @@ FORMS += \
         filetransfer.ui \
         mainwindow.ui
 
+TRANSLATIONS += \
+    trans/ifoxtrot-qt_cs.ts
+
 QMAKE_CXXFLAGS += -Wno-unused-parameter
 
 # Default rules for deployment.

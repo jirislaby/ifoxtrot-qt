@@ -130,7 +130,7 @@ void iFoxtrotSession::sockConnected()
     QByteArray lineArray = socket.readLine();
     auto GETINFOrcv = new iFoxtrotReceiverGETINFO(this);
     connect(GETINFOrcv, &iFoxtrotReceiver::done, [this, GETINFOrcv] {
-	    emit conStatusUpdate("Got info, receiving items");
+	    emit conStatusUpdate(tr("Got info, receiving items"));
 	    PLCVersion = GETINFOrcv->getPLCVersion();
 	    GETINFOrcv->deleteLater();
     });
@@ -149,7 +149,7 @@ void iFoxtrotSession::sockConnected()
 	    addItem(foxName, foxType, prop, value, listFox, enableString);
     });
     connect(GETrcv, &iFoxtrotReceiver::done, [this, GETrcv, listFox, enableString] {
-	    emit conStatusUpdate("Received items, receiving states");
+	    emit conStatusUpdate(tr("Received items, receiving states"));
 	    model.setList(*listFox);
 	    emit received();
 	    delete listFox;

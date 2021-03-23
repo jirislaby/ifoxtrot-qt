@@ -92,14 +92,14 @@ void MainWindow::on_butConnect_clicked()
     if (addr.isEmpty()) {
         QMessageBox mbox;
         mbox.setIcon(QMessageBox::Critical);
-        mbox.setText("Empty address!");
+	mbox.setText(tr("Empty address!"));
         mbox.exec();
         return;
     }
 
     session.connectToHost(addr, port, PLCAddr);
 
-    statusBar()->showMessage("Connecting to " + addr + ":" + QString::number(port));
+    statusBar()->showMessage(tr("Connecting to ") + addr + ":" + QString::number(port));
     ui->butConnect->setVisible(false);
     ui->butDisconnect->setVisible(true);
 }
@@ -123,7 +123,7 @@ void MainWindow::on_butDisconnect_clicked()
 void MainWindow::connected()
 {
 	proxyModel->sort(0);
-	statusBar()->showMessage("Connected to " + session.getPeerName());
+	statusBar()->showMessage(tr("Connected to ") + session.getPeerName());
 	ui->labelPLC->setText(session.getPLCVersion());
 	ui->listViewItems->setFocus();
 }
@@ -135,7 +135,7 @@ void MainWindow::conStatusUpdate(const QString &status)
 
 void MainWindow::disconnected()
 {
-    statusBar()->showMessage("Disconnected");
+    statusBar()->showMessage(tr("Disconnected"));
     ui->butConnect->setVisible(true);
     ui->butDisconnect->setVisible(false);
     ui->labelFoxName->setText("");
@@ -147,14 +147,14 @@ void MainWindow::conError(const QString &reason)
 {
 	qWarning() << "connection error" << reason;
 	disconnected();
-	statusBar()->showMessage("Connection error: " + reason);
+	statusBar()->showMessage(tr("Connection error: ") + reason);
 }
 
 void MainWindow::sockError(QAbstractSocket::SocketError socketError)
 {
     qWarning() << "disconnected" << socketError;
     disconnected();
-    statusBar()->showMessage("Socket error: " + QString::number(socketError));
+    statusBar()->showMessage(tr("Socket error: ") + QString::number(socketError));
 }
 
 void MainWindow::rowChanged(const QModelIndex &current,
@@ -240,11 +240,11 @@ void MainWindow::fileTransferTriggered()
 
 void MainWindow::aboutTriggered()
 {
-	QMessageBox::about(this, "iFoxtrot",
-	                   "Copyright © 2018-2020 <b>Jiri Slaby</b><br/>"
+	QMessageBox::about(this, "iFoxtrot", tr(
+			   "Copyright © 2018-2021 <b>Jiri Slaby</b><br/>"
 	                   "Licensed under GPLv2<br/>"
 	                   "Web: <a href=\"http://consultctl.eu\">http://consultctl.eu</a><br/>"
-	                   "E-mail: <a href=\"mailto:jirislaby@gmail.com\">jirislaby@gmail.com</a>");
+			   "E-mail: <a href=\"mailto:jirislaby@gmail.com\">jirislaby@gmail.com</a>"));
 }
 
 void MainWindow::aboutQtTriggered()

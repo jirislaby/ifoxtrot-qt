@@ -363,13 +363,13 @@ QVariant iFoxtrotShutter::data(int column, int role) const
 			QString suffix;
 
 			if (upPos)
-				suffix = " ↑";
+				suffix = tr(" ↑");
 			else if (downPos)
-				suffix = " ↓";
+				suffix = tr(" ↓");
 			else if (status == MovingUp)
-				suffix = " ⇡";
+				suffix = tr(" ⇡");
 			else if (status == MovingDown)
-				suffix = " ⇣";
+				suffix = tr(" ⇣");
 
 			return iFoxtrotCtl::data(column, role).toString() + suffix;
 		}
@@ -378,7 +378,7 @@ QVariant iFoxtrotShutter::data(int column, int role) const
         case 2:
             return stringPosition();
         case 3:
-            return running ? "Yes" : "No";
+	    return running ? tr("Yes") : tr("No");
         }
     }
 
@@ -423,11 +423,11 @@ QString iFoxtrotShutter::stringStatus() const
 {
     switch (status) {
     case Steady:
-        return "Steady";
+	return tr("Steady");
     case MovingUp:
-        return "Moving Up";
+	return tr("Moving Up");
     case MovingDown:
-        return "Moving Down";
+	return tr("Moving Down");
     }
     return QString();
 }
@@ -435,11 +435,11 @@ QString iFoxtrotShutter::stringStatus() const
 QString iFoxtrotShutter::stringPosition() const
 {
     if (upPos)
-        return "Up";
+	return tr("Up");
     if (downPos)
-        return "Down";
+	return tr("Down");
 
-    return "Unknown";
+    return tr("Unknown");
 }
 
 bool iFoxtrotScene::setProp(const QString &prop, const QString &val)
@@ -579,12 +579,13 @@ QVariant iFoxtrotScene::data(int column, int role) const
         case 1 ... 8:
             QString ret = sceneNames.value(column - 1);
             if (ret == "")
-                ret.append("Scene ").append(QString::number(column));
+		ret.append(tr("Scene ")).append(QString::number(column));
+	    auto cfg = sceneCfg.value(column - 1);
             ret.append(" (").
-                    append(QString::number(sceneCfg.value(column - 1).getLights())).append(" L, ").
-                    append(QString::number(sceneCfg.value(column - 1).getRelays())).append(" R, ").
-                    append(QString::number(sceneCfg.value(column - 1).getShutters())).append(" S, ").
-                    append(QString::number(sceneCfg.value(column - 1).getOthers())).append(" O)");
+		    append(QString::number(cfg.getLights())).append(tr(" L, ")).
+		    append(QString::number(cfg.getRelays())).append(tr(" R, ")).
+		    append(QString::number(cfg.getShutters())).append(tr(" S, ")).
+		    append(QString::number(cfg.getOthers())).append(tr(" O)"));
             return ret;
         }
     }
