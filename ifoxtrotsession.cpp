@@ -250,16 +250,16 @@ void iFoxtrotSession::sockReadyRead()
 			sockData.clear();
 			if (!isDIFF && !keep) {
 				if (toSend.empty()) {
-					qDebug() << "finished, all done";
+					//qDebug() << "finished, all done";
 					curReceiver = nullptr;
 				} else {
 					curReceiver = toSend.dequeue();
-					qDebug() << "finished, handling" << curReceiver->getWrite().left(40);
+					//qDebug() << "finished, handling" << curReceiver->getWrite().left(40);
 					socket.write(curReceiver->getWrite());
 				}
 			}
 		} else if (ret > 0) {
-			qDebug() << contReceiver;
+			//qDebug() << contReceiver;
 		} else {
 			contReceiver = nullptr;
 			error = true;
@@ -270,13 +270,13 @@ void iFoxtrotSession::sockReadyRead()
 void iFoxtrotSession::enqueueRcv(iFoxtrotReceiver *rcv)
 {
 	if (!curReceiver) {
-		qDebug() << __func__ << "directly" << rcv->getWrite().left(40);
+		//qDebug() << __func__ << "directly" << rcv->getWrite().left(40);
 		curReceiver = rcv;
 		socket.write(rcv->getWrite());
 		return;
 	}
 
-	qDebug() << __func__ << "enqueuing" << rcv->getWrite().left(40);
+	//qDebug() << __func__ << "enqueuing" << rcv->getWrite().left(40);
 	toSend.enqueue(rcv);
 }
 
