@@ -43,6 +43,8 @@ qint64 iFoxtrotReceiverLine::handleData(QByteArray &data, bool *keep)
 			}
 			QTextCodec *codec = QTextCodec::codecForName("Windows 1250");
 			pushLine(codec->toUnicode(data.data()));
+			if (!multiline)
+				emit done();
 			return 0;
 		}
 
