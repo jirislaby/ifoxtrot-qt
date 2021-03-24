@@ -2,6 +2,49 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="cs_CZ">
 <context>
+    <name>CommandLine</name>
+    <message>
+        <location filename="../commandline.cpp" line="59"/>
+        <source>Host not specified!</source>
+        <translation>Nezadán stroj!</translation>
+    </message>
+    <message>
+        <location filename="../commandline.cpp" line="66"/>
+        <source>Invalid port specified!</source>
+        <translation>Udán špatný port!</translation>
+    </message>
+    <message>
+        <location filename="../commandline.cpp" line="29"/>
+        <source>Invalid set command!</source>
+        <translation>Špatný formát nastavení!</translation>
+    </message>
+    <message>
+        <location filename="../commandline.cpp" line="91"/>
+        <source>Connected to</source>
+        <translation>Připojeno k</translation>
+    </message>
+    <message>
+        <location filename="../commandline.cpp" line="92"/>
+        <source>PLC version:</source>
+        <translation>Verze PLC:</translation>
+    </message>
+    <message>
+        <location filename="../commandline.cpp" line="138"/>
+        <source>Disconnected</source>
+        <translation>Odpojeno</translation>
+    </message>
+    <message>
+        <location filename="../commandline.cpp" line="143"/>
+        <source>Connection error:</source>
+        <translation>Chyba spojení:</translation>
+    </message>
+    <message>
+        <location filename="../commandline.cpp" line="149"/>
+        <source>Socket error:</source>
+        <translation>Chyba soketu:</translation>
+    </message>
+</context>
+<context>
     <name>FileTransfer</name>
     <message>
         <location filename="../filetransfer.cpp" line="45"/>
@@ -417,19 +460,11 @@
         <source>Copyright © 2018-2021 &lt;b&gt;Jiri Slaby&lt;/b&gt;&lt;br/&gt;Licensed under GPLv2&lt;br/&gt;Web: &lt;a href=&quot;http://consultctl.eu&quot;&gt;http://consultctl.eu&lt;/a&gt;&lt;br/&gt;E-mail: &lt;a href=&quot;mailto:jirislaby@gmail.com&quot;&gt;jirislaby@gmail.com&lt;/a&gt;</source>
         <translation>Copyright © 2018-2021 &lt;b&gt;Jiri Slaby&lt;/b&gt;&lt;br/&gt;Licencováno pod GPLv2&lt;br/&gt;Web: &lt;a href=&quot;http://consultctl.eu&quot;&gt;http://consultctl.eu&lt;/a&gt;&lt;br/&gt;E-mail: &lt;a href=&quot;mailto:jirislaby@gmail.com&quot;&gt;jirislaby@gmail.com&lt;/a&gt;</translation>
     </message>
-    <message>
-        <source>Copyright © 2018-2020 &lt;b&gt;Jiri Slaby&lt;/b&gt;&lt;br/&gt;Licensed under GPLv2&lt;br/&gt;Web: &lt;a href=&quot;http://consultctl.eu&quot;&gt;http://consultctl.eu&lt;/a&gt;&lt;br/&gt;E-mail: &lt;a href=&quot;mailto:jirislaby@gmail.com&quot;&gt;jirislaby@gmail.com&lt;/a&gt;</source>
-        <translation type="vanished">Copyright © 2018-2020 &lt;b&gt;Jiri Slaby&lt;/b&gt;&lt;br/&gt;Licencováno pod GPLv2&lt;br/&gt;Web: &lt;a href=&quot;http://consultctl.eu&quot;&gt;http://consultctl.eu&lt;/a&gt;&lt;br/&gt;E-mail: &lt;a href=&quot;mailto:jirislaby@gmail.com&quot;&gt;jirislaby@gmail.com&lt;/a&gt;</translation>
-    </message>
 </context>
 <context>
     <name>iFoxtrotReceiverSETCONF</name>
     <message>
-        <source>Cannot write</source>
-        <translation type="vanished">Nelze zapsat</translation>
-    </message>
-    <message>
-        <location filename="../ifoxtrotreceiver.cpp" line="109"/>
+        <location filename="../ifoxtrotreceiver.cpp" line="105"/>
         <source>Cannot write </source>
         <translation>Nelze zapsat </translation>
     </message>
@@ -470,9 +505,14 @@
         <translation>Přijato info, přijímám položky</translation>
     </message>
     <message>
-        <location filename="../ifoxtrotsession.cpp" line="152"/>
+        <location filename="../ifoxtrotsession.cpp" line="134"/>
+        <source>Got info</source>
+        <translation>Přijato info</translation>
+    </message>
+    <message>
+        <location filename="../ifoxtrotsession.cpp" line="158"/>
         <source>Received items, receiving states</source>
-        <translation>Přijaty položky, přijímam stavy</translation>
+        <translation>Přijaty položky, přijímám stavy</translation>
     </message>
 </context>
 <context>
@@ -536,6 +576,69 @@
         <location filename="../ifoxtrotctl.cpp" line="442"/>
         <source>Unknown</source>
         <translation>Neznámá</translation>
+    </message>
+</context>
+<context>
+    <name>main</name>
+    <message>
+        <location filename="../main.cpp" line="28"/>
+        <source>Frontend for iFoxtrot</source>
+        <translation>Klient pro iFoxtrot</translation>
+    </message>
+    <message>
+        <location filename="../main.cpp" line="34"/>
+        <source>Be quiet</source>
+        <translation>Tichý režim</translation>
+    </message>
+    <message>
+        <location filename="../main.cpp" line="36"/>
+        <source>Connect to &lt;host&gt;</source>
+        <translation>Připojit ke &lt;stroj&gt;</translation>
+    </message>
+    <message>
+        <location filename="../main.cpp" line="37"/>
+        <source>host</source>
+        <translation>stroj</translation>
+    </message>
+    <message>
+        <location filename="../main.cpp" line="39"/>
+        <source>Connect to &lt;port&gt; (default: 5010)</source>
+        <translation>Připojit k &lt;port&gt; (výchozí: 5010)</translation>
+    </message>
+    <message>
+        <location filename="../main.cpp" line="40"/>
+        <source>port</source>
+        <translation>port</translation>
+    </message>
+    <message>
+        <location filename="../main.cpp" line="43"/>
+        <source>Connect to &lt;PLC&gt;</source>
+        <translation>Připojit k &lt;PLC&gt;</translation>
+    </message>
+    <message>
+        <location filename="../main.cpp" line="44"/>
+        <source>PLC</source>
+        <translation>PLC</translation>
+    </message>
+    <message>
+        <location filename="../main.cpp" line="46"/>
+        <source>Obtain value of &lt;item&gt;</source>
+        <translation>Zjistit hodnotu z &lt;položka&gt;</translation>
+    </message>
+    <message>
+        <location filename="../main.cpp" line="47"/>
+        <source>item</source>
+        <translation>položka</translation>
+    </message>
+    <message>
+        <location filename="../main.cpp" line="49"/>
+        <source>Set &lt;value&gt; to &lt;item&gt;</source>
+        <translation>Nastavit &lt;hodnota&gt; v &lt;položka&gt;</translation>
+    </message>
+    <message>
+        <location filename="../main.cpp" line="50"/>
+        <source>item=value</source>
+        <translation>položka=hodnota</translation>
     </message>
 </context>
 </TS>

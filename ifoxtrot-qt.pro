@@ -25,6 +25,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+	commandline.cpp \
 	filetransfer.cpp \
 	ifoxtrotreceiver.cpp \
 	main.cpp \
@@ -34,6 +35,7 @@ SOURCES += \
 	ifoxtrotsession.cpp
 
 HEADERS += \
+	commandline.h \
 	filetransfer.h \
 	ifoxtrotreceiver.h \
 	mainwindow.h \

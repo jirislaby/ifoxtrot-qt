@@ -74,15 +74,15 @@ void iFoxtrotSession::updateItem(const QString &foxName,
 
 	auto itemIt = itemsFoxFind(foxName);
 	if (itemIt == itemsFoxEnd()) {
-		qWarning() << "cannot find" << foxName << "in items";
+		qWarning() << __func__ << "cannot find" << foxName << "in items";
 		return;
 	}
 	iFoxtrotCtl *item = itemIt.value();
 	item->setProp(prop, value);
 }
 
-iFoxtrotSession::iFoxtrotSession(QObject *parent) :
-    QObject(parent), state(Disconnected),
+iFoxtrotSession::iFoxtrotSession(bool full, QObject *parent) :
+    QObject(parent), full(full), state(Disconnected),
     PLCAddr(""),
     DIFFrcv(this),
     contReceiver(nullptr),
@@ -130,11 +130,17 @@ void iFoxtrotSession::sockConnected()
     QByteArray lineArray = socket.readLine();
     auto GETINFOrcv = new iFoxtrotReceiverGETINFO(this);
     connect(GETINFOrcv, &iFoxtrotReceiver::done, [this, GETINFOrcv] {
-	    emit conStatusUpdate(tr("Got info, receiving items"));
+	    emit conStatusUpdate(full ? tr("Got info, receiving items") :
+					tr("Got info"));
 	    PLCVersion = GETINFOrcv->getPLCVersion();
 	    GETINFOrcv->deleteLater();
+	    if (!full)
+		    emit connected();
     });
     enqueueRcv(GETINFOrcv);
+
+    if (!full)
+	    return;
 
     auto listFox = new QList<iFoxtrotCtl *>();
     auto enableString = new QByteArray("DI:\n");
@@ -292,4 +298,18 @@ void iFoxtrotSession::receiveFile(const QString &file,
 			fun(data);
 			frf->deleteLater();
 	}));
+}
+
+void iFoxtrotSession::handleDIFF(const QString &foxName, const QString &prop,
+				 const QString &value)
+{
+	auto itemIt = itemsFox.find(foxName);
+	if (itemIt == itemsFox.end()) {
+		if (full)
+			qWarning() << __func__ << "cannot find" << foxName <<
+				      "in items";
+		return;
+	}
+	iFoxtrotCtl *item = itemIt.value();
+	item->setProp(prop, value);
 }

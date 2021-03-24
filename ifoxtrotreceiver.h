@@ -82,8 +82,10 @@ public:
 	                           const QString &, const QString &)> CallbackFn;
 
 	iFoxtrotReceiverGET(iFoxtrotSession *session, const QByteArray &write,
-	                    const CallbackFn &callbackFn);
+			    const CallbackFn &callbackFn,
+			    bool multiline = true);
 
+	virtual bool handleError(QByteArray &data) override;
 	virtual void pushLine(const QString &line) override;
 private:
 	const CallbackFn callbackFn;

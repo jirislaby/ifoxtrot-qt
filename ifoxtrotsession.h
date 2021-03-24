@@ -22,7 +22,8 @@ public:
     };
 
     typedef QMap<QString, iFoxtrotCtl *> ItemsFox;
-    explicit iFoxtrotSession(QObject *parent = nullptr);
+
+    explicit iFoxtrotSession(bool full = true, QObject *parent = nullptr);
     ~iFoxtrotSession();
 
     iFoxtrotModel *getModel() { return &model; }
@@ -57,6 +58,9 @@ public:
     void receiveFile(const QString &file,
                      const std::function<void(const QByteArray &)> &fun);
 
+    void handleDIFF(const QString &foxName, const QString &prop,
+		    const QString &value);
+
     ItemsFox::const_iterator itemsFoxFind(const QString &foxName) const {
         return itemsFox.find(foxName);
     }
@@ -90,6 +94,7 @@ private:
     void updateItem(const QString &foxName, const QString &foxType,
                     const QString &prop, const QString &value);
 
+    bool full;
     iFoxtrotModel model;
     ItemsFox itemsFox;
     QQueue<iFoxtrotReceiver *> toSend;

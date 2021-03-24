@@ -70,17 +70,11 @@ void iFoxtrotReceiverDIFF::pushLine(const QString &line)
 	}
 
 	QString foxName = match.captured(1);
-	QString foxType = match.captured(2);
+	//QString foxType = match.captured(2);
 	QString prop = match.captured(3);
 	QString value = match.captured(4);
 
-	auto itemIt = session->itemsFoxFind(foxName);
-	if (itemIt == session->itemsFoxEnd()) {
-		qWarning() << "cannot find" << foxName << "in items";
-		return;
-	}
-	iFoxtrotCtl *item = itemIt.value();
-	item->setProp(prop, value);
+	session->handleDIFF(foxName, prop, value);
 
 	//qDebug() << __PRETTY_FUNCTION__ << "DIFF" << foxName << foxType << prop << value;
 }
@@ -122,10 +116,27 @@ void iFoxtrotReceiverSETCONF::pushLine(const QString &line)
 
 iFoxtrotReceiverGET::iFoxtrotReceiverGET(iFoxtrotSession *session,
                                          const QByteArray &write,
-                                         const CallbackFn &callbackFn) :
-        iFoxtrotReceiverLine(session, "GET:", write), callbackFn(callbackFn)
+					 const CallbackFn &callbackFn,
+					 bool multiline):
+	iFoxtrotReceiverLine(session, "GET:", write), callbackFn(callbackFn)
 {
-	multiline = true;
+	this->multiline = multiline;
+}
+
+bool iFoxtrotReceiverGET::handleError(QByteArray &data)
+{
+	if (data.startsWith("33 ")) {
+		auto col = data.indexOf(':') + 2;
+
+		qWarning().noquote() << __func__ << "bad register:" <<
+					data.mid(col);
+
+		return true;
+	}
+
+	qWarning() << __func__ << "unknown error" << data;
+
+	return true;
 }
 
 void iFoxtrotReceiverGET::pushLine(const QString &line)
