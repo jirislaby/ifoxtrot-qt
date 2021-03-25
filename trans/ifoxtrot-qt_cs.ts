@@ -47,9 +47,24 @@
 <context>
     <name>FileTransfer</name>
     <message>
-        <location filename="../filetransfer.cpp" line="45"/>
+        <location filename="../filetransfer.cpp" line="46"/>
         <source>Save File</source>
         <translation>Uložit soubor</translation>
+    </message>
+    <message>
+        <location filename="../filetransfer.cpp" line="56"/>
+        <source>Error</source>
+        <translation>Chyba</translation>
+    </message>
+    <message>
+        <location filename="../filetransfer.cpp" line="57"/>
+        <source>&lt;b&gt;Cannot open file &apos;</source>
+        <translation>&lt;b&gt;Nelze otevřít soubor &apos;</translation>
+    </message>
+    <message>
+        <location filename="../filetransfer.cpp" line="59"/>
+        <source>&apos; for writing!&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;</source>
+        <translation>&apos; pro zápis!&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;</translation>
     </message>
 </context>
 <context>

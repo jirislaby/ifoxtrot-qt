@@ -1,6 +1,7 @@
 #include <QDebug>
 #include <QFile>
 #include <QFileDialog>
+#include <QMessageBox>
 #include <QStringList>
 #include <QTextCodec>
 
@@ -50,8 +51,14 @@ void FileTransfer::on_butDownload_clicked()
 	auto dest = new QFile(destName);
 
 	if (!dest->open(QIODevice::WriteOnly)) {
-		qWarning() << "cannot open file for writing" <<
-		              dest->fileName();
+		QMessageBox mbox;
+		mbox.setIcon(QMessageBox::Critical);
+		mbox.setWindowTitle(tr("Error"));
+		mbox.setText(tr("<b>Cannot open file '").
+			     append(dest->fileName()).
+			     append(tr("' for writing!</b><br/><br/>")).
+			     append(dest->errorString()));
+		mbox.exec();
 		return;
 	}
 
