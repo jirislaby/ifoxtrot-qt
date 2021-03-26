@@ -32,7 +32,10 @@ SOURCES += \
 	mainwindow.cpp \
 	ifoxtrotctl.cpp \
 	ifoxtrotmodel.cpp \
-	ifoxtrotsession.cpp
+	ifoxtrotsession.cpp \
+	treeitem.cpp \
+	treemodel.cpp
+
 
 HEADERS += \
 	commandline.h \
@@ -41,7 +44,9 @@ HEADERS += \
 	mainwindow.h \
 	ifoxtrotctl.h \
 	ifoxtrotmodel.h \
-	ifoxtrotsession.h
+	ifoxtrotsession.h \
+	treeitem.h \
+	treemodel.h
 
 FORMS += \
         filetransfer.ui \

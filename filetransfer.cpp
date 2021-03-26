@@ -1,3 +1,5 @@
+#include <functional>
+
 #include <QDebug>
 #include <QFile>
 #include <QFileDialog>
@@ -5,46 +7,53 @@
 #include <QStringList>
 #include <QTextCodec>
 
+#include "treeitem.h"
 #include "filetransfer.h"
 #include "ifoxtrotsession.h"
 
 FileTransfer::FileTransfer(iFoxtrotSession *session, QWidget *parent) :
-    QDialog(parent), session(session)
+    QDialog(parent), session(session), model(this)
 {
 	ui.setupUi(this);
 	ui.treeView->setModel(&model);
-	loadByPath();
+	load();
 }
 
-void FileTransfer::loadByPath()
+void FileTransfer::load()
 {
-	const QString path = ui.lineEditPath->text();
+	load("//", [this](const QStringList &entries) -> void {
+		auto root = new TreeItem("//");
+		for (auto e : entries)
+			root->addChild(e.mid(2));
+		model.setRoot(root);
+	});
+}
 
+void FileTransfer::load(const QString &path,
+			const std::function<void(const QStringList &)> &callback)
+{
 	ui.groupRemote->setEnabled(false);
 
-	session->receiveFile(path, [this](const QByteArray &data) -> void {
+	session->receiveFile(path, [this, callback](const QByteArray &data) -> void {
 		QTextCodec *codec = QTextCodec::codecForName("Windows 1250");
 		QStringList entries = codec->toUnicode(data.data()).split('\n');
 		if (entries.count() && entries.last().isEmpty())
 			entries.removeLast();
 		qDebug() << entries;
-		model.setStringList(entries);
+		callback(entries);
 		ui.groupRemote->setEnabled(true);
 	});
 }
 
 void FileTransfer::on_butDownload_clicked()
 {
-	const QModelIndex index = ui.treeView->selectionModel()->currentIndex();
-	if (!index.isValid())
-		return;
-	QString src = model.data(index).toString();
-	if (src.endsWith('/'))
+	auto index = ui.treeView->selectionModel()->currentIndex();
+	if (!index.isValid() || model.hasChildren(index))
 		return;
 
-	QString suggestedName = src.mid(src.lastIndexOf('/') + 1);
+	QString src = model.getPath(index);
 	QString destName = QFileDialog::getSaveFileName(this, tr("Save File"),
-			suggestedName);
+			model.getName(index));
 	if (destName.isEmpty())
 		return;
 
@@ -72,24 +81,17 @@ void FileTransfer::on_butDownload_clicked()
 
 void FileTransfer::on_butReload_clicked()
 {
-	loadByPath();
+	load();
 }
 
 void FileTransfer::on_treeView_doubleClicked(const QModelIndex &index)
 {
-	QString str = model.data(index).toString();
-
-	qDebug() << __func__ << str;
-
-	if (str.endsWith('/')) {
-		ui.lineEditPath->setText(str);
-		loadByPath();
+	if (model.hasChildren(index))
 		return;
-	}
 
 	ui.groupRemote->setEnabled(false);
 
-	session->receiveFile(str, [this](const QByteArray &data) -> void {
+	session->receiveFile(model.getPath(index), [this](const QByteArray &data) -> void {
 		QTextCodec *codec = QTextCodec::codecForName("Windows 1250");
 		QString strData = codec->toUnicode(data.data());
 		ui.plainTextEdit->setPlainText(strData);
