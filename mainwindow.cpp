@@ -125,7 +125,6 @@ void MainWindow::connected()
 	proxyModel->sort(0);
 	statusBar()->showMessage(tr("Connected to ") + session.getPeerName());
 	ui->labelPLC->setText(session.getPLCVersion());
-	ui->listViewItems->setFocus();
 }
 
 void MainWindow::conStatusUpdate(const QString &status)
