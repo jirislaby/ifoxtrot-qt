@@ -26,6 +26,7 @@ public:
 	void setConnectionDetails(QCommandLineParser &parser);
 
 	void run();
+	void close();
 
 	const iFoxtrotSession *getSession() const { return &session; }
 

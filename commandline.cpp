@@ -34,7 +34,9 @@ void CommandLine::handleTUI(QApplication &a, QCommandLineParser &parser)
 
 	cmdline.run();
 
-	exit(a.exec());
+	int ret = a.exec();
+	cmdline.close();
+	exit(ret);
 }
 
 CommandLine::CommandLine(bool quiet, QObject *parent) :
@@ -47,9 +49,14 @@ CommandLine::CommandLine(bool quiet, QObject *parent) :
 	connect(&session, &iFoxtrotSession::conError, this, &CommandLine::conError);
 }
 
-CommandLine::~CommandLine()
+void CommandLine::close()
 {
 	session.close();
+}
+
+CommandLine::~CommandLine()
+{
+	close();
 }
 
 void CommandLine::setConnectionDetails(QCommandLineParser &parser)
