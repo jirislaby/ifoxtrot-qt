@@ -4,6 +4,7 @@
 #include "ifoxtrotsession.h"
 
 #include <QApplication>
+#include <QAtomicInt>
 #include <QCommandLineParser>
 #include <QObject>
 #include <QList>
@@ -44,6 +45,7 @@ signals:
 
 private:
 	void connectToHost();
+	void deref(QAtomicInt *aint);
 
 	iFoxtrotSession session;
 

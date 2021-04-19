@@ -90,6 +90,9 @@ iFoxtrotSession::iFoxtrotSession(bool full, QObject *parent) :
 {
     connect(&socket, &QTcpSocket::connected, this, &iFoxtrotSession::sockConnected);
     connect(&socket, &QTcpSocket::disconnected, this, &iFoxtrotSession::sockDisconnected);
+    connect(&socket, &QTcpSocket::bytesWritten, [this](qint64 bytes) {
+	    emit bytesWritten(bytes);
+    });
 #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
     connect(&socket, &QAbstractSocket::errorOccurred,
             this, &iFoxtrotSession::lowSockError);

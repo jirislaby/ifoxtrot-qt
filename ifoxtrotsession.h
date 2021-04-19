@@ -50,6 +50,7 @@ public:
     QByteArray read(qint64 maxSize) { return socket.read(maxSize); }
     void write(const QByteArray &array) { socket.write(array); }
     qint64 bytesAvailable() const { return socket.bytesAvailable(); }
+    qint64 bytesToWrite() const { return socket.bytesToWrite(); }
     bool canReadLine() const { return socket.canReadLine(); }
     QByteArray readLine() { return socket.readLine(); }
     QString getPeerName() const { return socket.peerName(); }
@@ -78,6 +79,7 @@ signals:
     void sockError(QAbstractSocket::SocketError socketError);
     void conError(const QString &reason);
     void conStatusUpdate(const QString &status);
+    void bytesWritten(qint64 bytes);
 
 public slots:
     void sockConnected();

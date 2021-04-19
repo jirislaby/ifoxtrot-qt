@@ -85,6 +85,14 @@ void CommandLine::connectToHost()
 	session.connectToHost(host, port, PLC);
 }
 
+void CommandLine::deref(QAtomicInt *aint)
+{
+	if (!aint->deref()) {
+		delete aint;
+		emit finished();
+	}
+}
+
 void CommandLine::connected()
 {
 	if (!quiet) {
@@ -94,7 +102,7 @@ void CommandLine::connected()
 
 	session.write("DI:\n");
 
-	auto aint = new QAtomicInt(gets.size() + 1);
+	auto aint = new QAtomicInt(gets.size() + !!sets.size());
 	for (auto g : gets) {
 		QString get("GET:");
 		get.append(g).append('\n');
@@ -108,23 +116,23 @@ void CommandLine::connected()
 		}, false);
 		connect(rcv, &iFoxtrotReceiver::done, [this, rcv, aint] {
 			rcv->deleteLater();
-			if (!aint->deref()) {
-				delete aint;
-				emit finished();
-			}
+			deref(aint);
 		});
 		session.enqueueRcv(rcv);
+	}
+
+	if (sets.size()) {
+		connect(&session, &iFoxtrotSession::bytesWritten,
+			[this, aint](quint64) {
+			if (!session.bytesToWrite())
+				deref(aint);
+		});
 	}
 
 	for (auto s : sets) {
 		QString set("SET:");
 		set.append(s.first).append(',').append(s.second).append('\n');
 		session.write(set.toUtf8());
-	}
-
-	if (!aint->deref()) {
-		delete aint;
-		emit finished();
 	}
 }
 
