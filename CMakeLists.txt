@@ -22,7 +22,7 @@ if (USE_WERROR)
 endif()
 
 set(QT_COMPONENTS Core Gui LinguistTools Network Widgets)
-find_package(Qt6 QUIET COMPONENTS ${QT_COMPONENTS})
+find_package(Qt6 QUIET COMPONENTS ${QT_COMPONENTS} Core5Compat)
 if (NOT Qt6_FOUND)
 	find_package(Qt5 REQUIRED COMPONENTS ${QT_COMPONENTS})
 endif()
@@ -59,6 +59,9 @@ add_executable(ifoxtrot-qt
 )
 
 target_link_libraries(ifoxtrot-qt Qt::Core Qt::Gui Qt::Network Qt::Widgets)
+if (Qt6_FOUND)
+    target_link_libraries(ifoxtrot-qt Qt::Core5Compat)
+endif()
 
 install(TARGETS ifoxtrot-qt
 	RUNTIME DESTINATION bin
