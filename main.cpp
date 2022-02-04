@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
 	QApplication a(argc, argv);
 
 	QTranslator translator;
-	auto paths = QStandardPaths::standardLocations(QStandardPaths::DataLocation);
+	auto paths = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
 	paths.prepend(a.applicationDirPath());
 	for (auto p : paths) {
 		QDir dir(p);
