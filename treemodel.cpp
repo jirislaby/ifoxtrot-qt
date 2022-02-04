@@ -51,7 +51,7 @@ int TreeModel::rowCount(const QModelIndex &index) const
 		//auto m = const_cast<TreeModel *>(this);
 		ft->load(*path, [/*m,*/ item, path](const QStringList &entries) -> void {
 			for (auto e : entries) {
-				if (!e.startsWith(path)) {
+				if (!e.startsWith(*path)) {
 					qWarning() << "entry does not conform to path";
 					continue;
 				}
