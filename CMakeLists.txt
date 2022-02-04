@@ -21,9 +21,13 @@ if (USE_WERROR)
 	add_compile_options(-Werror)
 endif()
 
-find_package(Qt5 COMPONENTS Core Gui LinguistTools Network Widgets REQUIRED)
+set(QT_COMPONENTS Core Gui LinguistTools Network Widgets)
+find_package(Qt6 QUIET COMPONENTS ${QT_COMPONENTS})
+if (NOT Qt6_FOUND)
+	find_package(Qt5 REQUIRED COMPONENTS ${QT_COMPONENTS})
+endif()
 
-qt5_add_translation(QM_FILES
+qt_add_translation(QM_FILES
 	trans/ifoxtrot-qt_cs.ts)
 
 add_compile_definitions(QT_NO_FOREACH QT_DEPRECATED_WARNINGS)
@@ -54,7 +58,7 @@ add_executable(ifoxtrot-qt
 	${QM_FILES}
 )
 
-target_link_libraries(ifoxtrot-qt Qt5::Core Qt5::Gui Qt5::Network Qt5::Widgets)
+target_link_libraries(ifoxtrot-qt Qt::Core Qt::Gui Qt::Network Qt::Widgets)
 
 install(TARGETS ifoxtrot-qt
 	RUNTIME DESTINATION bin
