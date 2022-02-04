@@ -575,8 +575,7 @@ void iFoxtrotScene::setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper)
 QVariant iFoxtrotScene::data(int column, int role) const
 {
     if (role == Qt::DisplayRole || role == Qt::EditRole) {
-        switch (column) {
-        case 1 ... 8:
+        if (column >= 1 && column <= 8) {
             QString ret = sceneNames.value(column - 1);
             if (ret == "")
 		ret.append(tr("Scene ")).append(QString::number(column));
