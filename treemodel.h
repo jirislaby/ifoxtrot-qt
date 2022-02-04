@@ -1,10 +1,10 @@
 #ifndef TREEMODEL_H
 #define TREEMODEL_H
 
-#include <treeitem.h>
-
 #include <QAbstractItemModel>
 #include <QModelIndex>
+
+#include "treeitem.h"
 
 class FileTransfer;
 
