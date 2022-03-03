@@ -16,7 +16,7 @@ class CommandLine : public QObject
 {
 	Q_OBJECT
 public:
-	typedef QPair<QString, QString> SetPair;
+	using SetPair = QPair<QString, QString>;
 
 	static void handleTUI(QApplication &a, QCommandLineParser &parser);
 

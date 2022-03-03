@@ -207,7 +207,7 @@ class iFoxtrotScene : public iFoxtrotCtl {
 public:
     class SceneCfg {
     public:
-        typedef QPair<iFoxtrotCtl *, QPair<QString, QString>> member;
+        using Member = QPair<iFoxtrotCtl *, QPair<QString, QString>>;
 
         SceneCfg() : lights(0), relays(0), shutters(0), others(0) {};
 
@@ -220,17 +220,17 @@ public:
                 shutters++;
             else
                 others++;
-            members.append(member(ctl, member::second_type(gtsap, val)));
+            members.append(Member(ctl, Member::second_type(gtsap, val)));
         }
 
-        QList<member> getMembers() const { return members; }
+        QList<Member> getMembers() const { return members; }
 
         int getLights() const { return lights; }
         int getRelays() const { return relays; }
         int getShutters() const { return shutters; }
         int getOthers() const { return others; }
     private:
-        QList<member> members;
+        QList<Member> members;
         int lights, relays, shutters, others;
     };
 

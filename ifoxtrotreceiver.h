@@ -78,8 +78,8 @@ public:
 class iFoxtrotReceiverGET : public iFoxtrotReceiverLine {
 	Q_OBJECT
 public:
-	typedef std::function<void(const QString &, const QString &,
-	                           const QString &, const QString &)> CallbackFn;
+	using CallbackFn = std::function<void(const QString &, const QString &,
+	                           const QString &, const QString &)>;
 
 	iFoxtrotReceiverGET(iFoxtrotSession *session, const QByteArray &write,
 			    const CallbackFn &callbackFn,
@@ -95,8 +95,8 @@ class iFoxtrotReceiverFile : public iFoxtrotReceiver
 {
 	Q_OBJECT
 public:
-	typedef std::function<void(iFoxtrotReceiverFile *,
-			const QByteArray &)> CallbackFn;
+	using CallbackFn = std::function<void(iFoxtrotReceiverFile *,
+			const QByteArray &)>;
 
 	iFoxtrotReceiverFile(iFoxtrotSession *session,
 	                     const QByteArray &write,

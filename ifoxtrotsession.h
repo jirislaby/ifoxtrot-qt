@@ -21,7 +21,7 @@ public:
         Connected,
     };
 
-    typedef QMap<QString, iFoxtrotCtl *> ItemsFox;
+    using ItemsFox = QMap<QString, iFoxtrotCtl *>;
 
     explicit iFoxtrotSession(bool full = true, QObject *parent = nullptr);
     ~iFoxtrotSession();
