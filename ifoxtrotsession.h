@@ -71,6 +71,7 @@ public:
     ItemsFox::const_iterator itemsFoxEnd() const {
         return itemsFox.end();
     }
+    QString getSettingsGrp() const;
 
 signals:
     void received();
@@ -88,8 +89,6 @@ public slots:
     void sockReadyRead();
 
 private:
-    QString getSettingsGrp();
-
     void addItem(const QString &foxName, const QString &foxType,
                  const QString &prop, const QString &value,
                  QList<iFoxtrotCtl *> *listFox, QByteArray *enableString);

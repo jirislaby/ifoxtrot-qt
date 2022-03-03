@@ -10,7 +10,7 @@
 #include "ifoxtrotreceiver.h"
 #include "ifoxtrotsession.h"
 
-QString iFoxtrotSession::getSettingsGrp()
+QString iFoxtrotSession::getSettingsGrp() const
 {
 	QString grp("name_cache_");
 	grp.append(host).append('_').append(QString::number(port)).append('_').

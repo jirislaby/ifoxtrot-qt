@@ -2,6 +2,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QList>
+#include <QSettings>
 #include <QTextCodec>
 #include <QtMath>
 
@@ -442,11 +443,24 @@ QString iFoxtrotShutter::stringPosition() const
     return tr("Unknown");
 }
 
+iFoxtrotScene::iFoxtrotScene(iFoxtrotSession *session, const QString &foxName) :
+	iFoxtrotCtl(session, foxName), sceneNames(8), scenes(0), sceneCfg(8)
+{
+	QSettings settings("jirislaby", "ifoxtrot");
+	settings.beginGroup(session->getSettingsGrp());
+	settings.beginReadArray(getFoxName());
+	for (int a = 0; a < 8; ++a) {
+	    settings.setArrayIndex(a);
+	    auto name = settings.value("name").toString();
+	    sceneNames[a] = name;
+	}
+}
+
 bool iFoxtrotScene::setProp(const QString &prop, const QString &val)
 {
-    if (prop == "FILE") {
-	    filename = getFoxString(val);
-	    if (filename == "" || !filename.endsWith('?')) {
+	if (prop == "FILE") {
+		filename = getFoxString(val);
+		if (filename == "" || !filename.endsWith('?')) {
 		    qWarning() << "wrong file for" << foxName << ":" << val;
 		    return false;
 	    }
@@ -540,6 +554,11 @@ void iFoxtrotScene::postReceive()
 				return;
 			}
 			sceneNames[a - 1] = name.value().toString();
+			QSettings settings("jirislaby", "ifoxtrot");
+			settings.beginGroup(session->getSettingsGrp());
+			settings.beginWriteArray(getFoxName());
+			settings.setArrayIndex(a - 1);
+			settings.setValue("name", sceneNames[a - 1]);
             changed("");
 
             auto scene = obj.find("scene");

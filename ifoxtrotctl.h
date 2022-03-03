@@ -234,8 +234,7 @@ public:
         int lights, relays, shutters, others;
     };
 
-    iFoxtrotScene(iFoxtrotSession *session, const QString &foxName) :
-        iFoxtrotCtl(session, foxName), sceneNames(8), scenes(0), sceneCfg(8) {}
+    iFoxtrotScene(iFoxtrotSession *session, const QString &foxName);
 
     QString getFoxType() const override { return "SCENE"; }
     bool setProp(const QString &prop, const QString &val) override;
