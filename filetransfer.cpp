@@ -39,7 +39,7 @@ void FileTransfer::load(const QString &path,
 		QStringList entries = codec->toUnicode(data.data()).split('\n');
 		if (entries.count() && entries.last().isEmpty())
 			entries.removeLast();
-		qDebug() << entries;
+		//qDebug() << entries;
 		callback(entries);
 		ui.groupRemote->setEnabled(true);
 	});
