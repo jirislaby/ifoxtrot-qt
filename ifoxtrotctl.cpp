@@ -168,6 +168,10 @@ bool iFoxtrotLight::setProp(const QString &prop, const QString &val)
         changed(prop);
         return true;
     }
+    if (prop == "TGTLEVEL") {
+	// TODO target dim level
+	return true;
+    }
 
     return iFoxtrotOnOff::setProp(prop, val);
 }
