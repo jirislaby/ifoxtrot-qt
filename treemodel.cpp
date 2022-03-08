@@ -43,22 +43,24 @@ int TreeModel::rowCount(const QModelIndex &index) const
 {
 	auto item = index.isValid() ? getInternal(index) : root;
 
-	//qDebug() << __func__ << "parent" << par->getName() << "->" << par->childrenCount();
+	//qDebug() << __func__ << index << item->getName() << "->" << item->childrenCount();
 
 	if (!item->isLoaded()) {
 		item->setLoaded();
 		auto path = new QString(item->getPath());
-		//auto m = const_cast<TreeModel *>(this);
-		ft->load(*path, [/*m,*/ item, path](const QStringList &entries) -> void {
+		auto m = const_cast<TreeModel *>(this);
+		ft->load(*path, [m, index, item, path](const QStringList &entries) -> void {
+			m->beginInsertRows(index, 0, entries.count() - 1);
 			for (auto e : entries) {
 				if (!e.startsWith(*path)) {
-					qWarning() << "entry does not conform to path";
+					qWarning() << "entry" << e <<
+						      "does not conform to path" <<
+						      *path;
 					continue;
 				}
 				item->addChild(e.mid(path->count()));
 			}
-			/*auto idx = m->createIndex(item->row(), 0, item);
-			emit m->dataChanged(idx, idx);*/
+			m->endInsertRows();
 			delete path;
 		});
 	}
