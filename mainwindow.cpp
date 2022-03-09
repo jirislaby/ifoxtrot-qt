@@ -240,7 +240,7 @@ void MainWindow::fileTransferTriggered()
 void MainWindow::aboutTriggered()
 {
 	QMessageBox::about(this, "iFoxtrot", tr(
-			   "Copyright © 2018-2021 <b>Jiri Slaby</b><br/>"
+			   "Copyright © 2018-2022 <b>Jiri Slaby</b><br/>"
 	                   "Licensed under GPLv2<br/>"
 	                   "Web: <a href=\"http://consultctl.eu\">http://consultctl.eu</a><br/>"
 			   "E-mail: <a href=\"mailto:jirislaby@gmail.com\">jirislaby@gmail.com</a>"));
