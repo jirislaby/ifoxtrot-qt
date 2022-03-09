@@ -4,12 +4,12 @@
 <context>
     <name>CommandLine</name>
     <message>
-        <location filename="../commandline.cpp" line="59"/>
+        <location filename="../commandline.cpp" line="66"/>
         <source>Host not specified!</source>
         <translation>Nezadán stroj!</translation>
     </message>
     <message>
-        <location filename="../commandline.cpp" line="66"/>
+        <location filename="../commandline.cpp" line="73"/>
         <source>Invalid port specified!</source>
         <translation>Udán špatný port!</translation>
     </message>
@@ -19,27 +19,27 @@
         <translation>Špatný formát nastavení!</translation>
     </message>
     <message>
-        <location filename="../commandline.cpp" line="91"/>
+        <location filename="../commandline.cpp" line="106"/>
         <source>Connected to</source>
         <translation>Připojeno k</translation>
     </message>
     <message>
-        <location filename="../commandline.cpp" line="92"/>
+        <location filename="../commandline.cpp" line="107"/>
         <source>PLC version:</source>
         <translation>Verze PLC:</translation>
     </message>
     <message>
-        <location filename="../commandline.cpp" line="138"/>
+        <location filename="../commandline.cpp" line="153"/>
         <source>Disconnected</source>
         <translation>Odpojeno</translation>
     </message>
     <message>
-        <location filename="../commandline.cpp" line="143"/>
+        <location filename="../commandline.cpp" line="158"/>
         <source>Connection error:</source>
         <translation>Chyba spojení:</translation>
     </message>
     <message>
-        <location filename="../commandline.cpp" line="149"/>
+        <location filename="../commandline.cpp" line="164"/>
         <source>Socket error:</source>
         <translation>Chyba soketu:</translation>
     </message>
@@ -47,22 +47,22 @@
 <context>
     <name>FileTransfer</name>
     <message>
-        <location filename="../filetransfer.cpp" line="46"/>
+        <location filename="../filetransfer.cpp" line="55"/>
         <source>Save File</source>
         <translation>Uložit soubor</translation>
     </message>
     <message>
-        <location filename="../filetransfer.cpp" line="56"/>
+        <location filename="../filetransfer.cpp" line="65"/>
         <source>Error</source>
         <translation>Chyba</translation>
     </message>
     <message>
-        <location filename="../filetransfer.cpp" line="57"/>
+        <location filename="../filetransfer.cpp" line="66"/>
         <source>&lt;b&gt;Cannot open file &apos;</source>
         <translation>&lt;b&gt;Nelze otevřít soubor &apos;</translation>
     </message>
     <message>
-        <location filename="../filetransfer.cpp" line="59"/>
+        <location filename="../filetransfer.cpp" line="68"/>
         <source>&apos; for writing!&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;</source>
         <translation>&apos; pro zápis!&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;</translation>
     </message>
@@ -80,27 +80,17 @@
         <translation>Vzdálený strom</translation>
     </message>
     <message>
-        <location filename="../filetransfer.ui" line="31"/>
-        <source>Path:</source>
-        <translation>Cesta:</translation>
-    </message>
-    <message>
-        <location filename="../filetransfer.ui" line="38"/>
-        <source>//</source>
-        <translation>//</translation>
-    </message>
-    <message>
-        <location filename="../filetransfer.ui" line="89"/>
+        <location filename="../filetransfer.ui" line="71"/>
         <source>&amp;Reload</source>
         <translation>&amp;Obnovit</translation>
     </message>
     <message>
-        <location filename="../filetransfer.ui" line="96"/>
+        <location filename="../filetransfer.ui" line="78"/>
         <source>&amp;Download</source>
         <translation>&amp;Stáhnout</translation>
     </message>
     <message>
-        <location filename="../filetransfer.ui" line="136"/>
+        <location filename="../filetransfer.ui" line="118"/>
         <source>&amp;Close</source>
         <translation>Z&amp;avřít</translation>
     </message>
@@ -456,24 +446,24 @@
         <translation>Připojeno k </translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="138"/>
+        <location filename="../mainwindow.cpp" line="137"/>
         <source>Disconnected</source>
         <translation>Odpojeno</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="150"/>
+        <location filename="../mainwindow.cpp" line="149"/>
         <source>Connection error: </source>
         <translation>Chyba připojení: </translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="157"/>
+        <location filename="../mainwindow.cpp" line="156"/>
         <source>Socket error: </source>
         <translation>Chyba soketu: </translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="243"/>
-        <source>Copyright © 2018-2021 &lt;b&gt;Jiri Slaby&lt;/b&gt;&lt;br/&gt;Licensed under GPLv2&lt;br/&gt;Web: &lt;a href=&quot;http://consultctl.eu&quot;&gt;http://consultctl.eu&lt;/a&gt;&lt;br/&gt;E-mail: &lt;a href=&quot;mailto:jirislaby@gmail.com&quot;&gt;jirislaby@gmail.com&lt;/a&gt;</source>
-        <translation>Copyright © 2018-2021 &lt;b&gt;Jiri Slaby&lt;/b&gt;&lt;br/&gt;Licencováno pod GPLv2&lt;br/&gt;Web: &lt;a href=&quot;http://consultctl.eu&quot;&gt;http://consultctl.eu&lt;/a&gt;&lt;br/&gt;E-mail: &lt;a href=&quot;mailto:jirislaby@gmail.com&quot;&gt;jirislaby@gmail.com&lt;/a&gt;</translation>
+        <location filename="../mainwindow.cpp" line="242"/>
+        <source>Copyright © 2018-2022 &lt;b&gt;Jiri Slaby&lt;/b&gt;&lt;br/&gt;Licensed under GPLv2&lt;br/&gt;Web: &lt;a href=&quot;http://consultctl.eu&quot;&gt;http://consultctl.eu&lt;/a&gt;&lt;br/&gt;E-mail: &lt;a href=&quot;mailto:jirislaby@gmail.com&quot;&gt;jirislaby@gmail.com&lt;/a&gt;</source>
+        <translation>Copyright © 2018-2022 &lt;b&gt;Jiri Slaby&lt;/b&gt;&lt;br/&gt;Licencováno pod GPLv2&lt;br/&gt;Web: &lt;a href=&quot;http://consultctl.eu&quot;&gt;http://consultctl.eu&lt;/a&gt;&lt;br/&gt;E-mail: &lt;a href=&quot;mailto:jirislaby@gmail.com&quot;&gt;jirislaby@gmail.com&lt;/a&gt;</translation>
     </message>
 </context>
 <context>
@@ -487,27 +477,27 @@
 <context>
     <name>iFoxtrotScene</name>
     <message>
-        <location filename="../ifoxtrotctl.cpp" line="582"/>
+        <location filename="../ifoxtrotctl.cpp" line="604"/>
         <source>Scene </source>
         <translation>Scéna </translation>
     </message>
     <message>
-        <location filename="../ifoxtrotctl.cpp" line="585"/>
+        <location filename="../ifoxtrotctl.cpp" line="607"/>
         <source> L, </source>
         <translation> S, </translation>
     </message>
     <message>
-        <location filename="../ifoxtrotctl.cpp" line="586"/>
+        <location filename="../ifoxtrotctl.cpp" line="608"/>
         <source> R, </source>
         <translation> R, </translation>
     </message>
     <message>
-        <location filename="../ifoxtrotctl.cpp" line="587"/>
+        <location filename="../ifoxtrotctl.cpp" line="609"/>
         <source> S, </source>
         <translation> Ž, </translation>
     </message>
     <message>
-        <location filename="../ifoxtrotctl.cpp" line="588"/>
+        <location filename="../ifoxtrotctl.cpp" line="610"/>
         <source> O)</source>
         <translation> O)</translation>
     </message>
@@ -515,17 +505,17 @@
 <context>
     <name>iFoxtrotSession</name>
     <message>
-        <location filename="../ifoxtrotsession.cpp" line="133"/>
+        <location filename="../ifoxtrotsession.cpp" line="136"/>
         <source>Got info, receiving items</source>
         <translation>Přijato info, přijímám položky</translation>
     </message>
     <message>
-        <location filename="../ifoxtrotsession.cpp" line="134"/>
+        <location filename="../ifoxtrotsession.cpp" line="137"/>
         <source>Got info</source>
         <translation>Přijato info</translation>
     </message>
     <message>
-        <location filename="../ifoxtrotsession.cpp" line="158"/>
+        <location filename="../ifoxtrotsession.cpp" line="161"/>
         <source>Received items, receiving states</source>
         <translation>Přijaty položky, přijímám stavy</translation>
     </message>
@@ -533,62 +523,62 @@
 <context>
     <name>iFoxtrotShutter</name>
     <message>
-        <location filename="../ifoxtrotctl.cpp" line="366"/>
+        <location filename="../ifoxtrotctl.cpp" line="371"/>
         <source> ↑</source>
         <translation> ↑</translation>
     </message>
     <message>
-        <location filename="../ifoxtrotctl.cpp" line="368"/>
+        <location filename="../ifoxtrotctl.cpp" line="373"/>
         <source> ↓</source>
         <translation> ↓</translation>
     </message>
     <message>
-        <location filename="../ifoxtrotctl.cpp" line="370"/>
+        <location filename="../ifoxtrotctl.cpp" line="375"/>
         <source> ⇡</source>
         <translation> ⇡</translation>
     </message>
     <message>
-        <location filename="../ifoxtrotctl.cpp" line="372"/>
+        <location filename="../ifoxtrotctl.cpp" line="377"/>
         <source> ⇣</source>
         <translation> ⇣</translation>
     </message>
     <message>
-        <location filename="../ifoxtrotctl.cpp" line="381"/>
+        <location filename="../ifoxtrotctl.cpp" line="386"/>
         <source>Yes</source>
         <translation>Ano</translation>
     </message>
     <message>
-        <location filename="../ifoxtrotctl.cpp" line="381"/>
+        <location filename="../ifoxtrotctl.cpp" line="386"/>
         <source>No</source>
         <translation>Ne</translation>
     </message>
     <message>
-        <location filename="../ifoxtrotctl.cpp" line="426"/>
+        <location filename="../ifoxtrotctl.cpp" line="431"/>
         <source>Steady</source>
         <translation>Bez pohybu</translation>
     </message>
     <message>
-        <location filename="../ifoxtrotctl.cpp" line="428"/>
+        <location filename="../ifoxtrotctl.cpp" line="433"/>
         <source>Moving Up</source>
         <translation>Jede nahoru</translation>
     </message>
     <message>
-        <location filename="../ifoxtrotctl.cpp" line="430"/>
+        <location filename="../ifoxtrotctl.cpp" line="435"/>
         <source>Moving Down</source>
         <translation>Jede dolů</translation>
     </message>
     <message>
-        <location filename="../ifoxtrotctl.cpp" line="438"/>
+        <location filename="../ifoxtrotctl.cpp" line="443"/>
         <source>Up</source>
         <translation>Nahoře</translation>
     </message>
     <message>
-        <location filename="../ifoxtrotctl.cpp" line="440"/>
+        <location filename="../ifoxtrotctl.cpp" line="445"/>
         <source>Down</source>
         <translation>Dole</translation>
     </message>
     <message>
-        <location filename="../ifoxtrotctl.cpp" line="442"/>
+        <location filename="../ifoxtrotctl.cpp" line="447"/>
         <source>Unknown</source>
         <translation>Neznámá</translation>
     </message>
