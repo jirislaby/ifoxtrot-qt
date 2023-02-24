@@ -199,6 +199,11 @@ void MainWindow::on_listViewItems_doubleClicked(const QModelIndex &index)
 void MainWindow::on_pushButtonLight_clicked()
 {
     auto ctl = getCurrentCtl();
+    if (!ctl) {
+        qWarning() << "invalid ctl (NULL)" << __LINE__;
+        return;
+    }
+
     auto onOff = dynamic_cast<iFoxtrotOnOff *>(ctl);
     if (!onOff) {
         qWarning() << "invalid ctl" << __LINE__ << ctl->getFoxType() <<
@@ -219,6 +224,11 @@ void MainWindow::buttonSceneClicked()
     set.replace(0, set.size() - 1, "SET");
 
     auto ctl = getCurrentCtl();
+    if (!ctl) {
+        qWarning() << "invalid ctl (NULL)" << __LINE__;
+        return;
+    }
+
     auto scene = dynamic_cast<iFoxtrotScene *>(ctl);
     if (!scene) {
         qWarning() << "invalid ctl" << __LINE__ << ctl->getFoxType() <<
@@ -254,6 +264,11 @@ void MainWindow::aboutQtTriggered()
 void MainWindow::on_pushButtonShutUp_clicked()
 {
     auto ctl = getCurrentCtl();
+    if (!ctl) {
+        qWarning() << "invalid ctl (NULL)" << __LINE__;
+        return;
+    }
+
     auto shutter = dynamic_cast<iFoxtrotShutter *>(ctl);
     if (!shutter) {
         qWarning() << "invalid ctl" << __LINE__ << ctl->getFoxType() <<
@@ -266,6 +281,11 @@ void MainWindow::on_pushButtonShutUp_clicked()
 void MainWindow::on_pushButtonShutRUp_clicked()
 {
     auto ctl = getCurrentCtl();
+    if (!ctl) {
+        qWarning() << "invalid ctl (NULL)" << __LINE__;
+        return;
+    }
+
     auto shutter = dynamic_cast<iFoxtrotShutter *>(ctl);
     if (!shutter) {
         qWarning() << "invalid ctl" << __LINE__ << ctl->getFoxType() <<
@@ -278,6 +298,11 @@ void MainWindow::on_pushButtonShutRUp_clicked()
 void MainWindow::on_pushButtonShutRDown_clicked()
 {
     auto ctl = getCurrentCtl();
+    if (!ctl) {
+        qWarning() << "invalid ctl (NULL)" << __LINE__;
+        return;
+    }
+
     auto shutter = dynamic_cast<iFoxtrotShutter *>(ctl);
     if (!shutter) {
         qWarning() << "invalid ctl" << __LINE__ << ctl->getFoxType() <<
@@ -290,6 +315,11 @@ void MainWindow::on_pushButtonShutRDown_clicked()
 void MainWindow::on_pushButtonShutDown_clicked()
 {
     auto ctl = getCurrentCtl();
+    if (!ctl) {
+        qWarning() << "invalid ctl (NULL)" << __LINE__;
+        return;
+    }
+
     auto shutter = dynamic_cast<iFoxtrotShutter *>(ctl);
     if (!shutter) {
         qWarning() << "invalid ctl" << __LINE__ << ctl->getFoxType() <<
@@ -325,6 +355,11 @@ void MainWindow::on_horizontalSliderDimlevel_sliderReleased()
 {
     int value = ui->horizontalSliderDimlevel->value();
     auto ctl = getCurrentCtl();
+    if (!ctl) {
+        qWarning() << "invalid ctl (NULL)" << __LINE__;
+        return;
+    }
+
     auto light = dynamic_cast<iFoxtrotLight *>(ctl);
     if (!light) {
         qWarning() << "invalid ctl" << __LINE__ << ctl->getFoxType() <<
@@ -345,6 +380,11 @@ void MainWindow::on_horizontalSliderDimlevel_actionTriggered(int action)
 void MainWindow::on_doubleSpinBoxDisplayVal_valueChanged(double value)
 {
     auto ctl = getCurrentCtl();
+    if (!ctl) {
+        qWarning() << "invalid ctl (NULL)" << __LINE__;
+        return;
+    }
+
     auto display = dynamic_cast<iFoxtrotDisplay *>(ctl);
     if (!display) {
         qWarning() << "invalid ctl" << __LINE__ << ctl->getFoxType() <<
@@ -366,6 +406,11 @@ void MainWindow::on_doubleSpinBoxDisplayVal_valueChanged(double value)
 void MainWindow::on_TPW_SB_delta_valueChanged(double value)
 {
     auto ctl = getCurrentCtl();
+    if (!ctl) {
+        qWarning() << "invalid ctl (NULL)" << __LINE__;
+        return;
+    }
+
     auto tpw = dynamic_cast<iFoxtrotTPW *>(ctl);
     if (!tpw) {
         qWarning() << "invalid ctl" << __LINE__ << ctl->getFoxType() <<
