@@ -116,6 +116,9 @@ QVariant iFoxtrotCtl::data(int column, int role) const
     if (role == Qt::DisplayRole || role == Qt::EditRole)
         return getFoxType().mid(0, 1) + ' ' + getName();
 
+    if (role == Qt::ForegroundRole)
+	return QBrush(QColor(Qt::black));
+
     if (role == Qt::BackgroundRole)
         return QBrush(getColor());
 
