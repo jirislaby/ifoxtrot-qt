@@ -58,7 +58,7 @@ int TreeModel::rowCount(const QModelIndex &index) const
 						      *path;
 					continue;
 				}
-				item->addChild(e.mid(path->count()));
+				item->addChild(e.mid(path->size()));
 			}
 			m->endInsertRows();
 			delete path;
