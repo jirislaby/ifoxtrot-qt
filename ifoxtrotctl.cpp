@@ -70,6 +70,17 @@ bool iFoxtrotCtl::setProp(const QString &prop, const QString &val)
 	if (prop == "ENABLE")
 		return true;
 
+	if (prop == "NEEDACK") {
+		if (val == "1")
+			qWarning() << getFoxName() << prop << "set but unsupported";
+		return true;
+	}
+	if (prop == "NEEDPIN") {
+		if (!getFoxString(val).isEmpty())
+			qWarning() << getFoxName() << prop << "set but unsupported";
+		return true;
+	}
+
 	if (prop == "NAME") {
 		return setName(getFoxString(val));
 
