@@ -117,6 +117,23 @@ protected:
 private:
 };
 
+class iFoxtrotSocket : public iFoxtrotOnOff {
+    Q_OBJECT
+public:
+    iFoxtrotSocket(iFoxtrotSession *session, const QString &foxName) :
+        iFoxtrotOnOff(session, foxName) { }
+
+    QString getFoxType() const override { return "SOCKET"; }
+    bool setProp(const QString &prop, const QString &val) override;
+
+    void setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper) override;
+
+protected:
+    QColor getColor() const override { return QColor(210, 210, 250); }
+
+private:
+};
+
 class iFoxtrotDisplay : public iFoxtrotCtl {
     Q_OBJECT
 public:

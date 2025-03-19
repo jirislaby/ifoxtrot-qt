@@ -31,6 +31,8 @@ iFoxtrotCtl *iFoxtrotCtl::getOne(iFoxtrotSession *session,
         return new iFoxtrotRelay(session, foxName);
     if (foxType == "SCENE")
         return new iFoxtrotScene(session, foxName);
+    if (foxType == "SOCKET")
+        return new iFoxtrotSocket(session, foxName);
     if (foxType == "SHUTTER")
         return new iFoxtrotShutter(session, foxName);
     if (foxType == "TPW")
@@ -229,6 +231,16 @@ bool iFoxtrotRelay::setProp(const QString &prop, const QString &val)
 void iFoxtrotRelay::setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper)
 {
     widgetMapper.addMapping(ui->labelRelayStatus, 1, "text");
+}
+
+bool iFoxtrotSocket::setProp(const QString &prop, const QString &val)
+{
+    return iFoxtrotOnOff::setProp(prop, val);
+}
+
+void iFoxtrotSocket::setupUI(Ui::MainWindow *ui, QDataWidgetMapper &widgetMapper)
+{
+    widgetMapper.addMapping(ui->labelSocketStatus, 1, "text");
 }
 
 bool iFoxtrotDisplay::setProp(const QString &prop, const QString &val)
